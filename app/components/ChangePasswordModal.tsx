@@ -70,7 +70,7 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#11120D] p-8 rounded-xl w-150 max-w-full space-y-6">
+      <div className="bg-[#1A1B16] p-8 rounded-xl w-150 max-w-full space-y-6">
         <h2 className="text-2xl font-semibold">Change Password</h2>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <input
@@ -78,35 +78,35 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
             placeholder="Current Password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="w-full p-4 rounded bg-[#254B33] text-white outline-none"
+            className="w-full p-4 rounded bg-[#697857] text-white outline-none"
           />
           <input
             type="password"
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full p-4 rounded bg-[#254B33] text-white outline-none"
+            className="w-full p-4 rounded bg-[#697857] text-white outline-none"
           />
           <input
             type="password"
             placeholder="Confirm New Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-4 rounded bg-[#254B33] text-white outline-none"
+            className="w-full p-4 rounded bg-[#697857] text-white outline-none"
           />
 
           <div className="flex justify-end gap-3 mt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 rounded bg-gray-600 hover:bg-gray-700"
+              className="px-5 py-2 rounded bg-gray-600 hover:bg-gray-700 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 rounded bg-green-600 hover:bg-green-700 disabled:opacity-50"
+              className="px-5 py-2 rounded bg-[#697857] hover:bg-green-600 disabled:opacity-50 cursor-pointer"
             >
               {loading ? "Updating..." : "Update"}
             </button>

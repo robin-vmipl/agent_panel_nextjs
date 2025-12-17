@@ -10,7 +10,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 h-screen bg-[#37432b] text-white flex flex-col">
+    <aside className="w-64 h-screen bg-[#0A192F] text-white flex flex-col">
       {/* Logo */}
       <div className="p-2 font-extrabold text-center border-b border-white/10">
         <img src="/logo.png" alt="Logo" className="mx-auto h-12 w-auto" />
@@ -23,7 +23,7 @@ export default function Sidebar() {
             key={item.href}
             href={item.href}
             className={`block px-4 py-3 my-1 rounded-md text-center transition-all ${
-              pathname === item.href ? "bg-[#11120D]" : "hover:bg-[#6B6A5A]/70"
+              pathname === item.href ? "bg-[#1A1B16]" : "hover:bg-[#6B6A5A]/70"
             }`}
           >
             {item.name}

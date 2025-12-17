@@ -33,7 +33,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="h-16 bg-[#2E4B30] text-white flex items-center justify-between px-6 border-b border-white/10">
+      <header className="h-16 bg-[#1F2937] text-white flex items-center justify-between px-6 border-b border-white/10">
         <h1 className="text-lg font-semibold capitalize">{dynamicTitle}</h1>
 
         <div className="flex items-center gap-4">
