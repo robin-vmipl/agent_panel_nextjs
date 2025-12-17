@@ -30,8 +30,8 @@ export default function StatusDropdown() {
         setCurrentStatus(data.status);
         localStorage.setItem("agentStatus", data.status);
       }
-    } catch {
-      toast.error("Failed to fetch current status");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to fetch current status");
     }
   };
 
@@ -62,18 +62,19 @@ export default function StatusDropdown() {
         }
       );
 
-      if (data.status === "error") {
-        toast.error(data.message || "Status update failed");
+      // backend now returns 'error' or message in consistent structure
+      if (data.error) {
+        toast.error(data.error); // ❌ show error
       } else {
-        setCurrentStatus(newStatus);
-        localStorage.setItem("agentStatus", newStatus);
+        setCurrentStatus(data.updatedStatus || newStatus); // ✅ only update on success
+        localStorage.setItem("agentStatus", data.updatedStatus || newStatus);
         toast.success(data.message || "Status updated");
       }
-    } catch {
-      toast.error("Something went wrong");
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   /* =========================
@@ -90,7 +91,7 @@ export default function StatusDropdown() {
       <button
         onClick={() => setOpen(!open)}
         disabled={loading}
-        className={`text-white px-4 py-2 rounded-md text-sm transition ${statusColor}`}
+        className={`text-white cursor-pointer px-4 py-2 rounded-md text-sm transition ${statusColor}`}
       >
         {loading ? "Updating..." : currentStatus}
       </button>
@@ -104,7 +105,7 @@ export default function StatusDropdown() {
             return (
               <button
                 key={s.value}
-                disabled={isActive}
+                disabled={isActive || loading} // disable while loading
                 onClick={() => handleStatusChange(s.value)}
                 className={`w-full text-left px-4 py-2 text-sm transition
                   ${

@@ -5,16 +5,30 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   });
 
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+
+  // ❌ Unauthorized → force logout
   if (res.status === 401) {
     localStorage.removeItem("token");
     window.location.href = "/login";
-    throw new Error("Unauthorized: Invalid or expired session");
+    throw new Error("Session expired");
   }
 
-  return res.json(); // returns parsed JSON
+  // ❌ Any other API error
+  if (!res.ok) {
+    throw new Error(data?.message || "Something went wrong");
+  }
+
+  // ✅ Success
+  return data;
 }

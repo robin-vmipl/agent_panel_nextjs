@@ -33,7 +33,7 @@ export default function MyIngroupsButton() {
     <>
       <button
         onClick={fetchIngoups}
-        className="px-4 py-2 text-sm rounded-md bg-[#6B6A5A] hover:bg-[#7A7968]"
+        className="px-4 py-2 text-sm rounded-md bg-[#697857] hover:bg-[#7A7968] cursor-pointer transition"
       >
         My Ingroups
       </button>

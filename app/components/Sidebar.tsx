@@ -4,20 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutUser } from "../lib/auth";
 
-const menuItems = [
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "My Performance", href: "/performance" },
-  { name: "Settings", href: "/settings" },
-];
+const menuItems = [{ name: "Dashboard", href: "/dashboard" }];
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 h-screen bg-[#043222] text-white flex flex-col">
-      {/* Header */}
-      <div className="p-6 text-2xl font-bold border-b border-white/10">
-        Agent Panel
+    <aside className="w-64 h-screen bg-[#37432b] text-white flex flex-col">
+      {/* Logo */}
+      <div className="p-2 font-extrabold text-center border-b border-white/10">
+        <img src="/logo.png" alt="Logo" className="mx-auto h-12 w-auto" />
       </div>
 
       {/* Menu */}
