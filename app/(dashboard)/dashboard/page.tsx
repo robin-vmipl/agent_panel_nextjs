@@ -44,7 +44,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8 text-gray-700">
+    <div className="space-y-8 text-white-700">
       <h1 className="text-3xl font-bold"></h1>
 
       {/* CALL SUMMARY */}
@@ -65,8 +65,8 @@ export default function DashboardPage() {
       </div>
 
       {/* GRAPH */}
-      <div className="bg-[#FFFFFF] p-6 rounded-xl shadow-2xl">
-        <h2 className="text-xl mb-4 text-gray-700">
+      <div className="bg-[#0a1d2c] p-6 rounded-xl shadow-2xl">
+        <h2 className="text-xl mb-4 text-white-700">
           Last 7 Days Agent Performance
         </h2>
         <ResponsiveContainer width="100%" height={400}>
@@ -82,7 +82,7 @@ export default function DashboardPage() {
             {/* X-Axis Configuration */}
             <XAxis
               dataKey="date"
-              stroke="#374151"
+              stroke="#ffffff"
               tick={{ fontSize: 12 }} // Adjust tick font size
               angle={0} // Set angle to 0 for horizontal text
               textAnchor="middle" // Ensure text is centered
@@ -91,7 +91,7 @@ export default function DashboardPage() {
 
             {/* Y-Axis Configuration */}
             <YAxis
-              stroke="#374151"
+              stroke="#ffffff"
               tick={{ fontSize: 12 }}
               domain={[0, "auto"]} // Automatically adjust max value
             />
@@ -131,7 +131,7 @@ export default function DashboardPage() {
 /* ------------------ COMPONENTS ------------------ */
 function Card({ title, value }: any) {
   return (
-    <div className="bg-[#FFFFFF] p-6 rounded-xl shadow-2xl text-gray-700 ">
+    <div className="bg-[#0a1d2c] p-6 rounded-xl shadow-2xl text-white-700 ">
       <p className="text-sm font-bold text-center">{title}</p>
       <p className="text-md mt-2 text-center">{value}</p>
     </div>
@@ -140,7 +140,7 @@ function Card({ title, value }: any) {
 
 function TimeCard({ title, value }: any) {
   return (
-    <div className="bg-[#FFFFFF] p-6 rounded-xl text-center shadow-2xl">
+    <div className="bg-[#0a1d2c] p-6 rounded-xl text-center shadow-2xl">
       <p className="text-sm font-bold">{title}</p>
       <p className="text-md mt-1">{value}</p>
     </div>

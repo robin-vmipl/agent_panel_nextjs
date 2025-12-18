@@ -10,7 +10,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 h-screen bg-[#0A192F] text-white flex flex-col">
+    <aside className="w-64 h-screen bg-[#0a1d2c] text-white flex flex-col">
       {/* Logo */}
       <div className="p-2 font-extrabold text-center border-b border-white/10">
         <img src="/logo.png" alt="Logo" className="mx-auto h-12 w-auto" />
@@ -34,7 +34,7 @@ export default function Sidebar() {
       {/* Logout Button */}
       <button
         onClick={logoutUser} // ✅ Use centralized logout
-        className="mt-auto m-4 bg-[#11120D] hover:bg-[#6B6A5A] py-2 rounded-md transition"
+        className="mt-auto m-4 bg-[#11120D] hover:bg-[#6B6A5A] py-2 rounded-md transition cursor-pointer"
       >
         Logout
       </button>

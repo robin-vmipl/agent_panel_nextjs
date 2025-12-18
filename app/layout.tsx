@@ -28,7 +28,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* ✅ GLOBAL TOAST PROVIDER */}
         <Toaster position="top-right" />
         {children}
       </body>
