@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function LoginPage() {
+  const { setUser } = useAuth();
   const router = useRouter();
 
   const [username, setUsername] = useState("");
@@ -52,6 +54,7 @@ export default function LoginPage() {
       // (optional but useful)
       localStorage.setItem("user", JSON.stringify(data.user));
 
+      setUser(data.user);
       router.replace("/dashboard");
     } catch (err: any) {
       setError(err.message);

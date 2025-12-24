@@ -28387,16 +28387,13 @@ THE SOFTWARE.
         /* eslint-disable @typescript-eslint/no-use-before-define */
         /* eslint-disable no-console */
 
-        // Accessing PHP variables embedded in HTML
-        const webrtc_username = "312519";
-        const webrtc_password = "312519";
         const clickToCallRoute = "/click-to-call";
 
-        const WEBSOCKET_HOST = "vconrtc.smartping.io";
-        const WEBSOCKET_PORT = 8080;
-        const SIP_PORT = 8443;
-        const SIP_USERNAME = webrtc_username;
-        const SIP_PASSWORD = webrtc_password;
+        const SIP_USERNAME = window.SIP_USERNAME;  
+        const SIP_PASSWORD = window.SIP_PASSWORD;  
+        const WEBSOCKET_HOST = window.WEBSOCKET_HOST || "vconrtc.smartping.io";
+        const WEBSOCKET_PORT = window.WEBSOCKET_PORT || 8080;
+        const SIP_PORT = window.SIP_PORT || 8443;
 
         // console.log(WEBSOCKET_HOST,WEBSOCKET_PORT,SIP_PORT,SIP_USERNAME,SIP_PASSWORD);
 

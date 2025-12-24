@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Phone, PhoneOff, MicOff, Mic, Pause, Play } from "lucide-react";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function CallWidget() {
+  const { sipConfig, user, isAuthenticated } = useAuth(); // ✅ NEW
+
   const [open, setOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -17,6 +20,19 @@ export default function CallWidget() {
   const sipNumberInputRef = useRef<HTMLInputElement | null>(null);
   const sipCallBtnRef = useRef<HTMLButtonElement | null>(null);
   const sipHangupBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  // ✅ ADD THIS useEffect - SETS DYNAMIC SIP CONFIG FOR demo-1.js
+  useEffect(() => {
+    if (sipConfig.username && sipConfig.password && isAuthenticated) {
+      (window as any).SIP_USERNAME = sipConfig.username;
+      (window as any).SIP_PASSWORD = sipConfig.password;
+      (window as any).WEBSOCKET_HOST = "vconrtc.smartping.io";
+      (window as any).WEBSOCKET_PORT = 8080;
+      (window as any).SIP_PORT = 8443;
+
+      console.log("✅ SIP Config loaded:", sipConfig.username); // Debug
+    }
+  }, [sipConfig.username, sipConfig.password, isAuthenticated]);
 
   // SIP Elements Setup
   useEffect(() => {
