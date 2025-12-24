@@ -98,7 +98,10 @@ export default function StatusDropdown() {
 
       {/* DROPDOWN */}
       {open && (
-        <div className="absolute right-0 mt-2 w-60 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50">
+        <div
+          className="absolute right-0 mt-2 w-60 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50"
+          id="UserStatusDropdown"
+        >
           {STATUS_OPTIONS.map((s) => {
             const isActive = s.value === currentStatus;
 

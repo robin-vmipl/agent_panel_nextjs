@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard - Agent Panel",
+  title: "Agent Panel",
   description: "Agent Panel Dashboard",
 };
 
@@ -25,6 +25,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* ✅ SIP LEGACY STYLES */}
+        {/* <link rel="stylesheet" href="/sip/demo-1.css" /> */}
+        {/* <link rel="stylesheet" href="/sip/style.css" /> */}
+      </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

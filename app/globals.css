@@ -1,5 +1,7 @@
+/* 🔹 ALL imports must be at the top */
 @import "tailwindcss";
 
+/* 🔹 Now normal CSS is allowed */
 :root {
   --background: #ffffff;
   --foreground: #171717;

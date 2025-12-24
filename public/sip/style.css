@@ -1,0 +1,115 @@
+/* Container at bottom-right */
+#webphone-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 280px;
+  font-family: Arial, sans-serif;
+}
+
+/* Toggle button */
+#chatbotButton {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Dialer panel */
+#tabContent {
+  /* display: none; */
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Show panel */
+#tabContent.active {
+  display: block;
+}
+
+/* Keypad grid */
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.digit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.keypad {
+  width: 60px;
+  height: 60px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+.sub {
+  font-size: 0.7rem;
+  color: grey;
+  margin-top: 4px;
+}
+
+/* Controls row */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.controls div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controls i {
+  font-size: 20px;
+  margin-top: 4px;
+}
+
+.controls button {
+  padding: 6px 12px;
+  margin-top: 4px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#call {
+  background-color: #66bb6a;
+  color: white;
+}
+
+#hangup {
+  background-color: #dc3545;
+  color: white;
+}
+
+#output input {
+  width: 100%;
+  font-size: 1.5rem;
+  padding: 6px;
+  margin-top: 6px;
+  text-align: center;
+}
