@@ -1,29 +1,20 @@
-// lib/sipBridge.ts
-
+// lib/sipControls.ts
 export const sipConnect = () => {
-  const btn = document.getElementById("connect") as HTMLButtonElement | null;
-
-  if (!btn) {
-    console.warn("❌ SIP connect button not found");
-    return;
-  }
-
-  if (!btn.disabled) {
-    console.log("📞 SIP connecting...");
-    btn.click();
+  console.log("📞 SIP: Connecting...");
+  const connectBtn = document.getElementById(
+    "connect"
+  ) as HTMLButtonElement | null;
+  if (connectBtn && !connectBtn.disabled) {
+    connectBtn.click();
   }
 };
 
 export const sipDisconnect = () => {
-  const btn = document.getElementById("disconnect") as HTMLButtonElement | null;
-
-  if (!btn) {
-    console.warn("❌ SIP disconnect button not found");
-    return;
-  }
-
-  if (!btn.disabled) {
-    console.log("📴 SIP disconnecting...");
-    btn.click();
+  console.log("📴 SIP: Disconnecting...");
+  const disconnectBtn = document.getElementById(
+    "disconnect"
+  ) as HTMLButtonElement | null;
+  if (disconnectBtn && !disconnectBtn.disabled) {
+    disconnectBtn.click();
   }
 };

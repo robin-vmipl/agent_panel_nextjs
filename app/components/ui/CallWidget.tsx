@@ -5,36 +5,34 @@ import { Phone, PhoneOff, MicOff, Mic, Pause, Play } from "lucide-react";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function CallWidget() {
-  const { sipConfig, user, isAuthenticated } = useAuth(); // ✅ NEW
+  const { sipConfig, user, isAuthenticated } = useAuth();
 
   const [open, setOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isOnHold, setIsOnHold] = useState(false);
+  const [isInCall, setIsInCall] = useState(false); // ✅ NEW: Call state
   const [callDuration, setCallDuration] = useState("00:00");
 
   const durationRef = useRef<number>(0);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ✅ FIXED: Proper TypeScript types for refs
   const sipNumberInputRef = useRef<HTMLInputElement | null>(null);
   const sipCallBtnRef = useRef<HTMLButtonElement | null>(null);
   const sipHangupBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  // ✅ ADD THIS useEffect - SETS DYNAMIC SIP CONFIG FOR demo-1.js
+  // ✅ SIP Config for demo-*.js
   useEffect(() => {
     if (sipConfig.username && sipConfig.password && isAuthenticated) {
       (window as any).SIP_USERNAME = sipConfig.username;
-      (window as any).SIP_PASSWORD = sipConfig.password;
+      (window as any).SIP_PASSWORD = sipConfig.username;
       (window as any).WEBSOCKET_HOST = "vconrtc.smartping.io";
       (window as any).WEBSOCKET_PORT = 8080;
       (window as any).SIP_PORT = 8443;
-
-      console.log("✅ SIP Config loaded:", sipConfig.username); // Debug
+      console.log("✅ SIP Config loaded:", sipConfig.username);
     }
   }, [sipConfig.username, sipConfig.password, isAuthenticated]);
 
-  // SIP Elements Setup
+  // ✅ SIP Elements + Call State Detection
   useEffect(() => {
     const sipPanel = document.getElementById("sipPanel");
     if (sipPanel) {
@@ -48,53 +46,29 @@ export default function CallWidget() {
         "#hangup button"
       ) as HTMLButtonElement | null;
     }
+
+    // ✅ SIP CALL STATE LISTENERS (demo-*.js events)
+    const checkCallState = setInterval(() => {
+      const callDetail = document.getElementById("callpick-detail");
+      const hangupDiv = document.getElementById("hangup_div");
+
+      // ✅ DETECT INCOMING/ACTIVE CALL
+      if (callDetail && !callDetail.hasAttribute("hidden")) {
+        setIsInCall(true);
+      } else if (hangupDiv && !hangupDiv.classList.contains("d-none")) {
+        setIsInCall(true);
+      } else {
+        setIsInCall(false);
+      }
+    }, 1000);
+
+    return () => clearInterval(checkCallState);
   }, []);
 
-  const handleConnect = () => {
-    const connectBtn = document.getElementById(
-      "connect"
-    ) as HTMLButtonElement | null;
-    connectBtn?.click();
-    setIsConnected(true);
-  };
-
-  const handleDisconnect = () => {
-    // Multiple disconnect methods
-    const disconnectBtn = document.getElementById(
-      "disconnect"
-    ) as HTMLButtonElement | null;
-    const sipLogoutBtn = document.getElementById(
-      "sipLogoutBtn"
-    ) as HTMLButtonElement | null;
-    const webrtcDisconnect = document.querySelector(
-      ".webrtc-connection button:last-child"
-    ) as HTMLButtonElement | null;
-
-    disconnectBtn?.click();
-    sipLogoutBtn?.click();
-    webrtcDisconnect?.click();
-
-    setIsConnected(false);
-    setIsMuted(false);
-    setIsOnHold(false);
-    if (durationIntervalRef.current) {
-      clearInterval(durationIntervalRef.current);
-      durationIntervalRef.current = null;
-    }
-    durationRef.current = 0;
-    setCallDuration("00:00");
-  };
-
-  const toggleMute = () => setIsMuted(!isMuted);
-  const toggleHold = () => setIsOnHold(!isOnHold);
-
-  const handleHangup = () => {
-    sipHangupBtnRef.current?.click();
-  };
-
-  // Call duration timer
+  // ✅ CALL DURATION - STARTS on call, STOPS on hangup
   useEffect(() => {
-    if (isConnected) {
+    if (isInCall) {
+      // ✅ START TIMER when call active
       durationIntervalRef.current = setInterval(() => {
         durationRef.current += 1;
         const minutes = Math.floor(durationRef.current / 60)
@@ -104,6 +78,7 @@ export default function CallWidget() {
         setCallDuration(`${minutes}:${seconds}`);
       }, 1000);
     } else {
+      // ✅ STOP + RESET on hangup
       if (durationIntervalRef.current) {
         clearInterval(durationIntervalRef.current);
         durationIntervalRef.current = null;
@@ -111,21 +86,50 @@ export default function CallWidget() {
       durationRef.current = 0;
       setCallDuration("00:00");
     }
+
     return () => {
       if (durationIntervalRef.current) {
         clearInterval(durationIntervalRef.current);
       }
     };
-  }, [isConnected]);
+  }, [isInCall]);
+
+  const toggleMute = useCallback(() => {
+    setIsMuted(!isMuted);
+    const muteCheckbox = document.querySelector(
+      "#mute"
+    ) as HTMLInputElement | null;
+    if (muteCheckbox) muteCheckbox.checked = !isMuted;
+  }, [isMuted]);
+
+  const toggleHold = useCallback(() => {
+    setIsOnHold(!isOnHold);
+    const holdCheckbox = document.querySelector(
+      "#hold"
+    ) as HTMLInputElement | null;
+    if (holdCheckbox) holdCheckbox.checked = !isOnHold;
+  }, [isOnHold]);
+
+  const handleHangup = useCallback(() => {
+    sipHangupBtnRef.current?.click();
+    setIsMuted(false);
+    setIsOnHold(false);
+    // ✅ Timer auto-stops via isInCall state
+  }, []);
+
+  const handleAnswer = useCallback(() => {
+    sipCallBtnRef.current?.click();
+  }, []);
 
   return (
     <>
-      {/* Hidden SIP Connect/Disconnect buttons */}
+      {/* ✅ HIDDEN SIP CONTROL BUTTONS */}
       <button id="connect" style={{ display: "none" }} />
       <button id="disconnect" style={{ display: "none" }} />
 
       {/* Floating Button */}
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className="fixed bottom-4 right-4 z-50 w-14 h-14 rounded-xl shadow-xl flex items-center justify-center transition-all duration-300 backdrop-blur-sm border-3 bg-linear-to-r from-emerald-500 to-emerald-600 border-emerald-400 shadow-emerald-500/50 hover:shadow-emerald-500/75 hover:scale-105"
         title="Web Phone"
@@ -137,7 +141,7 @@ export default function CallWidget() {
         )}
       </button>
 
-      {/* Compact SIP Panel */}
+      {/* SIP Panel */}
       <div
         id="sipPanel"
         className={`fixed bottom-20 right-4 z-50 w-80 max-h-[65vh] bg-linear-to-b from-slate-900/95 to-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 transition-all duration-500 p-4 overflow-hidden ${
@@ -146,7 +150,7 @@ export default function CallWidget() {
             : "opacity-0 translate-y-8 pointer-events-none"
         }`}
       >
-        {/* ALL REQUIRED SIP ELEMENTS - HIDDEN */}
+        {/* HIDDEN SIP ELEMENTS */}
         <div style={{ display: "none" }}>
           <button className="chatbot-button" id="chatbotButton" />
           <div id="tabContent" className="tabContent">
@@ -181,9 +185,9 @@ export default function CallWidget() {
                                 "*",
                                 "0",
                                 "#",
-                              ].map((d, i) => (
+                              ].map((d) => (
                                 <div
-                                  key={i}
+                                  key={d}
                                   className="digit box"
                                   id={`digit-${d}`}
                                 >
@@ -269,7 +273,7 @@ export default function CallWidget() {
           </div>
         </div>
 
-        {/* CLEAN MINIMAL UI - Only 5 buttons */}
+        {/* CLEAN UI */}
         <div className="space-y-3 h-full flex flex-col justify-between">
           {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-slate-700/50">
@@ -281,12 +285,14 @@ export default function CallWidget() {
                 <h3 className="text-lg font-bold bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                   Web Phone
                 </h3>
-                <p className="text-xs text-emerald-400">
-                  {isConnected ? "REGISTERED" : "Disconnected"}
+                {/* ✅ StatusDropdown CONTROLS this */}
+                <p id="sipStatus" className="text-xs text-red-400">
+                  Disconnected
                 </p>
               </div>
             </div>
             <button
+              type="button"
               onClick={() => setOpen(false)}
               className="p-1 hover:bg-slate-800/50 rounded-lg transition-all hover:scale-105"
             >
@@ -306,29 +312,28 @@ export default function CallWidget() {
             </button>
           </div>
 
-          {/* Status & Duration */}
+          {/* ✅ CALL DURATION - ONLY when isInCall = true */}
           <div className="flex-1 flex flex-col justify-center items-center space-y-2">
-            {isConnected && (
+            {isInCall && callDuration !== "00:00" && (
               <div className="flex items-center space-x-1 text-emerald-400">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                <span className="text-xs font-mono">
-                  Duration: {callDuration}
-                </span>
+                <span className="text-xs font-mono">Call: {callDuration}</span>
               </div>
             )}
           </div>
 
-          {/* ONLY 5 MAIN BUTTONS */}
+          {/* Controls */}
           <div className="space-y-2">
-            {/* Mute & Hold */}
             <div className="flex space-x-2">
               <button
+                type="button"
                 onClick={toggleMute}
+                disabled={!isInCall}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-sm shadow-lg transition-all hover:scale-105 ${
                   isMuted
                     ? "bg-linear-to-r from-red-500 to-red-600 text-white shadow-red-500/50"
                     : "bg-slate-700/50 border-2 border-slate-600/50 text-slate-300 hover:border-emerald-400 hover:text-emerald-400 hover:shadow-emerald-500/25"
-                }`}
+                } ${!isInCall ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isMuted ? (
                   <MicOff className="w-4 h-4" />
@@ -338,12 +343,14 @@ export default function CallWidget() {
                 {isMuted ? "Unmute" : "Mute"}
               </button>
               <button
+                type="button"
                 onClick={toggleHold}
+                disabled={!isInCall}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-sm shadow-lg transition-all hover:scale-105 ${
                   isOnHold
                     ? "bg-linear-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/50"
                     : "bg-slate-700/50 border-2 border-slate-600/50 text-slate-300 hover:border-amber-400 hover:text-amber-400 hover:shadow-amber-500/25"
-                }`}
+                } ${!isInCall ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isOnHold ? (
                   <Play className="w-4 h-4" />
@@ -354,56 +361,21 @@ export default function CallWidget() {
               </button>
             </div>
 
-            {/* Connect/Disconnect & Hangup */}
             <div className="flex space-x-2">
               <button
-                onClick={isConnected ? handleDisconnect : handleConnect}
-                className={`flex-2/3 bg-linear-to-r text-white font-bold py-4 px-4 rounded-xl shadow-xl hover:scale-105 transition-all flex items-center justify-center gap-2 text-sm ${
-                  isConnected
-                    ? "from-orange-500 to-orange-600 shadow-orange-500/50"
-                    : "from-emerald-500 to-teal-600 shadow-emerald-500/50"
-                }`}
+                type="button"
+                onClick={handleAnswer}
+                disabled={!isInCall}
+                className="flex-1 bg-linear-to-r from-emerald-500 to-teal-600 text-white font-bold py-4 px-4 rounded-xl shadow-xl hover:scale-105 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isConnected ? (
-                  <>
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
-                      />
-                    </svg>
-                    Disconnect
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
-                      />
-                    </svg>
-                    Connect
-                  </>
-                )}
+                <Phone className="w-5 h-5" />
+                Answer
               </button>
-
               <button
+                type="button"
                 onClick={handleHangup}
-                className="flex-1/3 bg-linear-to-r from-red-500 to-red-600 text-white font-bold py-4 px-3 rounded-xl shadow-xl hover:scale-105 transition-all flex items-center justify-center gap-1 text-sm"
+                disabled={!isInCall}
+                className="flex-1 bg-linear-to-r from-red-500 to-red-600 text-white font-bold py-4 px-3 rounded-xl shadow-xl hover:scale-105 transition-all flex items-center justify-center gap-1 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <PhoneOff className="w-5 h-5" />
                 Hangup

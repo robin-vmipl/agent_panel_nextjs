@@ -19,15 +19,11 @@ export default function StatusDropdown() {
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
-  /* =========================
-     FETCH STATUS
-  ==========================*/
   const fetchCurrentStatus = async () => {
     try {
       const data = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/agent/get-status`
       );
-
       if (data?.status) {
         setCurrentStatus(data.status);
         localStorage.setItem("agentStatus", data.status);
@@ -39,33 +35,37 @@ export default function StatusDropdown() {
     }
   };
 
-  /* =========================
-     INITIAL LOAD
-  ==========================*/
   useEffect(() => {
     fetchCurrentStatus();
   }, []);
 
-  /* =========================
-     AUTO SIP SYNC
-  ==========================*/
+  // ✅ STATUS → SIP + SIP STATUS SYNC
   useEffect(() => {
     if (!initialized) return;
 
     const timer = setTimeout(() => {
       if (currentStatus === "ACTIVE") {
         sipConnect();
+        // ✅ UPDATE CallWidget SIP status
+        const statusElement = document.getElementById("sipStatus");
+        if (statusElement) {
+          statusElement.textContent = "REGISTERED";
+          statusElement.className = "text-xs text-emerald-400";
+        }
       } else {
         sipDisconnect();
+        // ✅ UPDATE CallWidget SIP status
+        const statusElement = document.getElementById("sipStatus");
+        if (statusElement) {
+          statusElement.textContent = "Disconnected";
+          statusElement.className = "text-xs text-red-400";
+        }
       }
-    }, 2000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [currentStatus, initialized]);
 
-  /* =========================
-     CHANGE STATUS
-  ==========================*/
   const handleStatusChange = async (newStatus: string) => {
     if (newStatus === currentStatus || loading) return;
 
@@ -89,12 +89,6 @@ export default function StatusDropdown() {
       setCurrentStatus(newStatus);
       localStorage.setItem("agentStatus", newStatus);
       toast.success("Status updated");
-
-      if (newStatus === "ACTIVE") {
-        sipConnect();
-      } else {
-        sipDisconnect();
-      }
     } catch (err: any) {
       toast.error(err.message || "Update failed");
     } finally {
@@ -109,7 +103,6 @@ export default function StatusDropdown() {
 
   return (
     <div className="relative">
-      {/* Main button */}
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -119,12 +112,10 @@ export default function StatusDropdown() {
         {loading ? "Updating..." : currentStatus}
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="absolute right-0 mt-2 w-60 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50 py-1">
           {STATUS_OPTIONS.map((statusOption) => {
             const isActive = statusOption.value === currentStatus;
-
             return (
               <button
                 key={statusOption.value}
