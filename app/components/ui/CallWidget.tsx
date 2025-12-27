@@ -253,7 +253,7 @@ export default function CallWidget() {
                               </div>
                             </div>
                             <audio
-                              src="/assets/webrtc/media/audio/sample.mp3"
+                              src="/sip/sample.mp3"
                               className="show"
                               id="remoteAudio"
                               controls
