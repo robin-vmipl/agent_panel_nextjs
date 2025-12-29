@@ -55,7 +55,7 @@ export default function CallWidget() {
     }
   }, [sipConfig.username, sipConfig.password, isAuthenticated]);
 
-  // ✅ ENHANCED State monitoring - Handles auto-answer perfectly
+  // ✅ PERFECT auto-show + manual toggle
   useEffect(() => {
     const checkCallState = () => {
       const incomingNumberEl = document.getElementById(
@@ -79,15 +79,15 @@ export default function CallWidget() {
       const holdCheckbox = document.querySelector("#hold") as HTMLInputElement;
       if (holdCheckbox) setIsOnHold(holdCheckbox.checked);
 
-      // ✅ INCOMING CALL - Immediately disable answer button
+      // ✅ INCOMING CALL - AUTO SHOW
       if (incomingNumberEl?.textContent?.includes("Incoming call from")) {
         const number =
           incomingNumberEl.textContent.replace("Incoming call from ", "") ||
           "Unknown";
         setIncomingNumber(number);
         setIsInCall(true);
-        setIsAnswered(false); // Ringing state
-        setOpen(true);
+        setIsAnswered(false);
+        setOpen(true); // ✅ AUTO-SHOW WEBPHONE
 
         // ✅ DISABLE SIP answer button to prevent double-clicking
         const sipAnswerBtn = document.querySelector(
@@ -99,7 +99,7 @@ export default function CallWidget() {
         return;
       }
 
-      // ✅ ANSWERED CALL (auto or manual) - Enable hangup, disable answer
+      // ✅ ANSWERED CALL - AUTO SHOW
       if (
         callDetail &&
         !callDetail.hasAttribute("hidden") &&
@@ -108,7 +108,7 @@ export default function CallWidget() {
       ) {
         setIsAnswered(true);
         setIsInCall(true);
-        setOpen(true);
+        setOpen(true); // ✅ AUTO-SHOW WEBPHONE
         return;
       }
 
@@ -150,7 +150,6 @@ export default function CallWidget() {
   // ✅ Manual answer - Just logs (demo-1.js handles auto-answer)
   const handleAnswer = useCallback(() => {
     console.log("✅ Manual ANSWER clicked - Auto-answer active");
-    // Don't interfere with demo-1.js auto-answer
   }, []);
 
   const handleHangup = useCallback(() => {
@@ -188,9 +187,10 @@ export default function CallWidget() {
     }
   }, []);
 
+  // ✅ PERFECT TOGGLE - No stale closure!
   const handleToggle = useCallback(() => {
-    setOpen(!open);
-  }, [open]);
+    setOpen((prevOpen) => !prevOpen);
+  }, []);
 
   return (
     <>
@@ -316,185 +316,194 @@ export default function CallWidget() {
         </div>
       </div>
 
-      {/* PHONE ICON */}
+      {/* ✅ TOGGLE ICON - ALWAYS VISIBLE */}
       <button
         onClick={handleToggle}
-        className="fixed bottom-6 right-6 z-99999 w-16 h-16 rounded-full shadow-2xl border-4 border-white/30 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white flex items-center justify-center shadow-emerald-500/50 hover:shadow-emerald-500/70 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
-        title="WebPhone"
+        className={`fixed bottom-6 right-6 z-99999 rounded-full shadow-2xl border-4 border-white/30 
+                   text-white flex items-center justify-center transition-all duration-200 cursor-pointer ${
+                     isInCall
+                       ? "w-16 h-16 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/50 hover:shadow-emerald-500/70 hover:scale-110 active:scale-95"
+                       : "w-12 h-12 bg-slate-600/80 hover:bg-slate-500/90 hover:scale-105 active:scale-95"
+                   }`}
+        title={isInCall ? "Toggle WebPhone" : "WebPhone (Connect first)"}
       >
-        <Phone className="w-8 h-8 drop-shadow-lg" />
+        <Phone
+          className={`drop-shadow-lg ${isInCall ? "w-8 h-8" : "w-6 h-6"}`}
+        />
       </button>
 
-      {/* ✅ PERFECT CALL WIDGET */}
-      <div
-        className={`fixed bottom-24 right-6 z-100000 w-87.5 h-112.5 bg-linear-to-b from-slate-900 to-slate-800 backdrop-blur-xl shadow-3xl border border-emerald-400/50 rounded-2xl overflow-hidden transition-all duration-300 ${
-          open
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-8 scale-95 pointer-events-none"
-        }`}
-      >
-        {/* Header */}
-        <div className="p-3 bg-slate-800/90 border-b border-emerald-500/50 flex items-center justify-between h-14">
-          <div
-            className={`px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
-              sipStatus === "Connected"
-                ? "bg-emerald-500/90 text-white"
-                : "bg-slate-600/80 text-slate-300"
-            }`}
-          >
-            <Wifi className="w-3.5 h-3.5" />
-            {sipStatus}
-          </div>
-          <div className="w-9 h-9 bg-gray-400 rounded-lg flex items-center justify-center">
-            <Phone className="w-4.5 h-4.5 text-white" />
-          </div>
-        </div>
-
-        {/* Call Info */}
-        <div className="p-4 flex-1 flex flex-col justify-center items-center text-center space-y-3 h-52.5">
-          <h2
-            className={`text-lg font-bold ${
-              isAnswered ? "text-emerald-400" : "text-amber-400"
-            }`}
-          >
-            {isAnswered ? "ACTIVE CALL" : "INCOMING CALL"}
-          </h2>
-          <div className="text-xl font-mono font-bold text-white bg-slate-800/80 px-5 py-2.5 rounded-xl border border-slate-600">
-            {incomingNumber || "Unknown"}
-          </div>
-          <div
-            className={`text-xl font-mono font-bold px-6 py-2.5 rounded-xl shadow-xl ${
-              isAnswered
-                ? "text-emerald-400 bg-slate-900/90 border-2 border-emerald-500/50 animate-pulse"
-                : "text-amber-400 bg-amber-900/80 border-2 border-amber-500/50 animate-pulse"
-            }`}
-          >
-            {callDuration}
-          </div>
-        </div>
-
-        {/* ✅ PERFECT CONTROLS - FIXED FOR AUTO-ANSWER */}
-        <div className="p-4 bg-slate-900/90 border-t border-slate-700 h-42.5 grid grid-cols-2 grid-rows-2 gap-3">
-          {/* MUTE - TOP LEFT */}
-          <button
-            onClick={toggleMute}
-            className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer active:scale-95 hover:scale-105 ${
-              isMuted
-                ? "bg-red-600/90 text-white shadow-red-500/60 ring-1 ring-red-400/50"
-                : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-emerald-400/50"
-            }`}
-            title={isMuted ? "Click to UNMUTE" : "Click to MUTE"}
-          >
+      {/* ✅ FULL WIDGET - ONLY DURING CALL + AUTO-SHOW + PERFECT TOGGLE */}
+      {isInCall && (
+        <div
+          className={`fixed bottom-24 right-6 z-100000 w-87.5 h-112.5 bg-linear-to-b from-slate-900 to-slate-800 backdrop-blur-xl shadow-3xl border border-emerald-400/50 rounded-2xl overflow-hidden transition-all duration-300 ${
+            open
+              ? "opacity-100 translate-y-0 scale-100"
+              : "opacity-0 translate-y-8 scale-95 pointer-events-none"
+          }`}
+        >
+          {/* Header */}
+          <div className="p-3 bg-slate-800/90 border-b border-emerald-500/50 flex items-center justify-between h-14">
             <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
-                isMuted
-                  ? "bg-red-500/80 ring-1 ring-red-400/60"
-                  : "bg-slate-600/80 hover:bg-emerald-500/30"
+              className={`px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
+                sipStatus === "Connected"
+                  ? "bg-emerald-500/90 text-white"
+                  : "bg-slate-600/80 text-slate-300"
               }`}
             >
-              {isMuted ? (
-                <MicOff className="w-4.5 h-4.5 drop-shadow-lg" />
-              ) : (
-                <Mic className="w-4.5 h-4.5" />
-              )}
+              <Wifi className="w-3.5 h-3.5" />
+              {sipStatus}
             </div>
-            <span className="uppercase tracking-wider text-xs leading-tight">
-              {isMuted ? "UNMUTE" : "MUTE"}
-            </span>
-          </button>
-
-          {/* HOLD - TOP RIGHT */}
-          <button
-            onClick={toggleHold}
-            className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer active:scale-95 hover:scale-105 ${
-              isOnHold
-                ? "bg-amber-600/90 text-white shadow-amber-500/60 ring-1 ring-amber-400/50"
-                : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-amber-400/50"
-            }`}
-            title={isOnHold ? "Click to RESUME" : "Click to HOLD"}
-          >
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
-                isOnHold
-                  ? "bg-amber-500/80 ring-1 ring-amber-400/60"
-                  : "bg-slate-600/80 hover:bg-amber-500/30"
-              }`}
-            >
-              {isOnHold ? (
-                <Play className="w-4.5 h-4.5 drop-shadow-lg" />
-              ) : (
-                <Pause className="w-4.5 h-4.5" />
-              )}
+            <div className="w-9 h-9 bg-gray-400 rounded-lg flex items-center justify-center">
+              <Phone className="w-4.5 h-4.5 text-white" />
             </div>
-            <span className="uppercase tracking-wider text-xs leading-tight">
-              {isOnHold ? "RESUME" : "HOLD"}
-            </span>
-          </button>
+          </div>
 
-          {/* ✅ ANSWER - BOTTOM LEFT - GREENISH DISABLED DESIGN */}
-          <button
-            onClick={handleAnswer}
-            disabled={isInCall}
-            className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full group ${
-              isInCall
-                ? "bg-emerald-600/60 text-emerald-100 shadow-emerald-500/40 ring-1 ring-emerald-400/40 cursor-not-allowed shadow-md border border-emerald-500/30 pointer-events-none hover:scale-100"
-                : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/50 hover:scale-105 active:scale-95 cursor-pointer hover:shadow-emerald-500/70"
-            }`}
-            title={
-              isInCall
-                ? isAnswered
-                  ? "Call Answered"
-                  : "Auto-Answering..."
-                : "Answer Call"
-            }
-          >
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
-                isInCall
-                  ? "bg-emerald-500/60 border-2 border-emerald-400/50 ring-1 ring-emerald-400/40"
-                  : "bg-emerald-500/80 border-2 border-emerald-400/60 hover:scale-110"
+          {/* Call Info */}
+          <div className="p-4 flex-1 flex flex-col justify-center items-center text-center space-y-3 h-52.5">
+            <h2
+              className={`text-lg font-bold ${
+                isAnswered ? "text-emerald-400" : "text-amber-400"
               }`}
             >
-              <Phone
-                className={`w-4.5 h-4.5 transition-opacity ${
-                  isInCall ? "opacity-80" : ""
-                }`}
-              />
+              {isAnswered ? "ACTIVE CALL" : "INCOMING CALL"}
+            </h2>
+            <div className="text-xl font-mono font-bold text-white bg-slate-800/80 px-5 py-2.5 rounded-xl border border-slate-600">
+              {incomingNumber || "Unknown"}
             </div>
-            <span
-              className={`uppercase tracking-wider text-xs leading-tight font-semibold ${
-                isInCall ? "opacity-90" : ""
-              }`}
-            >
-              ANSWER
-            </span>
-          </button>
-
-          {/* HANGUP - BOTTOM RIGHT */}
-          <button
-            onClick={handleHangup}
-            className={`p-2.5 rounded-lg font-black text-xs shadow-2xl transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer group hover:scale-105 active:scale-95 ring-2 ring-red-400/60 ${
-              isAnswered
-                ? "bg-linear-to-br from-red-600 to-red-800 text-white shadow-red-500/70 hover:shadow-red-600/80 hover:from-red-700 hover:to-red-900"
-                : "bg-red-600/70 text-slate-200 hover:bg-red-600/90 shadow-red-400/50"
-            }`}
-            title="Hangup Call"
-          >
             <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-2xl transition-all shrink-0 group-hover:scale-110 group-hover:rotate-[-5deg] ${
+              className={`text-xl font-mono font-bold px-6 py-2.5 rounded-xl shadow-xl ${
                 isAnswered
-                  ? "bg-linear-to-br from-red-500/90 to-red-600/90 border-2 border-red-400/70 shadow-red-500/60"
-                  : "bg-red-500/70 border-2 border-red-400/60"
+                  ? "text-emerald-400 bg-slate-900/90 border-2 border-emerald-500/50 animate-pulse"
+                  : "text-amber-400 bg-amber-900/80 border-2 border-amber-500/50 animate-pulse"
               }`}
             >
-              <PhoneOff className="w-4.5 h-4.5 drop-shadow-lg" />
+              {callDuration}
             </div>
-            <span className="uppercase tracking-widest text-xs leading-tight drop-shadow-sm">
-              HANGUP
-            </span>
-          </button>
+          </div>
+
+          {/* Controls */}
+          <div className="p-4 bg-slate-900/90 border-t border-slate-700 h-42.5 grid grid-cols-2 grid-rows-2 gap-3">
+            {/* MUTE - TOP LEFT */}
+            <button
+              onClick={toggleMute}
+              className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer active:scale-95 hover:scale-105 ${
+                isMuted
+                  ? "bg-red-600/90 text-white shadow-red-500/60 ring-1 ring-red-400/50"
+                  : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-emerald-400/50"
+              }`}
+              title={isMuted ? "Click to UNMUTE" : "Click to MUTE"}
+            >
+              <div
+                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
+                  isMuted
+                    ? "bg-red-500/80 ring-1 ring-red-400/60"
+                    : "bg-slate-600/80 hover:bg-emerald-500/30"
+                }`}
+              >
+                {isMuted ? (
+                  <MicOff className="w-4.5 h-4.5 drop-shadow-lg" />
+                ) : (
+                  <Mic className="w-4.5 h-4.5" />
+                )}
+              </div>
+              <span className="uppercase tracking-wider text-xs leading-tight">
+                {isMuted ? "UNMUTE" : "MUTE"}
+              </span>
+            </button>
+
+            {/* HOLD - TOP RIGHT */}
+            <button
+              onClick={toggleHold}
+              className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer active:scale-95 hover:scale-105 ${
+                isOnHold
+                  ? "bg-amber-600/90 text-white shadow-amber-500/60 ring-1 ring-amber-400/50"
+                  : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-amber-400/50"
+              }`}
+              title={isOnHold ? "Click to RESUME" : "Click to HOLD"}
+            >
+              <div
+                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
+                  isOnHold
+                    ? "bg-amber-500/80 ring-1 ring-amber-400/60"
+                    : "bg-slate-600/80 hover:bg-amber-500/30"
+                }`}
+              >
+                {isOnHold ? (
+                  <Play className="w-4.5 h-4.5 drop-shadow-lg" />
+                ) : (
+                  <Pause className="w-4.5 h-4.5" />
+                )}
+              </div>
+              <span className="uppercase tracking-wider text-xs leading-tight">
+                {isOnHold ? "RESUME" : "HOLD"}
+              </span>
+            </button>
+
+            {/* ANSWER - BOTTOM LEFT */}
+            <button
+              onClick={handleAnswer}
+              disabled={isInCall}
+              className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full group ${
+                isInCall
+                  ? "bg-emerald-600/60 text-emerald-100 shadow-emerald-500/40 ring-1 ring-emerald-400/40 cursor-not-allowed shadow-md border border-emerald-500/30 pointer-events-none hover:scale-100"
+                  : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/50 hover:scale-105 active:scale-95 cursor-pointer hover:shadow-emerald-500/70"
+              }`}
+              title={
+                isInCall
+                  ? isAnswered
+                    ? "Call Answered"
+                    : "Auto-Answering..."
+                  : "Answer Call"
+              }
+            >
+              <div
+                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
+                  isInCall
+                    ? "bg-emerald-500/60 border-2 border-emerald-400/50 ring-1 ring-emerald-400/40"
+                    : "bg-emerald-500/80 border-2 border-emerald-400/60 hover:scale-110"
+                }`}
+              >
+                <Phone
+                  className={`w-4.5 h-4.5 transition-opacity ${
+                    isInCall ? "opacity-80" : ""
+                  }`}
+                />
+              </div>
+              <span
+                className={`uppercase tracking-wider text-xs leading-tight font-semibold ${
+                  isInCall ? "opacity-90" : ""
+                }`}
+              >
+                ANSWER
+              </span>
+            </button>
+
+            {/* HANGUP - BOTTOM RIGHT */}
+            <button
+              onClick={handleHangup}
+              className={`p-2.5 rounded-lg font-black text-xs shadow-2xl transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer group hover:scale-105 active:scale-95 ring-2 ring-red-400/60 ${
+                isAnswered
+                  ? "bg-linear-to-br from-red-600 to-red-800 text-white shadow-red-500/70 hover:shadow-red-600/80 hover:from-red-700 hover:to-red-900"
+                  : "bg-red-600/70 text-slate-200 hover:bg-red-600/90 shadow-red-400/50"
+              }`}
+              title="Hangup Call"
+            >
+              <div
+                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-2xl transition-all shrink-0 group-hover:scale-110 group-hover:rotate-[-5deg] ${
+                  isAnswered
+                    ? "bg-linear-to-br from-red-500/90 to-red-600/90 border-2 border-red-400/70 shadow-red-500/60"
+                    : "bg-red-500/70 border-2 border-red-400/60"
+                }`}
+              >
+                <PhoneOff className="w-4.5 h-4.5 drop-shadow-lg" />
+              </div>
+              <span className="uppercase tracking-widest text-xs leading-tight drop-shadow-sm">
+                HANGUP
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
