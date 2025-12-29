@@ -12,13 +12,39 @@ export default function CallWidget() {
   const [isOnHold, setIsOnHold] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const [incomingNumber, setIncomingNumber] = useState("");
-  const [callDuration, setCallDuration] = useState("00:00");
+  const [callDuration, setCallDuration] = useState("00:00:00"); // ✅ Updated format
   const [isInCall, setIsInCall] = useState(false);
   const [sipStatus, setSipStatus] = useState("Disconnected");
 
-  const durationRef = useRef(0);
+  const durationRef = useRef(0); // ✅ Single timer for entire call
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const callStateCheckRef = useRef<NodeJS.Timeout | null>(null);
+
+  // ✅ SINGLE DURATION TIMER - Starts on incoming, continues through answer
+  useEffect(() => {
+    if (isInCall && !durationIntervalRef.current) {
+      // Start timer when call comes in (ringing)
+      durationIntervalRef.current = setInterval(() => {
+        durationRef.current += 1;
+        const hours = Math.floor(durationRef.current / 3600)
+          .toString()
+          .padStart(2, "0");
+        const minutes = Math.floor((durationRef.current % 3600) / 60)
+          .toString()
+          .padStart(2, "0");
+        const seconds = (durationRef.current % 60).toString().padStart(2, "0");
+        setCallDuration(`${hours}:${minutes}:${seconds}`); // ✅ h:mm:ss format
+      }, 1000);
+    }
+
+    // Clear when call ends
+    return () => {
+      if (durationIntervalRef.current) {
+        clearInterval(durationIntervalRef.current);
+        durationIntervalRef.current = null;
+      }
+    };
+  }, [isInCall]);
 
   // SIP Config
   useEffect(() => {
@@ -60,7 +86,7 @@ export default function CallWidget() {
           incomingNumberEl.textContent.replace("Incoming call from ", "") ||
           "Unknown";
         setIncomingNumber(number);
-        setIsInCall(true);
+        setIsInCall(true); // ✅ Triggers duration timer
         setIsAnswered(false);
         setOpen(true);
         return;
@@ -73,7 +99,7 @@ export default function CallWidget() {
         !hangupDiv.classList.contains("d-none")
       ) {
         setIsAnswered(true);
-        setIsInCall(true);
+        setIsInCall(true); // ✅ Keep timer running
         setOpen(true);
         return;
       }
@@ -93,38 +119,13 @@ export default function CallWidget() {
     };
   }, []);
 
-  // 🔥 FIXED TIMER - Independent persistent timer
-  useEffect(() => {
-    if (isAnswered && !durationIntervalRef.current) {
-      durationRef.current = 0;
-      setCallDuration("00:00");
-
-      durationIntervalRef.current = setInterval(() => {
-        durationRef.current += 1;
-        const minutes = Math.floor(durationRef.current / 60)
-          .toString()
-          .padStart(2, "0");
-        const seconds = (durationRef.current % 60).toString().padStart(2, "0");
-        setCallDuration(`${minutes}:${seconds}`);
-        console.log("⏱️ Timer:", callDuration); // Debug log
-      }, 1000);
-    }
-
-    return () => {
-      if (!isAnswered && durationIntervalRef.current) {
-        clearInterval(durationIntervalRef.current);
-        durationIntervalRef.current = null;
-      }
-    };
-  }, [isAnswered]);
-
   const resetTimer = () => {
     if (durationIntervalRef.current) {
       clearInterval(durationIntervalRef.current);
       durationIntervalRef.current = null;
     }
     durationRef.current = 0;
-    setCallDuration("00:00");
+    setCallDuration("00:00:00");
   };
 
   const resetCall = () => {
@@ -313,168 +314,172 @@ export default function CallWidget() {
       {/* PHONE ICON */}
       <button
         onClick={handleToggle}
-        className="fixed bottom-6 right-6 z-[99999] w-16 h-16 rounded-full shadow-2xl border-4 border-white/30 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white flex items-center justify-center shadow-emerald-500/50 hover:shadow-emerald-500/70 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+        className="fixed bottom-6 right-6 z-99999 w-16 h-16 rounded-full shadow-2xl border-4 border-white/30 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white flex items-center justify-center shadow-emerald-500/50 hover:shadow-emerald-500/70 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
         title="WebPhone"
       >
         <Phone className="w-8 h-8 drop-shadow-lg" />
       </button>
 
-      {/* WEBPHONE MODAL */}
+      {/* ✅ FINAL PERFECT LAYOUT */}
       <div
-        className={`fixed bottom-24 right-6 z-[100000] w-[350px] h-[450px] bg-gradient-to-b from-slate-900 to-slate-800 backdrop-blur-xl shadow-3xl border border-emerald-400/50 rounded-2xl overflow-hidden transition-all duration-300 ${
+        className={`fixed bottom-24 right-6 z-100000 w-87.5 h-112.5 bg-linear-to-b from-slate-900 to-slate-800 backdrop-blur-xl shadow-3xl border border-emerald-400/50 rounded-2xl overflow-hidden transition-all duration-300 ${
           open
             ? "opacity-100 translate-y-0 scale-100"
             : "opacity-0 translate-y-8 scale-95 pointer-events-none"
         }`}
       >
         {/* Header */}
-        <div className="p-4 bg-slate-800/90 border-b border-emerald-500/50 flex items-center justify-between">
+        <div className="p-3 bg-slate-800/90 border-b border-emerald-500/50 flex items-center justify-between h-14">
           <div
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 ${
+            className={`px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
               sipStatus === "Connected"
                 ? "bg-emerald-500/90 text-white"
                 : "bg-slate-600/80 text-slate-300"
             }`}
           >
-            <Wifi className="w-4 h-4" />
+            <Wifi className="w-3.5 h-3.5" />
             {sipStatus}
           </div>
-          {/* <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
-            <Phone className="w-5 h-5 text-white" />
-          </div> */}
+          <div className="w-9 h-9 bg-gray-400 rounded-lg flex items-center justify-center">
+            <Phone className="w-4.5 h-4.5 text-white" />
+          </div>
         </div>
 
         {/* Call Info */}
-        <div className="p-6 flex-1 flex flex-col justify-center items-center text-center space-y-4">
+        <div className="p-4 flex-1 flex flex-col justify-center items-center text-center space-y-3 h-52.5">
           <h2
-            className={`text-xl font-bold ${
+            className={`text-lg font-bold ${
               isAnswered ? "text-emerald-400" : "text-amber-400"
             }`}
           >
             {isAnswered ? "ACTIVE CALL" : "INCOMING CALL"}
           </h2>
-          <div className="text-2xl font-mono font-bold text-white bg-slate-800/80 px-6 py-3 rounded-xl border border-slate-600">
+          <div className="text-xl font-mono font-bold text-white bg-slate-800/80 px-5 py-2.5 rounded-xl border border-slate-600">
             {incomingNumber || "Unknown"}
           </div>
-          {isAnswered && (
-            <div className="text-3xl font-mono font-bold text-emerald-400 bg-slate-900/90 px-8 py-4 rounded-xl border-2 border-emerald-500/50 shadow-2xl animate-pulse">
-              {callDuration}
-            </div>
-          )}
+          <div
+            className={`text-xl font-mono font-bold px-6 py-2.5 rounded-xl shadow-xl ${
+              isAnswered
+                ? "text-emerald-400 bg-slate-900/90 border-2 border-emerald-500/50 animate-pulse"
+                : "text-amber-400 bg-amber-900/80 border-2 border-amber-500/50 animate-pulse"
+            }`}
+          >
+            {callDuration}
+          </div>
         </div>
 
-        {/* CONTROLS */}
-        <div className="p-6 bg-slate-900/90 space-y-4 border-t border-slate-700">
-          <div className="grid grid-cols-2 gap-3">
-            {/* MUTE/UNMUTE */}
-            <button
-              onClick={toggleMute}
-              className={`p-3 rounded-xl font-bold text-sm shadow-lg transition-all flex flex-col items-center gap-2 h-20 cursor-pointer active:scale-95 hover:scale-105 ${
+        {/* ✅ FIXED CONTROLS - Tailwind Linear Gradient Syntax */}
+        <div className="p-4 bg-slate-900/90 border-t border-slate-700 h-[170px] grid grid-cols-2 grid-rows-2 gap-3">
+          {/* MUTE - TOP LEFT */}
+          <button
+            onClick={toggleMute}
+            className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer active:scale-95 hover:scale-105 ${
+              isMuted
+                ? "bg-red-600/90 text-white shadow-red-500/60 ring-1 ring-red-400/50"
+                : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-emerald-400/50"
+            }`}
+            title={isMuted ? "Click to UNMUTE" : "Click to MUTE"}
+          >
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all flex-shrink-0 ${
                 isMuted
-                  ? "bg-red-600/90 text-white shadow-red-500/60 ring-2 ring-red-400/50"
-                  : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-emerald-400/50"
+                  ? "bg-red-500/80 ring-1 ring-red-400/60"
+                  : "bg-slate-600/80 hover:bg-emerald-500/30"
               }`}
-              title={isMuted ? "Click to UNMUTE" : "Click to MUTE"}
             >
-              <div
-                className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-md transition-all ${
-                  isMuted
-                    ? "bg-red-500/80 ring-2 ring-red-400/60"
-                    : "bg-slate-600/80 hover:bg-emerald-500/30"
-                }`}
-              >
-                {isMuted ? (
-                  <MicOff className="w-6 h-6 drop-shadow-lg" />
-                ) : (
-                  <Mic className="w-6 h-6" />
-                )}
-              </div>
-              <span className="uppercase tracking-wider text-xs">
-                {isMuted ? "UNMUTE" : "MUTE"}
-              </span>
-            </button>
+              {isMuted ? (
+                <MicOff className="w-4.5 h-4.5 drop-shadow-lg" />
+              ) : (
+                <Mic className="w-4.5 h-4.5" />
+              )}
+            </div>
+            <span className="uppercase tracking-wider text-xs leading-tight">
+              {isMuted ? "UNMUTE" : "MUTE"}
+            </span>
+          </button>
 
-            {/* HOLD/RESUME */}
-            <button
-              onClick={toggleHold}
-              className={`p-3 rounded-xl font-bold text-sm shadow-lg transition-all flex flex-col items-center gap-2 h-20 cursor-pointer active:scale-95 hover:scale-105 ${
+          {/* HOLD - TOP RIGHT */}
+          <button
+            onClick={toggleHold}
+            className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer active:scale-95 hover:scale-105 ${
+              isOnHold
+                ? "bg-amber-600/90 text-white shadow-amber-500/60 ring-1 ring-amber-400/50"
+                : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-amber-400/50"
+            }`}
+            title={isOnHold ? "Click to RESUME" : "Click to HOLD"}
+          >
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all flex-shrink-0 ${
                 isOnHold
-                  ? "bg-amber-600/90 text-white shadow-amber-500/60 ring-2 ring-amber-400/50"
-                  : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-amber-400/50"
+                  ? "bg-amber-500/80 ring-1 ring-amber-400/60"
+                  : "bg-slate-600/80 hover:bg-amber-500/30"
               }`}
-              title={isOnHold ? "Click to RESUME" : "Click to HOLD"}
             >
-              <div
-                className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-md transition-all ${
-                  isOnHold
-                    ? "bg-amber-500/80 ring-2 ring-amber-400/60"
-                    : "bg-slate-600/80 hover:bg-amber-500/30"
-                }`}
-              >
-                {isOnHold ? (
-                  <Play className="w-6 h-6 drop-shadow-lg" />
-                ) : (
-                  <Pause className="w-6 h-6" />
-                )}
-              </div>
-              <span className="uppercase tracking-wider text-xs">
-                {isOnHold ? "RESUME" : "HOLD"}
-              </span>
-            </button>
-          </div>
+              {isOnHold ? (
+                <Play className="w-4.5 h-4.5 drop-shadow-lg" />
+              ) : (
+                <Pause className="w-4.5 h-4.5" />
+              )}
+            </div>
+            <span className="uppercase tracking-wider text-xs leading-tight">
+              {isOnHold ? "RESUME" : "HOLD"}
+            </span>
+          </button>
 
-          <div className="grid grid-cols-2 gap-4">
-            {/* ✅ ANSWER - GRAY & SUPER FADED */}
-            <button
-              onClick={handleAnswer}
-              disabled={isAnswered}
-              className={`p-4 rounded-xl font-bold text-lg shadow-md transition-all flex flex-col items-center gap-2 h-24 group ${
+          {/* ANSWER - BOTTOM LEFT - SAME SIZE & GRAY */}
+          <button
+            onClick={handleAnswer}
+            disabled={isAnswered}
+            className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full group ${
+              isAnswered
+                ? "bg-gray-700 text-gray-400 opacity-50 cursor-not-allowed shadow-none border border-gray-600 pointer-events-none hover:scale-100"
+                : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/50 hover:scale-105 active:scale-95 cursor-pointer hover:shadow-emerald-500/70"
+            }`}
+            title="Answer Call"
+          >
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all flex-shrink-0 ${
                 isAnswered
-                  ? "bg-gray-800/50 text-gray-500 opacity-25 cursor-not-allowed shadow-none border-2 border-gray-600/50 hover:scale-100 active:scale-100"
-                  : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/50 hover:scale-105 active:scale-95 cursor-pointer hover:shadow-emerald-500/70"
+                  ? "bg-gray-600/40 border border-gray-600"
+                  : "bg-emerald-500/80 border-2 border-emerald-400/60 hover:scale-110"
               }`}
-              title="Answer Call"
             >
-              <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
-                  isAnswered
-                    ? "bg-gray-700/30 border border-gray-600/50"
-                    : "bg-emerald-500/80 border-4 border-emerald-400/60 hover:scale-110"
-                }`}
-              >
-                <Phone
-                  className={`w-7 h-7 ${isAnswered ? "opacity-40" : ""}`}
-                />
-              </div>
-              <span className={`${isAnswered ? "opacity-40" : ""}`}>
-                ANSWER
-              </span>
-            </button>
+              <Phone
+                className={`w-4.5 h-4.5 ${isAnswered ? "opacity-60" : ""}`}
+              />
+            </div>
+            <span
+              className={`uppercase tracking-wider text-xs leading-tight font-semibold ${
+                isAnswered ? "font-normal" : ""
+              }`}
+            >
+              ANSWER
+            </span>
+          </button>
 
-            {/* HANGUP - SUPER COLORFUL */}
-            <button
-              onClick={handleHangup}
-              className={`p-4 rounded-xl font-black text-lg shadow-2xl transition-all flex flex-col items-center gap-2 h-24 cursor-pointer group hover:scale-105 active:scale-95 ring-4 ring-red-400/60 ${
+          {/* HANGUP - BOTTOM RIGHT - SAME SIZE - ✅ FIXED GRADIENT */}
+          <button
+            onClick={handleHangup}
+            className={`p-2.5 rounded-lg font-black text-xs shadow-2xl transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer group hover:scale-105 active:scale-95 ring-2 ring-red-400/60 ${
+              isAnswered
+                ? "bg-gradient-to-br from-red-600 to-red-800 text-white shadow-red-500/70 hover:shadow-red-600/80 hover:from-red-700 hover:to-red-900"
+                : "bg-red-600/70 text-slate-200 hover:bg-red-600/90 shadow-red-400/50"
+            }`}
+            title="Hangup Call"
+          >
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-2xl transition-all flex-shrink-0 group-hover:scale-110 group-hover:rotate-[-5deg] ${
                 isAnswered
-                  ? "bg-gradient-to-br from-red-600 to-red-800 text-white shadow-red-500/70 hover:shadow-red-600/80 hover:from-red-700 hover:to-red-900"
-                  : "bg-red-600/60 text-slate-300 hover:bg-red-600/80 opacity-70 hover:opacity-100 shadow-red-400/40"
+                  ? "bg-gradient-to-br from-red-500/90 to-red-600/90 border-2 border-red-400/70 shadow-red-500/60"
+                  : "bg-red-500/70 border-2 border-red-400/60"
               }`}
-              title="Hangup Call"
             >
-              <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-2xl transition-all group-hover:scale-110 group-hover:rotate-[-5deg] ${
-                  isAnswered
-                    ? "bg-gradient-to-br from-red-500/90 to-red-600/90 border-4 border-red-400/70 shadow-red-500/60"
-                    : "bg-red-500/50 border-2 border-red-400/50"
-                }`}
-              >
-                <PhoneOff className="w-7 h-7 drop-shadow-lg" />
-              </div>
-              <span className="uppercase tracking-widest drop-shadow-md">
-                HANGUP
-              </span>
-            </button>
-          </div>
+              <PhoneOff className="w-4.5 h-4.5 drop-shadow-lg" />
+            </div>
+            <span className="uppercase tracking-widest text-xs leading-tight drop-shadow-sm">
+              HANGUP
+            </span>
+          </button>
         </div>
       </div>
     </>
