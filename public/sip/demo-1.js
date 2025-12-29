@@ -28514,7 +28514,7 @@ THE SOFTWARE.
                 // console.log("SIP HEADER : ",simpleUser);
                 const incomingNum = getIncomingRequestNumber(simpleUser);
                 // console.log(incomingNum,'Incoming Number!!');
-                incomingCustomerNumber(incomingNum);
+                // incomingCustomerNumber(incomingNum);
                 renderIncomingNumber(incomingNum);
                 playAudio();
                 // added enableCall();
@@ -28837,7 +28837,6 @@ THE SOFTWARE.
 
         const disableStatusMenu = () => {
             UserStatusDropdown.setAttribute("hidden", "true");
-            $("#sipLogoutBtn").click();
         };
 
         const hideHoldButton = () => {
@@ -28849,34 +28848,12 @@ THE SOFTWARE.
         };
 
         const openCrmModal = () => {
-            startCallDurationCounter();
-            $("#logoutMenu").attr("style", "display: none !important");
-            $("#UserStatusDropdown").addClass("d-none");
-            $("#liveCallText").text("Live Call");
-            $("#liveCallText").css("cursor", "none");
-            $("#liveCallText")
-                .removeClass("btn-outline-dark")
-                .addClass("btn-success");
-            $("#call_transfer").removeClass("d-none");
-            $("#btnctc").attr("href", "javascript:void(0)");
-            $("#btnctc").css("cursor", "default");
-            $("#greetings").addClass("d-none");
-            $("#call_transfer").css("pointer-events", "all");
-            $(".agentNavLink").css("pointer-events", "none");
-            $("#my_performance").css("pointer-events", "none");
+            // startCallDurationCounter();
+          
         };
 
         const closeCrmModal = () => {
-            $("#callingQueue").addClass("d-none");
-            $("#liveCallText")
-                .removeClass("btn-success")
-                .addClass("btn-outline-dark");
-            $("#liveCallText").html("No live calls");
-            $("#liveCallText").css("cursor", "none");
-            $("#btnctc").attr("href", clickToCallRoute);
-            $("#btnctc").css("cursor", "pointer");
-            $("#my_performance").css("pointer-events", "all");
-            $("#call_transfer").prop("disabled", false).addClass("d-none");
+           
             if (holdTimer) {
                 const elapsedTime = Math.floor(
                     (Date.now() - holdStartTime) / 1000
@@ -28887,33 +28864,17 @@ THE SOFTWARE.
                 holdButtonDiv.style.color = "";
                 pauseIcon.classList.remove("line-through");
             }
-            handleReadyState(totalHoldTime);
+            // handleReadyState(totalHoldTime);
             holdStartTime = 0;
             totalHoldTime = 0;
-            $("#logoutMenu").attr("style", "display: block !important");
-            $("#UserStatusDropdown").removeClass("d-none");
-            $("#greetings").removeClass("d-none");
+         
         };
 
         const callInQueue = () => {
             holdStartTime = 0;
             totalHoldTime = 0;
             holdTimer = null;
-            $("#logoutMenu").attr("style", "display: none !important");
-            $("#UserStatusDropdown").addClass("d-none");
-            $("#callingQueue").removeClass("d-none");
-            $(".callDuration").text("");
-            $("#liveCallText").html("Ringing");
-            $("#liveCallText").css("cursor", "none");
-            $("#liveCallText")
-                .removeClass("btn-outline-dark")
-                .addClass("btn-success");
-            $("#btnctc").attr("href", "javascript:void(0)");
-            $("#btnctc").css("cursor", "default");
-            $("#greetings").addClass("d-none");
-            $(".agentNavLink").css("pointer-events", "none");
-            updateCallingQueue();
-            $("#inboundCall").removeClass("d-none");
+           
         };
 
         const getIncomingRequestNumber = (simpleUser) => {

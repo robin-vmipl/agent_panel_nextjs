@@ -12,18 +12,17 @@ export default function CallWidget() {
   const [isOnHold, setIsOnHold] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const [incomingNumber, setIncomingNumber] = useState("");
-  const [callDuration, setCallDuration] = useState("00:00:00"); // ✅ Updated format
+  const [callDuration, setCallDuration] = useState("00:00:00");
   const [isInCall, setIsInCall] = useState(false);
   const [sipStatus, setSipStatus] = useState("Disconnected");
 
-  const durationRef = useRef(0); // ✅ Single timer for entire call
+  const durationRef = useRef(0);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const callStateCheckRef = useRef<NodeJS.Timeout | null>(null);
 
   // ✅ SINGLE DURATION TIMER - Starts on incoming, continues through answer
   useEffect(() => {
     if (isInCall && !durationIntervalRef.current) {
-      // Start timer when call comes in (ringing)
       durationIntervalRef.current = setInterval(() => {
         durationRef.current += 1;
         const hours = Math.floor(durationRef.current / 3600)
@@ -33,11 +32,10 @@ export default function CallWidget() {
           .toString()
           .padStart(2, "0");
         const seconds = (durationRef.current % 60).toString().padStart(2, "0");
-        setCallDuration(`${hours}:${minutes}:${seconds}`); // ✅ h:mm:ss format
+        setCallDuration(`${hours}:${minutes}:${seconds}`);
       }, 1000);
     }
 
-    // Clear when call ends
     return () => {
       if (durationIntervalRef.current) {
         clearInterval(durationIntervalRef.current);
@@ -57,7 +55,7 @@ export default function CallWidget() {
     }
   }, [sipConfig.username, sipConfig.password, isAuthenticated]);
 
-  // State monitoring
+  // ✅ ENHANCED State monitoring - Handles auto-answer perfectly
   useEffect(() => {
     const checkCallState = () => {
       const incomingNumberEl = document.getElementById(
@@ -81,17 +79,27 @@ export default function CallWidget() {
       const holdCheckbox = document.querySelector("#hold") as HTMLInputElement;
       if (holdCheckbox) setIsOnHold(holdCheckbox.checked);
 
+      // ✅ INCOMING CALL - Immediately disable answer button
       if (incomingNumberEl?.textContent?.includes("Incoming call from")) {
         const number =
           incomingNumberEl.textContent.replace("Incoming call from ", "") ||
           "Unknown";
         setIncomingNumber(number);
-        setIsInCall(true); // ✅ Triggers duration timer
-        setIsAnswered(false);
+        setIsInCall(true);
+        setIsAnswered(false); // Ringing state
         setOpen(true);
+
+        // ✅ DISABLE SIP answer button to prevent double-clicking
+        const sipAnswerBtn = document.querySelector(
+          "#call button"
+        ) as HTMLButtonElement;
+        if (sipAnswerBtn && !sipAnswerBtn.disabled) {
+          sipAnswerBtn.disabled = true;
+        }
         return;
       }
 
+      // ✅ ANSWERED CALL (auto or manual) - Enable hangup, disable answer
       if (
         callDetail &&
         !callDetail.hasAttribute("hidden") &&
@@ -99,11 +107,12 @@ export default function CallWidget() {
         !hangupDiv.classList.contains("d-none")
       ) {
         setIsAnswered(true);
-        setIsInCall(true); // ✅ Keep timer running
+        setIsInCall(true);
         setOpen(true);
         return;
       }
 
+      // ✅ CALL ENDED - Reset everything
       if (
         hangupDiv?.classList.contains("d-none") &&
         callDetail?.hasAttribute("hidden") &&
@@ -138,15 +147,11 @@ export default function CallWidget() {
     resetTimer();
   };
 
+  // ✅ Manual answer - Just logs (demo-1.js handles auto-answer)
   const handleAnswer = useCallback(() => {
-    const answerBtn = document.querySelector(
-      "#call button"
-    ) as HTMLButtonElement;
-    if (answerBtn && !isAnswered) {
-      answerBtn.click();
-      console.log("✅ ANSWER clicked");
-    }
-  }, [isAnswered]);
+    console.log("✅ Manual ANSWER clicked - Auto-answer active");
+    // Don't interfere with demo-1.js auto-answer
+  }, []);
 
   const handleHangup = useCallback(() => {
     const hangupSelectors = [
@@ -320,7 +325,7 @@ export default function CallWidget() {
         <Phone className="w-8 h-8 drop-shadow-lg" />
       </button>
 
-      {/* ✅ FINAL PERFECT LAYOUT */}
+      {/* ✅ PERFECT CALL WIDGET */}
       <div
         className={`fixed bottom-24 right-6 z-100000 w-87.5 h-112.5 bg-linear-to-b from-slate-900 to-slate-800 backdrop-blur-xl shadow-3xl border border-emerald-400/50 rounded-2xl overflow-hidden transition-all duration-300 ${
           open
@@ -368,8 +373,8 @@ export default function CallWidget() {
           </div>
         </div>
 
-        {/* ✅ FIXED CONTROLS - Tailwind Linear Gradient Syntax */}
-        <div className="p-4 bg-slate-900/90 border-t border-slate-700 h-[170px] grid grid-cols-2 grid-rows-2 gap-3">
+        {/* ✅ PERFECT CONTROLS - FIXED FOR AUTO-ANSWER */}
+        <div className="p-4 bg-slate-900/90 border-t border-slate-700 h-42.5 grid grid-cols-2 grid-rows-2 gap-3">
           {/* MUTE - TOP LEFT */}
           <button
             onClick={toggleMute}
@@ -381,7 +386,7 @@ export default function CallWidget() {
             title={isMuted ? "Click to UNMUTE" : "Click to MUTE"}
           >
             <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all flex-shrink-0 ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
                 isMuted
                   ? "bg-red-500/80 ring-1 ring-red-400/60"
                   : "bg-slate-600/80 hover:bg-emerald-500/30"
@@ -409,7 +414,7 @@ export default function CallWidget() {
             title={isOnHold ? "Click to RESUME" : "Click to HOLD"}
           >
             <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all flex-shrink-0 ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
                 isOnHold
                   ? "bg-amber-500/80 ring-1 ring-amber-400/60"
                   : "bg-slate-600/80 hover:bg-amber-500/30"
@@ -426,51 +431,59 @@ export default function CallWidget() {
             </span>
           </button>
 
-          {/* ANSWER - BOTTOM LEFT - SAME SIZE & GRAY */}
+          {/* ✅ ANSWER - BOTTOM LEFT - GREENISH DISABLED DESIGN */}
           <button
             onClick={handleAnswer}
-            disabled={isAnswered}
+            disabled={isInCall}
             className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full group ${
-              isAnswered
-                ? "bg-gray-700 text-gray-400 opacity-50 cursor-not-allowed shadow-none border border-gray-600 pointer-events-none hover:scale-100"
+              isInCall
+                ? "bg-emerald-600/60 text-emerald-100 shadow-emerald-500/40 ring-1 ring-emerald-400/40 cursor-not-allowed shadow-md border border-emerald-500/30 pointer-events-none hover:scale-100"
                 : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/50 hover:scale-105 active:scale-95 cursor-pointer hover:shadow-emerald-500/70"
             }`}
-            title="Answer Call"
+            title={
+              isInCall
+                ? isAnswered
+                  ? "Call Answered"
+                  : "Auto-Answering..."
+                : "Answer Call"
+            }
           >
             <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all flex-shrink-0 ${
-                isAnswered
-                  ? "bg-gray-600/40 border border-gray-600"
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
+                isInCall
+                  ? "bg-emerald-500/60 border-2 border-emerald-400/50 ring-1 ring-emerald-400/40"
                   : "bg-emerald-500/80 border-2 border-emerald-400/60 hover:scale-110"
               }`}
             >
               <Phone
-                className={`w-4.5 h-4.5 ${isAnswered ? "opacity-60" : ""}`}
+                className={`w-4.5 h-4.5 transition-opacity ${
+                  isInCall ? "opacity-80" : ""
+                }`}
               />
             </div>
             <span
               className={`uppercase tracking-wider text-xs leading-tight font-semibold ${
-                isAnswered ? "font-normal" : ""
+                isInCall ? "opacity-90" : ""
               }`}
             >
               ANSWER
             </span>
           </button>
 
-          {/* HANGUP - BOTTOM RIGHT - SAME SIZE - ✅ FIXED GRADIENT */}
+          {/* HANGUP - BOTTOM RIGHT */}
           <button
             onClick={handleHangup}
             className={`p-2.5 rounded-lg font-black text-xs shadow-2xl transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer group hover:scale-105 active:scale-95 ring-2 ring-red-400/60 ${
               isAnswered
-                ? "bg-gradient-to-br from-red-600 to-red-800 text-white shadow-red-500/70 hover:shadow-red-600/80 hover:from-red-700 hover:to-red-900"
+                ? "bg-linear-to-br from-red-600 to-red-800 text-white shadow-red-500/70 hover:shadow-red-600/80 hover:from-red-700 hover:to-red-900"
                 : "bg-red-600/70 text-slate-200 hover:bg-red-600/90 shadow-red-400/50"
             }`}
             title="Hangup Call"
           >
             <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-2xl transition-all flex-shrink-0 group-hover:scale-110 group-hover:rotate-[-5deg] ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-2xl transition-all shrink-0 group-hover:scale-110 group-hover:rotate-[-5deg] ${
                 isAnswered
-                  ? "bg-gradient-to-br from-red-500/90 to-red-600/90 border-2 border-red-400/70 shadow-red-500/60"
+                  ? "bg-linear-to-br from-red-500/90 to-red-600/90 border-2 border-red-400/70 shadow-red-500/60"
                   : "bg-red-500/70 border-2 border-red-400/60"
               }`}
             >
