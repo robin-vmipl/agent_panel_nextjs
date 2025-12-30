@@ -28483,6 +28483,7 @@ THE SOFTWARE.
             },
             onCallAnswered: () => {
                 console.log(`[${displayName}] Call answered`);
+                if (window.onCallAnswered) window.onCallAnswered(); // 🔥 ANSWERED
                 keypadDisabled(false);
                 holdCheckboxDisabled(false);
                 muteCheckboxDisabled(false);
@@ -28491,6 +28492,7 @@ THE SOFTWARE.
             },
             onCallHangup: () => {
                 console.log(`[${displayName}] Call hangup`);
+                if (window.onCallHangup) window.onCallHangup(); // 🔥 ENDED
                 STATE = STATES.DEFAULT;
                 stopAudio();
                 // removed enableCall();
@@ -28510,6 +28512,7 @@ THE SOFTWARE.
             },
             onCallReceived: async () => {
                 console.log("Incoming Call!");
+                if (window.onCallReceived) window.onCallReceived(); // 🔥 RINGING
                 STATE = STATES.INCOMING;
                 // console.log("SIP HEADER : ",simpleUser);
                 const incomingNum = getIncomingRequestNumber(simpleUser);

@@ -20,7 +20,39 @@ export default function CallWidget() {
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const callStateCheckRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ✅ SINGLE DURATION TIMER - Starts on incoming, continues through answer
+  // 🔥 GLOBAL SIP.js EVENT LISTENERS
+  useEffect(() => {
+    const handleCallReceived = () => {
+      console.log("🔥 CALLWIDGET: onCallReceived - RINGING");
+      setIsInCall(true);
+      setIsAnswered(false);
+      setOpen(true);
+    };
+
+    const handleCallAnswered = () => {
+      console.log("🔥 CALLWIDGET: onCallAnswered - ANSWERED");
+      setIsAnswered(true);
+      setIsInCall(true);
+      setOpen(true);
+    };
+
+    const handleCallHangup = () => {
+      console.log("🔥 CALLWIDGET: onCallHangup - ENDED");
+      resetCall();
+    };
+
+    (window as any).onCallReceived = handleCallReceived;
+    (window as any).onCallAnswered = handleCallAnswered;
+    (window as any).onCallHangup = handleCallHangup;
+
+    return () => {
+      delete (window as any).onCallReceived;
+      delete (window as any).onCallAnswered;
+      delete (window as any).onCallHangup;
+    };
+  }, []);
+
+  // DURATION TIMER
   useEffect(() => {
     if (isInCall && !durationIntervalRef.current) {
       durationIntervalRef.current = setInterval(() => {
@@ -55,17 +87,17 @@ export default function CallWidget() {
     }
   }, [sipConfig.username, sipConfig.password, isAuthenticated]);
 
-  // ✅ PERFECT auto-show + manual toggle
+  // STATUS CHECKER (FALLBACK + MUTE/HOLD SYNC)
   useEffect(() => {
-    const checkCallState = () => {
-      const incomingNumberEl = document.getElementById(
-        "incoming-number"
-      ) as HTMLElement;
-      const callDetail = document.getElementById("callpick-detail");
-      const hangupDiv = document.getElementById("hangup_div");
+    const checkStatus = () => {
+      const muteCheckbox = document.querySelector("#mute") as HTMLInputElement;
+      const holdCheckbox = document.querySelector("#hold") as HTMLInputElement;
       const connectBtn = document.getElementById(
         "connect"
       ) as HTMLButtonElement;
+
+      if (muteCheckbox) setIsMuted(muteCheckbox.checked);
+      if (holdCheckbox) setIsOnHold(holdCheckbox.checked);
 
       if (connectBtn?.textContent?.includes("Connected")) {
         setSipStatus("Connected");
@@ -73,58 +105,23 @@ export default function CallWidget() {
         setSipStatus("Disconnected");
       }
 
-      const muteCheckbox = document.querySelector("#mute") as HTMLInputElement;
-      if (muteCheckbox) setIsMuted(muteCheckbox.checked);
-
-      const holdCheckbox = document.querySelector("#hold") as HTMLInputElement;
-      if (holdCheckbox) setIsOnHold(holdCheckbox.checked);
-
-      // ✅ INCOMING CALL - AUTO SHOW
+      // FALLBACK: Incoming number detection
+      const incomingNumberEl = document.getElementById(
+        "incoming-number"
+      ) as HTMLElement;
       if (incomingNumberEl?.textContent?.includes("Incoming call from")) {
         const number =
           incomingNumberEl.textContent.replace("Incoming call from ", "") ||
           "Unknown";
         setIncomingNumber(number);
-        setIsInCall(true);
-        setIsAnswered(false);
-        setOpen(true); // ✅ AUTO-SHOW WEBPHONE
-
-        // ✅ DISABLE SIP answer button to prevent double-clicking
-        const sipAnswerBtn = document.querySelector(
-          "#call button"
-        ) as HTMLButtonElement;
-        if (sipAnswerBtn && !sipAnswerBtn.disabled) {
-          sipAnswerBtn.disabled = true;
-        }
-        return;
-      }
-
-      // ✅ ANSWERED CALL - AUTO SHOW
-      if (
-        callDetail &&
-        !callDetail.hasAttribute("hidden") &&
-        hangupDiv &&
-        !hangupDiv.classList.contains("d-none")
-      ) {
-        setIsAnswered(true);
-        setIsInCall(true);
-        setOpen(true); // ✅ AUTO-SHOW WEBPHONE
-        return;
-      }
-
-      // ✅ CALL ENDED - Reset everything
-      if (
-        hangupDiv?.classList.contains("d-none") &&
-        callDetail?.hasAttribute("hidden") &&
-        !incomingNumberEl?.textContent?.includes("Incoming call from")
-      ) {
-        resetCall();
       }
     };
 
-    callStateCheckRef.current = setInterval(checkCallState, 150);
+    callStateCheckRef.current = setInterval(checkStatus, 200);
     return () => {
-      if (callStateCheckRef.current) clearInterval(callStateCheckRef.current);
+      if (callStateCheckRef.current) {
+        clearInterval(callStateCheckRef.current);
+      }
     };
   }, []);
 
@@ -147,49 +144,42 @@ export default function CallWidget() {
     resetTimer();
   };
 
-  // ✅ Manual answer - Just logs (demo-1.js handles auto-answer)
   const handleAnswer = useCallback(() => {
-    console.log("✅ Manual ANSWER clicked - Auto-answer active");
+    console.log("✅ Manual Answer clicked");
+
+    // 🔥 CHECK IF ALREADY ANSWERING OR ANSWERED
+    const callDiv = document.querySelector("#call") as HTMLDivElement;
+    const callButton = callDiv?.querySelector("button") as HTMLButtonElement;
+
+    if (
+      callButton &&
+      !callButton.disabled &&
+      callButton.textContent?.includes("Answer")
+    ) {
+      console.log("✅ SIP Answer button found and clickable");
+      callButton.click();
+    } else {
+      console.log("❌ SIP Answer button not available or disabled");
+    }
   }, []);
 
   const handleHangup = useCallback(() => {
-    const hangupSelectors = [
-      "#hangup button",
-      "#hangup_div button",
-      ".call.reject button",
-      "#hangup",
-    ];
-
-    for (const selector of hangupSelectors) {
-      const hangupBtn = document.querySelector(selector) as HTMLButtonElement;
-      if (hangupBtn) {
-        hangupBtn.focus();
-        hangupBtn.click();
-        console.log("✅ HANGUP clicked via", selector);
-        return;
-      }
-    }
+    const hangupButton = document.getElementById("hangup") as HTMLButtonElement;
+    if (hangupButton) hangupButton.click();
   }, []);
 
   const toggleMute = useCallback(() => {
     const muteCheckbox = document.querySelector("#mute") as HTMLInputElement;
-    if (muteCheckbox) {
-      muteCheckbox.click();
-      console.log("✅ MUTE/UNMUTE toggled");
-    }
+    if (muteCheckbox) muteCheckbox.click();
   }, []);
 
   const toggleHold = useCallback(() => {
     const holdCheckbox = document.querySelector("#hold") as HTMLInputElement;
-    if (holdCheckbox) {
-      holdCheckbox.click();
-      console.log("✅ HOLD/UNHOLD toggled");
-    }
+    if (holdCheckbox) holdCheckbox.click();
   }, []);
 
-  // ✅ PERFECT TOGGLE - No stale closure!
   const handleToggle = useCallback(() => {
-    setOpen((prevOpen) => !prevOpen);
+    setOpen((prev) => !prev);
   }, []);
 
   return (
@@ -316,23 +306,24 @@ export default function CallWidget() {
         </div>
       </div>
 
-      {/* ✅ TOGGLE ICON - ALWAYS VISIBLE */}
+      {/* TOGGLE BUTTON */}
       <button
         onClick={handleToggle}
-        className={`fixed bottom-6 right-6 z-99999 rounded-full shadow-2xl border-4 border-white/30 
-                   text-white flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                     isInCall
-                       ? "w-16 h-16 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/50 hover:shadow-emerald-500/70 hover:scale-110 active:scale-95"
-                       : "w-12 h-12 bg-slate-600/80 hover:bg-slate-500/90 hover:scale-105 active:scale-95"
-                   }`}
-        title={isInCall ? "Toggle WebPhone" : "WebPhone (Connect first)"}
+        className={`fixed bottom-6 right-6 z-99999 rounded-full shadow-2xl border-4 border-white/30 text-white flex items-center justify-center transition-all duration-200 cursor-pointer ${
+          isInCall
+            ? "w-16 h-16 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/50 hover:shadow-emerald-500/70 hover:scale-110 active:scale-95"
+            : "w-12 h-12 bg-slate-600/80 hover:bg-slate-500/90 hover:scale-105 active:scale-95"
+        }`}
+        title={
+          isInCall ? (open ? "Hide WebPhone" : "Show WebPhone") : "WebPhone"
+        }
       >
         <Phone
           className={`drop-shadow-lg ${isInCall ? "w-8 h-8" : "w-6 h-6"}`}
         />
       </button>
 
-      {/* ✅ FULL WIDGET - ONLY DURING CALL + AUTO-SHOW + PERFECT TOGGLE */}
+      {/* WEBPHONE WIDGET */}
       {isInCall && (
         <div
           className={`fixed bottom-24 right-6 z-100000 w-87.5 h-112.5 bg-linear-to-b from-slate-900 to-slate-800 backdrop-blur-xl shadow-3xl border border-emerald-400/50 rounded-2xl overflow-hidden transition-all duration-300 ${
@@ -359,13 +350,13 @@ export default function CallWidget() {
           </div>
 
           {/* Call Info */}
-          <div className="p-4 flex-1 flex flex-col justify-center items-center text-center space-y-3 h-52.5">
+          <div className="p-4 flex flex-col justify-center items-center text-center space-y-3 h-52.5">
             <h2
               className={`text-lg font-bold ${
                 isAnswered ? "text-emerald-400" : "text-amber-400"
               }`}
             >
-              {isAnswered ? "ACTIVE CALL" : "INCOMING CALL"}
+              {isAnswered ? "IN CALL" : "INCOMING CALL"}
             </h2>
             <div className="text-xl font-mono font-bold text-white bg-slate-800/80 px-5 py-2.5 rounded-xl border border-slate-600">
               {incomingNumber || "Unknown"}
@@ -381,21 +372,29 @@ export default function CallWidget() {
             </div>
           </div>
 
-          {/* Controls */}
+          {/* 🔥 PERFECT CONTROLS - FIXED HOVER + MANUAL ANSWER */}
           <div className="p-4 bg-slate-900/90 border-t border-slate-700 h-42.5 grid grid-cols-2 grid-rows-2 gap-3">
-            {/* MUTE - TOP LEFT */}
+            {/* MUTE */}
             <button
               onClick={toggleMute}
-              className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer active:scale-95 hover:scale-105 ${
-                isMuted
-                  ? "bg-red-600/90 text-white shadow-red-500/60 ring-1 ring-red-400/50"
-                  : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-emerald-400/50"
+              disabled={!isAnswered}
+              className={`group h-full flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all duration-200 ${
+                !isAnswered
+                  ? "opacity-40 bg-slate-700/60 cursor-not-allowed shadow-none ring-1 ring-slate-500/30 hover:scale-100"
+                  : isMuted
+                  ? "bg-red-600/90 text-white shadow-red-500/60 ring-1 ring-red-400/50 hover:scale-105 active:scale-95 cursor-pointer"
+                  : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-emerald-400/50 hover:scale-105 active:scale-95 cursor-pointer"
               }`}
-              title={isMuted ? "Click to UNMUTE" : "Click to MUTE"}
+              title={
+                !isAnswered ? "Wait for answer..." : isMuted ? "UNMUTE" : "MUTE"
+              }
             >
+              {/* ICON + TEXT SAME AS BEFORE */}
               <div
                 className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
-                  isMuted
+                  !isAnswered
+                    ? "bg-slate-600/50 opacity-60"
+                    : isMuted
                     ? "bg-red-500/80 ring-1 ring-red-400/60"
                     : "bg-slate-600/80 hover:bg-emerald-500/30"
                 }`}
@@ -411,19 +410,30 @@ export default function CallWidget() {
               </span>
             </button>
 
-            {/* HOLD - TOP RIGHT */}
+            {/* HOLD */}
             <button
               onClick={toggleHold}
-              className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer active:scale-95 hover:scale-105 ${
-                isOnHold
-                  ? "bg-amber-600/90 text-white shadow-amber-500/60 ring-1 ring-amber-400/50"
-                  : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-amber-400/50"
+              disabled={!isAnswered}
+              className={`group h-full flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all duration-200 ${
+                !isAnswered
+                  ? "opacity-40 bg-slate-700/60 cursor-not-allowed shadow-none ring-1 ring-slate-500/30 hover:scale-100"
+                  : isOnHold
+                  ? "bg-amber-600/90 text-white shadow-amber-500/60 ring-1 ring-amber-400/50 hover:scale-105 active:scale-95 cursor-pointer"
+                  : "bg-slate-700 hover:bg-slate-600 text-white hover:shadow-amber-400/50 hover:scale-105 active:scale-95 cursor-pointer"
               }`}
-              title={isOnHold ? "Click to RESUME" : "Click to HOLD"}
+              title={
+                !isAnswered
+                  ? "Wait for answer..."
+                  : isOnHold
+                  ? "RESUME"
+                  : "HOLD"
+              }
             >
               <div
                 className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
-                  isOnHold
+                  !isAnswered
+                    ? "bg-slate-600/50 opacity-60"
+                    : isOnHold
                     ? "bg-amber-500/80 ring-1 ring-amber-400/60"
                     : "bg-slate-600/80 hover:bg-amber-500/30"
                 }`}
@@ -439,60 +449,55 @@ export default function CallWidget() {
               </span>
             </button>
 
-            {/* ANSWER - BOTTOM LEFT */}
+            {/* ANSWER - FIXED MANUAL ANSWER */}
             <button
               onClick={handleAnswer}
-              disabled={isInCall}
-              className={`p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 h-full group ${
-                isInCall
-                  ? "bg-emerald-600/60 text-emerald-100 shadow-emerald-500/40 ring-1 ring-emerald-400/40 cursor-not-allowed shadow-md border border-emerald-500/30 pointer-events-none hover:scale-100"
-                  : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/50 hover:scale-105 active:scale-95 cursor-pointer hover:shadow-emerald-500/70"
+              disabled={isAnswered}
+              className={`group h-full flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-lg font-bold text-xs shadow-lg transition-all duration-200 ${
+                isAnswered
+                  ? "bg-emerald-600/60 text-emerald-100 shadow-emerald-500/40 ring-1 ring-emerald-400/40 cursor-not-allowed opacity-70 pointer-events-none"
+                  : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/50 hover:scale-105 active:scale-95 cursor-pointer"
               }`}
-              title={
-                isInCall
-                  ? isAnswered
-                    ? "Call Answered"
-                    : "Auto-Answering..."
-                  : "Answer Call"
-              }
+              title={isAnswered ? "Call Answered" : "Answer Call (Manual)"}
             >
               <div
                 className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-md transition-all shrink-0 ${
-                  isInCall
-                    ? "bg-emerald-500/60 border-2 border-emerald-400/50 ring-1 ring-emerald-400/40"
+                  isAnswered
+                    ? "bg-emerald-500/60 border-2 border-emerald-400/50"
                     : "bg-emerald-500/80 border-2 border-emerald-400/60 hover:scale-110"
                 }`}
               >
                 <Phone
                   className={`w-4.5 h-4.5 transition-opacity ${
-                    isInCall ? "opacity-80" : ""
+                    isAnswered ? "opacity-70" : ""
                   }`}
                 />
               </div>
               <span
-                className={`uppercase tracking-wider text-xs leading-tight font-semibold ${
-                  isInCall ? "opacity-90" : ""
+                className={`uppercase tracking-wider text-xs font-semibold ${
+                  isAnswered ? "opacity-70" : ""
                 }`}
               >
-                ANSWER
+                {isAnswered ? "ANSWERED" : "ANSWER"}
               </span>
             </button>
 
-            {/* HANGUP - BOTTOM RIGHT */}
+            {/* HANGUP */}
             <button
               onClick={handleHangup}
-              className={`p-2.5 rounded-lg font-black text-xs shadow-2xl transition-all flex flex-col items-center justify-center gap-1.5 h-full cursor-pointer group hover:scale-105 active:scale-95 ring-2 ring-red-400/60 ${
-                isAnswered
-                  ? "bg-linear-to-br from-red-600 to-red-800 text-white shadow-red-500/70 hover:shadow-red-600/80 hover:from-red-700 hover:to-red-900"
-                  : "bg-red-600/70 text-slate-200 hover:bg-red-600/90 shadow-red-400/50"
+              disabled={!isAnswered}
+              className={`group h-full flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-lg font-black text-xs shadow-2xl transition-all duration-200 ring-2 ring-red-400/60 hover:scale-105 active:scale-95 ${
+                !isAnswered
+                  ? "opacity-40 bg-slate-700/60 cursor-not-allowed shadow-none text-slate-300 hover:scale-100"
+                  : "bg-linear-to-br from-red-600 to-red-800 text-white shadow-red-500/70 hover:shadow-red-600/80 hover:from-red-700 hover:to-red-900 cursor-pointer"
               }`}
-              title="Hangup Call"
+              title={!isAnswered ? "Wait for answer..." : "Hangup Call"}
             >
               <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-2xl transition-all shrink-0 group-hover:scale-110 group-hover:rotate-[-5deg] ${
-                  isAnswered
-                    ? "bg-linear-to-br from-red-500/90 to-red-600/90 border-2 border-red-400/70 shadow-red-500/60"
-                    : "bg-red-500/70 border-2 border-red-400/60"
+                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-2xl transition-all shrink-0 group-hover:scale-110 ${
+                  !isAnswered
+                    ? "bg-slate-600/50 opacity-60 border-2 border-slate-500/40"
+                    : "bg-linear-to-br from-red-500/90 to-red-600/90 border-2 border-red-400/70 shadow-red-500/60"
                 }`}
               >
                 <PhoneOff className="w-4.5 h-4.5 drop-shadow-lg" />
