@@ -18,6 +18,21 @@ export default function StatusDropdown() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [isInCall, setIsInCall] = useState(false);
+
+  // 🔥 CHECK CALL STATUS
+  useEffect(() => {
+    const checkCallStatus = () => {
+      const callDiv = document.querySelector("#callpick-detail") as HTMLElement;
+      const hangupDiv = document.querySelector("#hangup_div") as HTMLElement;
+      const isCallDetailVisible = callDiv && !callDiv.hasAttribute("hidden");
+      const isHangupVisible =
+        hangupDiv && !hangupDiv.classList.contains("d-none");
+      setIsInCall(isCallDetailVisible || isHangupVisible);
+    };
+    const interval = setInterval(checkCallStatus, 500);
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchCurrentStatus = async () => {
     try {
@@ -39,14 +54,11 @@ export default function StatusDropdown() {
     fetchCurrentStatus();
   }, []);
 
-  // ✅ STATUS → SIP + SIP STATUS SYNC
   useEffect(() => {
     if (!initialized) return;
-
     const timer = setTimeout(() => {
       if (currentStatus === "ACTIVE") {
         sipConnect();
-        // ✅ UPDATE CallWidget SIP status
         const statusElement = document.getElementById("sipStatus");
         if (statusElement) {
           statusElement.textContent = "REGISTERED";
@@ -54,7 +66,6 @@ export default function StatusDropdown() {
         }
       } else {
         sipDisconnect();
-        // ✅ UPDATE CallWidget SIP status
         const statusElement = document.getElementById("sipStatus");
         if (statusElement) {
           statusElement.textContent = "Disconnected";
@@ -62,16 +73,18 @@ export default function StatusDropdown() {
         }
       }
     }, 500);
-
     return () => clearTimeout(timer);
   }, [currentStatus, initialized]);
 
   const handleStatusChange = async (newStatus: string) => {
+    if (isInCall) {
+      toast.error("Cannot change status during active call!");
+      setOpen(false);
+      return;
+    }
     if (newStatus === currentStatus || loading) return;
-
     setLoading(true);
     setOpen(false);
-
     try {
       const data = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/agent/update-status`,
@@ -80,12 +93,10 @@ export default function StatusDropdown() {
           body: JSON.stringify({ status: newStatus }),
         }
       );
-
       if (data?.error) {
         toast.error(data.error);
         return;
       }
-
       setCurrentStatus(newStatus);
       localStorage.setItem("agentStatus", newStatus);
       toast.success("Status updated");
@@ -101,18 +112,30 @@ export default function StatusDropdown() {
       ? "bg-green-600 hover:bg-green-700"
       : "bg-red-600 hover:bg-red-700";
 
+  const isDisabled = isInCall || loading;
+  const buttonStyle = isDisabled ? "bg-slate-700/60 opacity-70" : statusColor;
+
   return (
     <div className="relative">
+      {/* 🔥 BUTTON WITH POINTER + DANCING ICON */}
       <button
         type="button"
-        onClick={() => setOpen(!open)}
-        disabled={loading}
-        className={`text-white px-4 py-2 rounded-md text-sm font-medium ${statusColor} transition-colors`}
+        onClick={() => !isDisabled && setOpen(!open)}
+        disabled={isDisabled}
+        className={`text-white px-4 py-2 rounded-md text-sm font-medium transition-all hover:scale-105 pointer-events-auto ${buttonStyle} ${
+          isDisabled ? "cursor-not-allowed" : "cursor-pointer"
+        }`}
+        title={
+          isInCall ? "📞 Call in progress - End call first" : "Change Status"
+        }
       >
-        {loading ? "Updating..." : currentStatus}
+        <span className="inline-flex items-center gap-1.5">
+          {loading ? "Updating..." : currentStatus}
+        </span>
       </button>
 
-      {open && (
+      {/* 🔥 SIMPLE DROPDOWN */}
+      {open && !isInCall && (
         <div className="absolute right-0 mt-2 w-60 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50 py-1">
           {STATUS_OPTIONS.map((statusOption) => {
             const isActive = statusOption.value === currentStatus;
@@ -122,7 +145,7 @@ export default function StatusDropdown() {
                 type="button"
                 disabled={isActive || loading}
                 onClick={() => handleStatusChange(statusOption.value)}
-                className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-700 transition-colors ${
+                className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-700 transition-all pointer-events-auto cursor-pointer hover:scale-[1.02] ${
                   isActive
                     ? "bg-gray-700 text-gray-400 cursor-not-allowed"
                     : "text-gray-300"
