@@ -82,10 +82,10 @@ export default function Sidebar() {
           <button
             onClick={handleLogout}
             disabled={isInCall}
-            className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
+            className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200  ${
               isInCall
                 ? "bg-slate-700/60 opacity-70 cursor-not-allowed"
-                : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20"
+                : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20 cursor-pointer"
             }`}
           >
             <LogOut className="w-5 h-5" />

@@ -139,7 +139,7 @@ export default function StatusDropdown() {
         className={`relative overflow-hidden px-5 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 hover:scale-[1.02] backdrop-blur-xl border-2 shadow-2xl ${
           isDisabled
             ? "bg-slate-800/60 border-slate-700/50 opacity-70 cursor-not-allowed"
-            : `${currentConfig.bg} ${currentConfig.ring} border-emerald-500/30 hover:border-emerald-400/50 hover:shadow-emerald-500/30 ${currentConfig.text}`
+            : `${currentConfig.bg} ${currentConfig.ring} border-emerald-500/30 hover:border-emerald-400/50 hover:shadow-emerald-500/30 cursor-pointer ${currentConfig.text}`
         }`}
         title={
           isInCall ? "📞 Call in progress - End call first" : "Change Status"

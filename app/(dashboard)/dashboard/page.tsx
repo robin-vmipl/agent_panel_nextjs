@@ -37,7 +37,10 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* 🔥 COMBINED SUMMARY + ACTIVITY - SINGLE BLACKISH CONTAINER */}
       {isLoading ? (
-        <SummarySkeleton />
+        <div className="bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-3xl p-8 rounded-3xl border-2 border-white/10 shadow-2xl shadow-emerald-500/20 ring-2 ring-white/5 overflow-hidden relative">
+          <SummarySkeleton />
+          <ActivitySkeleton />
+        </div>
       ) : (
         <div className="bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-3xl p-8 rounded-3xl border-2 border-white/10 shadow-2xl shadow-emerald-500/20 ring-2 ring-white/5 overflow-hidden relative">
           {/* 🔥 VIBRANT GLOW BACKGROUND */}
