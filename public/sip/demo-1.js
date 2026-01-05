@@ -28455,6 +28455,18 @@ THE SOFTWARE.
         let totalHoldTime = 0;
         let holdTimer = null;
 
+        window.SIP_CALL_DATA = {
+            currentIncomingNumber: "",
+            sessionId: "",
+            callState: "idle", // idle, ringing, answered, active, ended
+            update: function(number, sessionId, state) {
+                this.currentIncomingNumber = number || "";
+                this.sessionId = sessionId || "";
+                this.callState = state || "idle";
+            }
+        };
+
+
         // WebSocket Server URL
         const webSocketServer = `wss://${WEBSOCKET_HOST}:${WEBSOCKET_PORT}/ws`;
         // Destination URI
@@ -28484,6 +28496,14 @@ THE SOFTWARE.
             onCallAnswered: () => {
                 console.log(`[${displayName}] Call answered`);
                 if (window.onCallAnswered) window.onCallAnswered(); // 🔥 ANSWERED
+
+                //UPDATE SIP DATA
+                window.SIP_CALL_DATA.update(
+                window.SIP_CALL_DATA.currentIncomingNumber,
+                simpleUser.session?._id,
+                "answered"
+                );
+
                 keypadDisabled(false);
                 holdCheckboxDisabled(false);
                 muteCheckboxDisabled(false);
@@ -28493,6 +28513,8 @@ THE SOFTWARE.
             onCallHangup: () => {
                 console.log(`[${displayName}] Call hangup`);
                 if (window.onCallHangup) window.onCallHangup(); // 🔥 ENDED
+                window.SIP_CALL_DATA.update("", "", "ended");
+
                 STATE = STATES.DEFAULT;
                 stopAudio();
                 // removed enableCall();
@@ -28519,6 +28541,11 @@ THE SOFTWARE.
                 // console.log(incomingNum,'Incoming Number!!');
                 // incomingCustomerNumber(incomingNum);
                 renderIncomingNumber(incomingNum);
+
+
+                // UPDATE SIP DATA WITH REAL CALLER NUMBER
+                window.SIP_CALL_DATA.update(incomingNum, "", "ringing");
+    
                 playAudio();
                 // added enableCall();
                 // enableCall();

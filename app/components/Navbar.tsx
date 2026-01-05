@@ -6,6 +6,7 @@ import MyIngroupsButton from "./MyIngroupsButton";
 import { useEffect, useState } from "react";
 import ChangePasswordModal from "./ChangePasswordModal";
 import { ChevronDown, User } from "lucide-react";
+import NavbarCrmButton from "./NavbarCrmButton";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -44,6 +45,7 @@ export default function Navbar() {
 
         {/* 🔥 CONTROLS + PROFILE */}
         <div className="flex items-center gap-4">
+          <NavbarCrmButton />
           <StatusDropdown />
           <MyIngroupsButton />
 

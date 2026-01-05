@@ -130,7 +130,6 @@ const SIP_HTML = (
 export default function CallWidget() {
   const { sipConfig, user, isAuthenticated } = useAuth();
 
-  // 🔥 ALL YOUR ORIGINAL STATES (UNCHANGED)
   const [open, setOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isOnHold, setIsOnHold] = useState(false);
@@ -143,12 +142,14 @@ export default function CallWidget() {
   const [ingroups, setIngroups] = useState<string[]>([]);
   const [selectedGroup, setSelectedGroup] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hasOpenedCrm, setHasOpenedCrm] = useState(false);
 
   const durationRef = useRef(0);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const callStateCheckRef = useRef<NodeJS.Timeout | null>(null);
+  const currentCallIdRef = useRef<string>("");
 
-  // 🔥 ALL YOUR ORIGINAL FUNCTIONS (UNCHANGED - Just renamed for components)
+  // 🔥 ALL FUNCTIONS
   const handleToggle = useCallback(() => {
     setOpen((prev) => !prev);
   }, []);
@@ -269,15 +270,19 @@ export default function CallWidget() {
     setIsOnHold(false);
     setTransferPopup(false);
     setSelectedGroup("");
+    setHasOpenedCrm(false);
+    currentCallIdRef.current = "";
     resetTimer();
   };
 
-  // 🔥 ALL YOUR ORIGINAL useEffects (100% UNCHANGED)
+  // 🔥 SIP EVENT HANDLERS
   useEffect(() => {
     const handleCallReceived = () => {
       setIsInCall(true);
       setIsAnswered(false);
       setOpen(true);
+      setHasOpenedCrm(false);
+      currentCallIdRef.current = "";
     };
 
     const handleCallAnswered = () => {
@@ -301,6 +306,7 @@ export default function CallWidget() {
     };
   }, []);
 
+  // 🔥 CALL DURATION TIMER
   useEffect(() => {
     if (isInCall && !durationIntervalRef.current) {
       durationIntervalRef.current = setInterval(() => {
@@ -324,6 +330,7 @@ export default function CallWidget() {
     };
   }, [isInCall]);
 
+  // 🔥 SIP CONFIG
   useEffect(() => {
     if (sipConfig.username && sipConfig.password && isAuthenticated) {
       (window as any).SIP_USERNAME = sipConfig.username;
@@ -334,6 +341,7 @@ export default function CallWidget() {
     }
   }, [sipConfig.username, sipConfig.password, isAuthenticated]);
 
+  // 🔥 STATUS CHECK + GLOBAL SIP DATA
   useEffect(() => {
     const checkStatus = () => {
       const muteCheckbox = document.querySelector("#mute") as HTMLInputElement;
@@ -351,14 +359,10 @@ export default function CallWidget() {
         setSipStatus("Disconnected");
       }
 
-      const incomingNumberEl = document.getElementById(
-        "incoming-number"
-      ) as HTMLElement;
-      if (incomingNumberEl?.textContent?.includes("Incoming call from")) {
-        const number =
-          incomingNumberEl.textContent.replace("Incoming call from ", "") ||
-          "Unknown";
-        setIncomingNumber(number);
+      // 🔥 USE GLOBAL SIP DATA INSTEAD OF DOM PARSING
+      const sipData = (window as any).SIP_CALL_DATA;
+      if (sipData?.currentIncomingNumber) {
+        setIncomingNumber(sipData.currentIncomingNumber);
       }
     };
 
@@ -370,11 +374,74 @@ export default function CallWidget() {
     };
   }, []);
 
+  // 🔥 FETCH INGROUPS ON ANSWER
   useEffect(() => {
     if (isAnswered) {
       fetchIngroups();
     }
   }, [isAnswered, fetchIngroups]);
+
+  // 🔥 AUTO CRM - GLOBAL SIP DATA VERSION (NO DOM PARSING!)
+  useEffect(() => {
+    if (isAnswered && !hasOpenedCrm) {
+      console.log("🎤 SIP Call answered - Auto opening CRM...");
+
+      const openCrmOnce = async () => {
+        try {
+          // 🔥 USE GLOBAL SIP DATA DIRECTLY
+          const sipData = (window as any).SIP_CALL_DATA;
+          const incomingNum = sipData?.currentIncomingNumber || "";
+
+          // Only proceed if we have a real incoming number (new call detection)
+          if (incomingNum && incomingNum !== currentCallIdRef.current) {
+            currentCallIdRef.current = incomingNum;
+
+            const data = await apiFetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/agent/call_details`
+            );
+            const { call_details } = data;
+
+            if (call_details) {
+              const encryptStringData = (
+                data: string | null
+              ): string | null => {
+                if (!data) return null;
+                try {
+                  return btoa(unescape(encodeURIComponent(data)));
+                } catch {
+                  return null;
+                }
+              };
+
+              const userID = encryptStringData(call_details.user || null);
+              const uniqueID = encryptStringData(
+                call_details.external_update_fields_data || null
+              );
+              const mobileNumber = encryptStringData(
+                (call_details.external_transferconf || "").slice(-10)
+              );
+
+              const url = `https://pmfby.gov.in/krph/?userID=${userID}&uniqueID=${uniqueID}&mobileNumber=${mobileNumber}`;
+              window.open(url, "_blank");
+
+              setHasOpenedCrm(true);
+              console.log("Auto CRM opened for call:", incomingNum);
+            }
+          }
+        } catch (err: any) {
+          console.log("Auto CRM failed:", err.message);
+        }
+      };
+
+      setTimeout(openCrmOnce, 1500);
+    }
+
+    // RESET when call hangs up
+    if (!isInCall) {
+      setHasOpenedCrm(false);
+      currentCallIdRef.current = "";
+    }
+  }, [isAnswered, isInCall]);
 
   return (
     <>

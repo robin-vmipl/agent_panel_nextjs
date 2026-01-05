@@ -28,12 +28,10 @@ export default function StatusDropdown() {
   // 🔥 CHECK CALL STATUS
   useEffect(() => {
     const checkCallStatus = () => {
-      const callDiv = document.querySelector("#callpick-detail") as HTMLElement;
-      const hangupDiv = document.querySelector("#hangup_div") as HTMLElement;
-      const isCallDetailVisible = callDiv && !callDiv.hasAttribute("hidden");
-      const isHangupVisible =
-        hangupDiv && !hangupDiv.classList.contains("d-none");
-      setIsInCall(isCallDetailVisible || isHangupVisible);
+      const sipData = (window as any).SIP_CALL_DATA;
+      setIsInCall(
+        sipData?.callState === "ringing" || sipData?.callState === "answered"
+      );
     };
     const interval = setInterval(checkCallStatus, 500);
     return () => clearInterval(interval);

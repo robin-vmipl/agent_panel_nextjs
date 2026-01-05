@@ -7,7 +7,10 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Activity, User, Clock, Settings, LogOut } from "lucide-react";
 
-const menuItems = [{ name: "Dashboard", href: "/dashboard", icon: Activity }];
+const menuItems = [
+  { name: "Dashboard", href: "/dashboard", icon: Activity },
+  // { name: "Click to Call", href: "/ctc", icon: Activity },
+];
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -15,12 +18,11 @@ export default function Sidebar() {
 
   useEffect(() => {
     const checkCallStatus = () => {
-      const callDiv = document.querySelector("#callpick-detail") as HTMLElement;
-      const hangupDiv = document.querySelector("#hangup_div") as HTMLElement;
-      const isCallDetailVisible = callDiv && !callDiv.hasAttribute("hidden");
-      const isHangupVisible =
-        hangupDiv && !hangupDiv.classList.contains("d-none");
-      setIsInCall(isCallDetailVisible || isHangupVisible);
+      const sipData = (window as any).SIP_CALL_DATA;
+      // 🔥 Use SIP states directly
+      setIsInCall(
+        sipData?.callState === "ringing" || sipData?.callState === "answered"
+      );
     };
     const interval = setInterval(checkCallStatus, 500);
     return () => clearInterval(interval);
