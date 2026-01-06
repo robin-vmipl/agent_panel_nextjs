@@ -16,6 +16,7 @@ export default function Navbar() {
 
   const pageTitleMap: Record<string, string> = {
     "/dashboard": "Dashboard",
+    "/ctc": "Outbound Calls",
   };
 
   const dynamicTitle =

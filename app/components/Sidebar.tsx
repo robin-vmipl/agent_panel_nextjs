@@ -5,11 +5,11 @@ import { usePathname } from "next/navigation";
 import { logoutUser } from "../lib/auth";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Activity, User, Clock, Settings, LogOut } from "lucide-react";
+import { Activity, User, Clock, Settings, LogOut, Phone } from "lucide-react";
 
 const menuItems = [
   { name: "Dashboard", href: "/dashboard", icon: Activity },
-  // { name: "Click to Call", href: "/ctc", icon: Activity },
+  { name: "Click to Call", href: "/ctc", icon: Phone },
 ];
 
 export default function Sidebar() {
