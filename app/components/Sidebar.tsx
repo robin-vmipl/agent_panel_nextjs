@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutUser } from "../lib/auth";
@@ -19,7 +18,6 @@ export default function Sidebar() {
   useEffect(() => {
     const checkCallStatus = () => {
       const sipData = (window as any).SIP_CALL_DATA;
-      // 🔥 Use SIP states directly
       setIsInCall(
         sipData?.callState === "ringing" || sipData?.callState === "answered"
       );
@@ -27,6 +25,14 @@ export default function Sidebar() {
     const interval = setInterval(checkCallStatus, 500);
     return () => clearInterval(interval);
   }, []);
+
+  const handleMenuClick = (href: string) => {
+    if (isInCall) {
+      toast.error("📞 End call before switching pages!");
+      return false; // Prevent navigation
+    }
+    return true; // Allow navigation
+  };
 
   const handleLogout = () => {
     if (isInCall) {
@@ -39,7 +45,7 @@ export default function Sidebar() {
   return (
     <>
       {/* 🔥 FIXED SIDEBAR OVERLAY - MOBILE */}
-      <div className="lg:hidden fixed inset-0 bg-black/50 z-99 backdrop-blur-sm" />
+      <div className="lg:hidden fixed inset-0 bg-black/50" />
 
       {/* 🔥 FIXED SIDEBAR */}
       <aside className="w-64 h-screen bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border-r border-slate-700/50 shadow-2xl flex flex-col fixed z-100 lg:z-50 lg:relative transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
@@ -57,25 +63,37 @@ export default function Sidebar() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
+            const isDisabled = isInCall;
+
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`group flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
-                  isActive
-                    ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-semibold"
-                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
-                }`}
-              >
-                <Icon
-                  className={`w-5 h-5 ${
+              <div key={item.href} className="block">
+                <Link
+                  href={item.href}
+                  onClick={(e) => {
+                    if (isDisabled && !handleMenuClick(item.href)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className={`group flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 w-full ${
                     isActive
-                      ? "text-emerald-400"
-                      : "group-hover:text-emerald-400"
+                      ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-semibold"
+                      : isDisabled
+                      ? "bg-slate-700/60 opacity-70 cursor-not-allowed text-slate-500"
+                      : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                   }`}
-                />
-                <span>{item.name}</span>
-              </Link>
+                >
+                  <Icon
+                    className={`w-5 h-5 shrink-0 ${
+                      isActive
+                        ? "text-emerald-400"
+                        : isDisabled
+                        ? "text-slate-500"
+                        : "group-hover:text-emerald-400"
+                    }`}
+                  />
+                  <span className="truncate">{item.name}</span>
+                </Link>
+              </div>
             );
           })}
         </nav>
@@ -84,7 +102,7 @@ export default function Sidebar() {
           <button
             onClick={handleLogout}
             disabled={isInCall}
-            className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200  ${
+            className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
               isInCall
                 ? "bg-slate-700/60 opacity-70 cursor-not-allowed"
                 : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20 cursor-pointer"

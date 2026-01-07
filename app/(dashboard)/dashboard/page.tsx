@@ -18,10 +18,13 @@ import {
   ActivitySkeleton,
   ChartSkeleton,
 } from "../../components/ui/DashboardSkeleton";
+import { useAgentStatus } from "@/app/utils/useAgentStatus";
 
 const fetcher = (url: string) => apiFetch(url);
 
 export default function DashboardPage() {
+  useAgentStatus(); // CUSTOM HOOK FOR AGENT STATUS UPDATES
+
   const { data, error, isLoading } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/agent/activity-report`,
     fetcher,

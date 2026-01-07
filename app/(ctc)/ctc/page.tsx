@@ -11,8 +11,11 @@ import ManualDialSkeleton from "@/app/components/ui/ManualDialSkeleton";
 import MissedCallsSkeleton from "@/app/components/ui/MissedCallsSkeleton";
 import AssignedCampaignsSkeleton from "@/app/components/ui/AssignedCampaignsSkeleton";
 import AutoDialerSkeleton from "@/app/components/ui/AutoDialerSkeleton";
+import { useAgentStatus } from "@/app/utils/useAgentStatus";
 
 export default function CTCPage() {
+  useAgentStatus(); // CUSTOM HOOK FOR AGENT STATUS UPDATES
+
   const [agentConfig, setAgentConfig] = useState<any>(null);
   const [missedCalls, setMissedCalls] = useState<any[]>([]);
   const [tableLoading, setTableLoading] = useState(true);
