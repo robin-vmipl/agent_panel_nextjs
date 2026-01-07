@@ -5,11 +5,15 @@ import { apiFetch } from "@/app/lib/api";
 import toast from "react-hot-toast";
 import ManualDial from "@/app/components/ctc/ManualDial";
 import MissedCallsTable from "@/app/components/ctc/MissedCallsTable";
+import AssignedCampaigns from "@/app/components/ctc/AssignedCampaigns";
+import AutoCampaignDialer from "@/app/components/ctc/AutoCampaignDialer";
 
 export default function CTCPage() {
   const [agentConfig, setAgentConfig] = useState<any>(null);
   const [missedCalls, setMissedCalls] = useState<any[]>([]);
   const [tableLoading, setTableLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [dialerCampaigns, setDialerCampaigns] = useState<any[]>([]);
 
   useEffect(() => {
     loadData();
@@ -19,10 +23,12 @@ export default function CTCPage() {
     setTableLoading(true);
     try {
       const data = await apiFetch(
-        `https://krph.csccloud.in/api/agent/ctc-data`
+        `${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-data`
       );
       setAgentConfig(data);
       setMissedCalls(data.missed_calls || []);
+      setCampaigns(data.campaigns || []);
+      setDialerCampaigns(data.dialer_campaigns || []);
       console.log("Loaded missed calls:", data.missed_calls?.length);
     } catch (error) {
       console.error("CTC Data error:", error);
@@ -83,6 +89,13 @@ export default function CTCPage() {
           missedCalls={missedCalls}
           loading={tableLoading}
           onCallDialed={handleCallDialed}
+        />
+
+        <AssignedCampaigns agentConfig={agentConfig} campaigns={campaigns} />
+
+        <AutoCampaignDialer
+          agentConfig={agentConfig}
+          dialerCampaigns={dialerCampaigns}
         />
       </div>
     </div>

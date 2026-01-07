@@ -33,7 +33,7 @@ export default function ManualDial({
       });
 
       await apiFetch(
-        `https://krph.csccloud.in/api/agent/click-to-call?${params.toString()}`
+        `${process.env.NEXT_PUBLIC_API_URL}/agent/click-to-call?${params.toString()}`
       );
       toast.success(`Calling ${phonenumber.slice(-4)}...`);
       setPhonenumber("");

@@ -40,7 +40,7 @@ export default function MissedCallsTable({
 
     try {
       const response = await apiFetch(
-        `https://krph.csccloud.in/api/agent/missed-call-dial`,
+        `${process.env.NEXT_PUBLIC_API_URL}/agent/missed-call-dial`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
