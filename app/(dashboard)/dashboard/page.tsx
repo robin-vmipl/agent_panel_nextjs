@@ -35,19 +35,18 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* 🔥 COMBINED SUMMARY + ACTIVITY - SINGLE BLACKISH CONTAINER */}
+      {/* 🔥 BACKGROUND: SLATE */}
       {isLoading ? (
-        <div className="bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-3xl p-8 rounded-3xl border-2 border-white/10 shadow-2xl shadow-emerald-500/20 ring-2 ring-white/5 overflow-hidden relative">
+        <div className="bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-3xl p-8 rounded-3xl border-2 border-white/10 shadow-2xl shadow-slate-500/20 ring-2 ring-white/5 overflow-hidden relative">
           <SummarySkeleton />
           <ActivitySkeleton />
         </div>
       ) : (
-        <div className="bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-3xl p-8 rounded-3xl border-2 border-white/10 shadow-2xl shadow-emerald-500/20 ring-2 ring-white/5 overflow-hidden relative">
-          {/* 🔥 VIBRANT GLOW BACKGROUND */}
-          <div className="absolute inset-0 bg-linear-to-br from-emerald-400/10 via-transparent to-purple-400/10 blur-xl -z-10" />
+        <div className="bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-3xl p-8 rounded-3xl border-2 border-white/10 shadow-2xl shadow-slate-500/20 ring-2 ring-white/5 overflow-hidden relative">
+          <div className="absolute inset-0 bg-linear-to-br from-slate-500/10 via-slate-400/5 to-slate-600/10 blur-xl -z-10" />
 
           <div className="relative z-20 space-y-8">
-            {/* SUMMARY CARDS */}
+            {/* SUMMARY CARDS - EMERALD/TEAL 1-1 PAIR */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <Card
                 title="Answered Calls"
@@ -59,23 +58,23 @@ export default function DashboardPage() {
                 title="Dropped Calls"
                 value={data.summary.dropped}
                 icon={<Phone className="w-5 h-5" />}
-                color="rose"
+                color="teal"
               />
               <Card
                 title="Last Login"
                 value={data.summary.login}
                 icon={<Clock className="w-5 h-5" />}
-                color="blue"
+                color="emerald"
               />
               <Card
                 title="Last Logout"
                 value={data.summary.logout}
                 icon={<Activity className="w-5 h-5" />}
-                color="purple"
+                color="teal"
               />
             </div>
 
-            {/* ACTIVITY CARDS */}
+            {/* ACTIVITY CARDS - EMERALD/TEAL 1-1 PAIR */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <TimeCard
                 title="Login Hours"
@@ -85,42 +84,39 @@ export default function DashboardPage() {
               <TimeCard
                 title="Active Hours"
                 value={data.activity.activeHour}
-                color="blue"
+                color="teal"
               />
               <TimeCard
                 title="Idle Hours"
                 value={data.activity.idleHour}
-                color="amber"
+                color="emerald"
               />
               <TimeCard
                 title="Break Hours"
                 value={data.activity.breakHour}
-                color="purple"
+                color="teal"
               />
               <TimeCard
                 title="Training Hours"
                 value={data.activity.trainingBreakHour}
-                color="indigo"
+                color="emerald"
               />
             </div>
           </div>
         </div>
       )}
 
-      {/* 🔥 CHART - COLORFUL MATCHING CARDS */}
+      {/* 🔥 CHART - EMERALD/TEAL BARS */}
       {isLoading ? (
         <ChartSkeleton />
       ) : (
-        <div className="bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-3xl p-6 rounded-3xl border-2 border-white/10 shadow-2xl shadow-emerald-500/20 ring-2 ring-white/5 overflow-hidden relative">
-          {/* 🔥 VIBRANT GLOW BACKGROUND */}
-          <div className="absolute inset-0 bg-linear-to-br from-emerald-400/10 via-transparent to-purple-400/10 blur-xl -z-10" />
+        <div className="bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-3xl p-6 rounded-3xl border-2 border-white/10 shadow-2xl shadow-slate-500/20 ring-2 ring-white/5 overflow-hidden relative">
+          <div className="absolute inset-0 bg-linear-to-br from-slate-500/10 via-slate-400/5 to-slate-600/10 blur-xl -z-10" />
 
-          {/* 🔥 GLOWING HEADER */}
           <div className="flex items-center justify-between mb-6 relative z-10">
-            <h2 className="text-xl font-black bg-linear-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-2xl">
+            <h2 className="text-xl font-black bg-linear-to-r from-emerald-300 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-2xl">
               📈 Last 7 Days Performance
             </h2>
-            {/* <div className="w-2.5 h-2.5 bg-linear-to-r from-emerald-400 to-blue-400 rounded-full shadow-lg ring-2 ring-white/30" /> */}
           </div>
 
           <ResponsiveContainer width="100%" height={320}>
@@ -140,9 +136,9 @@ export default function DashboardPage() {
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#10B981" stopOpacity={0.95} />
-                  <stop offset="40%" stopColor="#34D399" stopOpacity={0.9} />
-                  <stop offset="100%" stopColor="#059669" stopOpacity={0.4} />
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.9} />
+                  <stop offset="50%" stopColor="#34d399" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#059669" stopOpacity={0.5} />
                 </linearGradient>
                 <linearGradient
                   id="droppedGradient"
@@ -151,12 +147,11 @@ export default function DashboardPage() {
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#EF4444" stopOpacity={0.95} />
-                  <stop offset="40%" stopColor="#F87171" stopOpacity={0.9} />
-                  <stop offset="100%" stopColor="#DC2626" stopOpacity={0.4} />
+                  <stop offset="0%" stopColor="#EF4444" stopOpacity={0.9} />
+                  <stop offset="50%" stopColor="#F87171" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#DC2626" stopOpacity={0.5} />
                 </linearGradient>
               </defs>
-
               <XAxis
                 dataKey="date"
                 stroke="#94a3b8"
@@ -216,45 +211,42 @@ interface CardProps {
   title: string;
   value: string | number;
   icon: React.ReactNode;
-  color: "emerald" | "rose" | "blue" | "purple";
+  color: "emerald" | "teal";
 }
 
 interface TimeCardProps {
   title: string;
   value: string | number;
-  color: "emerald" | "blue" | "amber" | "purple" | "indigo";
+  color: "emerald" | "teal";
 }
 
 function Card({ title, value, icon, color }: CardProps) {
   const colors = {
-    emerald: "from-emerald-400/50 via-emerald-500/60 to-emerald-600/70",
-    rose: "from-rose-400/50 via-rose-500/60 to-rose-600/70",
-    blue: "from-blue-400/50 via-blue-500/60 to-blue-600/70",
-    purple: "from-purple-400/50 via-purple-500/60 to-purple-600/70",
+    emerald:
+      "bg-emerald-500/20 border border-emerald-500/40 hover:bg-emerald-500/30 text-emerald-300 ring-emerald-500/20",
+    teal: "bg-teal-500/20 border border-teal-500/40 hover:bg-teal-500/30 text-teal-300 ring-teal-500/20",
   } as Record<CardProps["color"], string>;
 
   return (
     <div
-      className={`group bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl p-4 rounded-xl border-2 border-white/10 shadow-xl hover:shadow-[0_0_25px_rgba(16,185,129,0.25)] hover:-translate-y-1 transition-all duration-400 cursor-pointer relative overflow-hidden ${colors[color]} ring-1 ring-white/5`}
+      className={`group relative bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl p-4 rounded-xl border-2 border-white/10 shadow-xl hover:shadow-emerald-500/25 hover:-translate-y-1 transition-all duration-400 cursor-pointer overflow-hidden ring-1 ring-white/5 ${colors[color]}`}
     >
-      <div className="absolute inset-0 bg-linear-to-r from-emerald-400/20 via-white/10 to-blue-400/20 opacity-0 group-hover:opacity-100 -skew-x-12 -translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700 blur-xs -z-10" />
+      <div className="absolute inset-0 bg-linear-to-r from-emerald-400/20 via-teal-400/10 to-emerald-400/20 opacity-0 group-hover:opacity-100 -skew-x-12 -translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700 blur-xs -z-10" />
 
       <div className="relative z-10 text-center space-y-3 h-full flex flex-col justify-center">
-        {/* 🔥 ICON CONTAINER - SAME AS TIMECARD */}
         <div
-          className={`w-16 h-16 mx-auto ${colors[color]} rounded-2xl border-2 border-white/30 flex items-center justify-center shadow-xl group-hover:border-emerald-400/60 group-hover:shadow-emerald-400/40 group-hover:scale-105 transition-all duration-500 backdrop-blur-xl ring-2 ring-white/20`}
+          className={`w-16 h-16 mx-auto ${colors[color]} rounded-2xl border-2 border-white/30 flex items-center justify-center shadow-xl group-hover:border-white/50 group-hover:shadow-lg group-hover:scale-105 transition-all duration-500 backdrop-blur-xl ring-2 ring-white/20`}
         >
           <div className="drop-shadow-xl">{icon}</div>
         </div>
 
-        {/* 🔥 VALUE + TITLE - SAME AS TIMECARD */}
         <div className="space-y-1">
-          <p className="text-xl font-black text-white drop-shadow-xl">
+          <p className="text-sm font-black text-white drop-shadow-xl">
+            {" "}
+            {/* Smaller: text-sm */}
             {value}
           </p>
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-wide">
-            {title}
-          </p>
+          <p className="text-xs font-bold uppercase tracking-wide">{title}</p>
         </div>
       </div>
     </div>
@@ -263,53 +255,42 @@ function Card({ title, value, icon, color }: CardProps) {
 
 function TimeCard({ title, value, color }: TimeCardProps) {
   const colors = {
-    emerald: "from-emerald-400/50 via-emerald-500/60 to-emerald-600/70",
-    blue: "from-blue-400/50 via-blue-500/60 to-blue-600/70",
-    amber: "from-amber-400/50 via-amber-500/60 to-amber-600/70",
-    purple: "from-purple-400/50 via-purple-500/60 to-purple-600/70",
-    indigo: "from-indigo-400/50 via-indigo-500/60 to-indigo-600/70",
+    emerald:
+      "bg-emerald-500/20 border border-emerald-500/40 hover:bg-emerald-500/30 text-emerald-300 ring-emerald-500/20",
+    teal: "bg-teal-500/20 border border-teal-500/40 hover:bg-teal-500/30 text-teal-300 ring-teal-500/20",
   } as Record<TimeCardProps["color"], string>;
 
   const getIcon = (color: TimeCardProps["color"]) => {
     switch (color) {
       case "emerald":
-        return <Clock className="w-5 h-5" />;
-      case "blue":
-        return <Activity className="w-5 h-5" />;
-      case "amber":
-        return <Clock className="w-5 h-5 rotate-12" />;
-      case "purple":
-        return <Clock className="w-5 h-5" />;
-      case "indigo":
-        return <Activity className="w-5 h-5" />;
+        return <Clock className="w-5 h-5 text-emerald-300" />;
+      case "teal":
+        return <Activity className="w-5 h-5 text-teal-300" />;
       default:
-        return <Clock className="w-5 h-5" />;
+        return <Clock className="w-5 h-5 text-emerald-300" />;
     }
   };
 
   return (
     <div
-      className={`group bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl p-4 rounded-xl border-2 border-white/10 shadow-xl hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:-translate-y-1 transition-all duration-400 cursor-pointer relative overflow-hidden ${colors[color]} ring-1 ring-white/5`}
+      className={`group relative bg-linear-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl p-4 rounded-xl border-2 border-white/10 shadow-xl hover:shadow-teal-500/25 hover:-translate-y-1 transition-all duration-400 cursor-pointer overflow-hidden ring-1 ring-white/5 ${colors[color]}`}
     >
-      {/* 🔥 VIBRANT GLOW - SAME AS CARD */}
-      <div className="absolute inset-0 bg-linear-to-br from-emerald-400/20 via-transparent to-blue-400/20 blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10" />
+      <div className="absolute inset-0 bg-linear-to-br from-emerald-400/20 via-teal-400/10 to-emerald-400/20 blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10" />
 
       <div className="relative z-10 text-center space-y-3 h-full flex flex-col justify-center">
-        {/* 🔥 ICON CONTAINER - IDENTICAL TO CARD */}
         <div
-          className={`p-3 rounded-xl ${colors[color]} border border-white/30 shadow-xl mx-auto w-16 h-16 flex items-center justify-center group-hover:scale-105 group-hover:shadow-emerald-400/40 group-hover:border-emerald-400/50 transition-all duration-400 backdrop-blur-xl ring-1 ring-white/20`}
+          className={`p-3 rounded-xl ${colors[color]} border border-white/30 shadow-xl mx-auto w-16 h-16 flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg group-hover:border-white/50 transition-all duration-400 backdrop-blur-xl ring-1 ring-white/20`}
         >
           <div className="drop-shadow-xl">{getIcon(color)}</div>
         </div>
 
-        {/* 🔥 VALUE + TITLE - IDENTICAL TO CARD */}
         <div className="space-y-1">
-          <p className="text-lg md:text-xl font-black text-white drop-shadow-xl">
+          <p className="text-sm font-black text-white drop-shadow-xl">
+            {" "}
+            {/* Smaller: text-sm */}
             {value}
           </p>
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-wide">
-            {title}
-          </p>
+          <p className="text-xs font-bold uppercase tracking-wide">{title}</p>
         </div>
       </div>
     </div>

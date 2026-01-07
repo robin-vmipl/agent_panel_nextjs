@@ -41,7 +41,7 @@ export default function MissedCallsSkeleton() {
                       <div className="h-4 w-16 bg-slate-700/60 rounded"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="w-full h-11 bg-linear-to-r from-orange-500/40 to-amber-500/40 rounded-xl"></div>
+                      <div className="w-full h-11 bg-linear-to-r from-emerald-500/40 to-emerald-500/40 rounded-xl"></div>
                     </td>
                   </tr>
                 ))}

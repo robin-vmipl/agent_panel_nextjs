@@ -2,7 +2,7 @@ export default function AutoDialerSkeleton() {
   return (
     <div className="animate-pulse">
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 bg-linear-to-r from-purple-500/30 to-pink-500/30 rounded-2xl"></div>
+        <div className="w-12 h-12 bg-linear-to-r from-orange-500/30 to-amber-500/30 rounded-2xl"></div>
         <div className="h-12 w-72 bg-linear-to-r from-slate-700/60 to-slate-600/60 rounded-2xl"></div>
       </div>
 
@@ -33,7 +33,7 @@ export default function AutoDialerSkeleton() {
                       <div className="h-5 w-32 bg-slate-700/60 rounded"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="w-32 h-11 bg-linear-to-r from-purple-600/40 to-pink-500/40 rounded-xl"></div>
+                      <div className="w-32 h-11 bg-linear-to-r from-orange-600/40 to-amber-500/40 rounded-xl"></div>
                     </td>
                   </tr>
                 ))}
