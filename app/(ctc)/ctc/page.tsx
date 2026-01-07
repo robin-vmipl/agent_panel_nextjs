@@ -7,6 +7,10 @@ import ManualDial from "@/app/components/ctc/ManualDial";
 import MissedCallsTable from "@/app/components/ctc/MissedCallsTable";
 import AssignedCampaigns from "@/app/components/ctc/AssignedCampaigns";
 import AutoCampaignDialer from "@/app/components/ctc/AutoCampaignDialer";
+import ManualDialSkeleton from "@/app/components/ui/ManualDialSkeleton";
+import MissedCallsSkeleton from "@/app/components/ui/MissedCallsSkeleton";
+import AssignedCampaignsSkeleton from "@/app/components/ui/AssignedCampaignsSkeleton";
+import AutoDialerSkeleton from "@/app/components/ui/AutoDialerSkeleton";
 
 export default function CTCPage() {
   const [agentConfig, setAgentConfig] = useState<any>(null);
@@ -14,12 +18,14 @@ export default function CTCPage() {
   const [tableLoading, setTableLoading] = useState(true);
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [dialerCampaigns, setDialerCampaigns] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
+    setIsLoading(true);
     setTableLoading(true);
     try {
       const data = await apiFetch(
@@ -35,10 +41,11 @@ export default function CTCPage() {
       toast.error("Failed to load agent data");
     } finally {
       setTableLoading(false);
+      setIsLoading(false);
     }
   };
 
-  // 🔥 CALLBACK - Remove dialed call from state
+  // CALLBACK - Remove dialed call from state
   const handleCallDialed = (dialedCallId: string) => {
     setMissedCalls((prev) => {
       const newCalls = prev.filter((call) => call.id !== dialedCallId);
@@ -49,6 +56,27 @@ export default function CTCPage() {
     });
   };
 
+  // SKELETON UI - Page refresh loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pb-12 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="max-w-6xl mx-auto px-6 pt-6">
+          <ManualDialSkeleton />
+          <div className="flex justify-end mt-4">
+            <div className="h-6 w-32 bg-slate-700/50 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto px-6 mt-12">
+          <MissedCallsSkeleton />
+          <AssignedCampaignsSkeleton />
+          <AutoDialerSkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  // 🔥 CLEAN MAIN UI
   return (
     <div className="min-h-screen pb-12 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="max-w-6xl mx-auto px-6 pt-6">

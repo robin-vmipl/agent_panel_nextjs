@@ -86,7 +86,9 @@ export default function AutoCampaignDialer({
       });
 
       const response1 = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/auto-campaign-dial?${params1.toString()}`
+        `${
+          process.env.NEXT_PUBLIC_API_URL
+        }/agent/auto-campaign-dial?${params1.toString()}`
       );
 
       if (response1.message.startsWith("01")) {
@@ -107,7 +109,9 @@ export default function AutoCampaignDialer({
         });
 
         await apiFetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/agent/auto-campaign-dial?${params2.toString()}`
+          `${
+            process.env.NEXT_PUBLIC_API_URL
+          }/agent/auto-campaign-dial?${params2.toString()}`
         );
 
         toast.success(
@@ -140,11 +144,11 @@ export default function AutoCampaignDialer({
     <div className="mt-12">
       <div className="bg-linear-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 bg-linear-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="w-12 h-12 bg-linear-to-r from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg">
             <Play className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold bg-linear-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
               Auto Campaign Dialer
             </h2>
             <p className="text-slate-400 mt-1">
@@ -157,7 +161,7 @@ export default function AutoCampaignDialer({
         <div className="bg-slate-900/50 rounded-2xl p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
             <select
-              className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white font-medium focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white font-medium focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
               value={selectedCampaign}
               onChange={(e) => setSelectedCampaign(e.target.value)}
             >
@@ -174,7 +178,7 @@ export default function AutoCampaignDialer({
               className={`px-8 py-3 font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 ${
                 loading || !selectedCampaign
                   ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
-                  : "bg-linear-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 hover:shadow-purple-500/50 hover:scale-[1.02] text-white"
+                  : "bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 hover:shadow-orange-500/50 hover:scale-[1.02] text-white"
               }`}
             >
               {tableLoading ? (
@@ -190,7 +194,7 @@ export default function AutoCampaignDialer({
         {/* Auto Campaign Table */}
         {tableLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-purple-400 mr-3" />
+            <Loader2 className="w-8 h-8 animate-spin text-orange-400 mr-3" />
             <span className="text-slate-400">
               Loading auto campaign data...
             </span>
@@ -217,9 +221,9 @@ export default function AutoCampaignDialer({
                     <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-35">
                       Number
                     </th>
-                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-40">
+                    {/* <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-40">
                       Start Time
-                    </th>
+                    </th> */}
                     <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-25">
                       Status
                     </th>
@@ -232,9 +236,6 @@ export default function AutoCampaignDialer({
                     <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-20">
                       Flag
                     </th>
-                    {/* <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-35">
-                      Updated
-                    </th> */}
                     <th className="px-4 py-4 text-center text-xs font-bold text-slate-300 uppercase tracking-wider w-32">
                       Action
                     </th>
@@ -251,9 +252,9 @@ export default function AutoCampaignDialer({
                         <td className="px-4 py-4 text-sm font-mono text-emerald-400 font-semibold">
                           {row.customer_number}
                         </td>
-                        <td className="px-4 py-4 text-sm text-slate-300">
+                        {/* <td className="px-4 py-4 text-sm text-slate-300">
                           {formatTime(row.start_time)}
-                        </td>
+                        </td> */}
                         <td className="px-4 py-4">
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -267,23 +268,20 @@ export default function AutoCampaignDialer({
                             {row.status}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-sm text-purple-400">
+                        <td className="px-4 py-4 text-sm text-orange-400">
                           {row.circle}
                         </td>
                         <td className="px-4 py-4 text-sm text-slate-300">
                           {formatTime(row.event_date)}
                         </td>
-                        <td className="px-4 py-4 text-sm font-medium text-blue-400">
+                        <td className="px-4 py-4 text-sm font-medium text-orange-400">
                           {row.flag}
                         </td>
-                        {/* <td className="px-4 py-4 text-sm text-slate-400">
-                          {formatTime(row.upd_time)}
-                        </td> */}
                         <td className="px-4 py-4">
                           <button
                             onClick={() => handleAutoDial(row)}
                             disabled={dialingCalls[rowKey]}
-                            className={`mx-auto px-6 py-2.5 bg-linear-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-purple-500/50 hover:scale-[1.02] transition-all text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 w-full group-hover:scale-[1.01]`}
+                            className="mx-auto px-6 py-2.5 bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-orange-500/50 hover:scale-[1.02] transition-all text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 w-full group-hover:scale-[1.01]"
                           >
                             {dialingCalls[rowKey] ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -293,7 +291,7 @@ export default function AutoCampaignDialer({
                             <span>
                               {dialingCalls[rowKey]
                                 ? "Dialing..."
-                                : "Auto Dial"}
+                                : "Dial"}
                             </span>
                           </button>
                         </td>
