@@ -71,7 +71,7 @@ export default function Sidebar({
         `}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-slate-700/50 shrink-0 flex items-center justify-center">
+        <div className="p-4 border-b border-slate-300/50 shrink-0 flex items-center justify-center">
           <img
             src="/logo.png"
             alt="Logo"

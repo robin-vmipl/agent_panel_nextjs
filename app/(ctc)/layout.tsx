@@ -9,7 +9,7 @@ export default function CTCLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen bg-linear-to-br from-slate-800/70 to-slate-900/70 text-foreground">
       {/* 🔥 FIXED SIDEBAR */}
       <Sidebar
         isMobileOpen={isMobileMenuOpen}
