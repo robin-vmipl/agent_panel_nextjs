@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import ChangePasswordModal from "./ChangePasswordModal";
 import { ChevronDown, Menu, ChevronLeft } from "lucide-react";
 import NavbarCrmButton from "./NavbarCrmButton";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar({
   onToggleMobileMenu,
@@ -93,6 +94,11 @@ export default function Navbar({
                     <MyIngroupsButton />
                   </div>
 
+                  {/* Theme toggle (mobile) */}
+                  <div className="p-3 rounded-xl hover:bg-slate-700/50 transition-colors">
+                    <ThemeToggle />
+                  </div>
+
                   {/* Divider */}
                   <div className="px-4 my-2">
                     <div className="h-px bg-linear-to-r from-transparent via-slate-700/50 to-transparent" />
@@ -134,6 +140,7 @@ export default function Navbar({
             <NavbarCrmButton />
             <StatusDropdown />
             <MyIngroupsButton />
+            <ThemeToggle />
 
             <button
               onClick={() => setOpenPasswordModal(true)}

@@ -87,14 +87,14 @@ export default function MissedCallsTable({
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mr-3" />
-        <span className="text-slate-400">Loading missed calls...</span>
+        <span className="text-muted">Loading missed calls...</span>
       </div>
     );
   }
 
   if (missedCalls.length === 0) {
     return (
-      <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-slate-900/30 backdrop-blur-sm p-12">
+      <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-panel backdrop-blur-sm p-12">
         <svg
           className="w-20 h-20 mx-auto mb-6 text-slate-500"
           fill="currentColor"
@@ -115,8 +115,8 @@ export default function MissedCallsTable({
   }
 
   return (
-    <div className="bg-linear-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl">
-      <div className="bg-slate-900/50 rounded-3xl overflow-x-auto">
+    <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl">
+      <div className="theme-panel rounded-3xl overflow-x-auto">
         <table className="w-full table-auto">
           <thead className="bg-slate-900/70 border-b border-slate-700/50">
             <tr>

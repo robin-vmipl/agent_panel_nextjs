@@ -94,7 +94,7 @@ export default function AssignedCampaigns({
 
   return (
     <div className="mt-12">
-      <div className="bg-linear-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
+      <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
         <div className="flex items-center gap-4 mb-8">
           <svg
             className="w-12 h-12 text-blue-400"
@@ -113,7 +113,7 @@ export default function AssignedCampaigns({
           </div>
         </div>
         {/* Campaign Selector */}
-        <div className="bg-slate-900/50 rounded-2xl p-6 mb-8">
+        <div className="theme-panel rounded-2xl p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
             <select
               className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white font-medium focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -170,8 +170,8 @@ export default function AssignedCampaigns({
             </p>
           </div>
         ) : (
-          <div className="bg-linear-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl overflow-hidden">
-            <div className="bg-slate-900/50 rounded-3xl overflow-x-auto">
+          <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl overflow-hidden">
+            <div className="theme-panel rounded-3xl overflow-x-auto">
               <table className="w-full table-auto">
                 <thead className="bg-slate-900/70 border-b border-slate-700/50">
                   <tr>
@@ -238,7 +238,7 @@ export default function AssignedCampaigns({
                         <button
                           onClick={() => handleDial(row)}
                           disabled={loading}
-                          className="mx-auto px-6 py-2.5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:scale-[1.02] transition-all text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 w-full group-hover:scale-[1.01]"
+                          className="theme-surface mx-auto px-6 py-2.5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:scale-[1.02] transition-all text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 w-full group-hover:scale-[1.01]"
                         >
                           {loading ? (
                             <Loader2 className="w-4 h-4 animate-spin" />

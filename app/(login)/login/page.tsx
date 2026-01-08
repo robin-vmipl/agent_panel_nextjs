@@ -89,7 +89,7 @@ export default function LoginPage() {
       {/* 🔥 MAIN LOGIN FORM - EXACT CHANGE PASSWORD STYLE */}
       <form
         onSubmit={handleLogin}
-        className="bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl w-full max-w-md mx-4 p-10 rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 relative z-10 overflow-hidden animate-[float_6s_ease-in-out_infinite]"
+        className="theme-panel bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl w-full max-w-md mx-4 p-10 rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 relative z-10 overflow-hidden animate-[float_6s_ease-in-out_infinite]"
       >
         {/* 🔥 BACKGROUND GLOW */}
         <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-purple-500/5 rounded-3xl blur-xl animate-pulse pointer-events-none -z-10" />

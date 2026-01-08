@@ -62,8 +62,8 @@ export default function Sidebar({
       {/* 🔥 SIDEBAR */}
       <aside
         className={`
-          w-64 h-screen bg-linear-to-b from-slate-900/95 to-slate-800/95 
-          backdrop-blur-xl border-r border-slate-700/50 shadow-2xl flex flex-col
+          w-64 h-screen theme-surface
+          border-r border-slate-700/50 shadow-2xl flex flex-col
           fixed inset-y-0 left-0 z-50
           lg:static lg:z-auto lg:translate-x-0
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
@@ -132,8 +132,8 @@ export default function Sidebar({
             disabled={isInCall}
             className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
               isInCall
-                ? "bg-slate-700/60 opacity-70 cursor-not-allowed text-slate-500"
-                : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20"
+                ? "bg-slate-700/60 opacity-70 cursor-not-allowed text-muted"
+                : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20 text-white"
             }`}
           >
             <LogOut className="w-5 h-5" />

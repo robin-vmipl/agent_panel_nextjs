@@ -142,10 +142,10 @@ export default function AutoCampaignDialer({
 
   return (
     <div className="mt-12">
-      <div className="bg-linear-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
+      <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 bg-linear-to-r from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg">
-            <Play className="w-6 h-6 text-white" />
+          <div className="w-12 h-12 bg-panel rounded-2xl flex items-center justify-center shadow-lg">
+            <Play className="w-6 h-6 text-foreground" />
           </div>
           <div>
             <h2 className="text-3xl font-bold bg-linear-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
@@ -158,7 +158,7 @@ export default function AutoCampaignDialer({
         </div>
 
         {/* Campaign Selector */}
-        <div className="bg-slate-900/50 rounded-2xl p-6 mb-8">
+        <div className="theme-panel rounded-2xl p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
             <select
               className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white font-medium focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
@@ -210,8 +210,8 @@ export default function AutoCampaignDialer({
             </p>
           </div>
         ) : (
-          <div className="bg-linear-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl overflow-hidden">
-            <div className="bg-slate-900/50 rounded-3xl overflow-x-auto">
+          <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl overflow-hidden">
+            <div className="theme-panel rounded-3xl overflow-x-auto">
               <table className="w-full table-auto">
                 <thead className="bg-slate-900/70 border-b border-slate-700/50">
                   <tr>
@@ -289,9 +289,7 @@ export default function AutoCampaignDialer({
                               <Phone className="w-4 h-4" />
                             )}
                             <span>
-                              {dialingCalls[rowKey]
-                                ? "Dialing..."
-                                : "Dial"}
+                              {dialingCalls[rowKey] ? "Dialing..." : "Dial"}
                             </span>
                           </button>
                         </td>

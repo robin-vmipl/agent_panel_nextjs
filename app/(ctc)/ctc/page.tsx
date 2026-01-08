@@ -65,7 +65,7 @@ export default function CTCPage() {
   // SKELETON UI - Page refresh loading
   if (isLoading) {
     return (
-      <div className="min-h-screen pb-12 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen pb-12 bg-background text-foreground">
         <div className="max-w-6xl mx-auto px-6 pt-6">
           <ManualDialSkeleton />
           <div className="flex justify-end mt-4">
@@ -84,12 +84,12 @@ export default function CTCPage() {
 
   // 🔥 CLEAN MAIN UI
   return (
-    <div className="min-h-screen pb-12 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen pb-12 bg-background text-foreground">
       <div className="max-w-6xl mx-auto px-6 pt-6">
         <ManualDial agentConfig={agentConfig} />
-        <div className="flex justify-end mt-4 text-xs text-slate-400">
+        <div className="flex justify-end mt-4 text-xs text-muted">
           Agent:{" "}
-          <span className="font-mono font-semibold text-white ml-1">
+          <span className="font-mono font-semibold text-foreground ml-1">
             {agentConfig?.agent_number}
           </span>
         </div>

@@ -52,13 +52,13 @@ export default function ManualDial({
     <div className={`w-full ${className}`}>
       {/* MOBILE: Stacked Layout */}
       <div className="block lg:hidden">
-        <div className="bg-linear-to-r from-slate-900/95 to-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl">
-          <div className="bg-slate-900/50 rounded-3xl p-3 space-y-3">
+        <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl">
+          <div className="theme-panel rounded-3xl p-3 space-y-3">
             {/* Input - Full Width */}
             <input
               type="text"
               maxLength={10}
-              className="w-full px-6 py-5 bg-transparent border-0 text-lg font-mono font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all rounded-2xl"
+              className="w-full px-6 py-5 bg-transparent border-0 text-lg font-mono font-bold text-foreground placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all rounded-2xl"
               placeholder="Enter 10-digit number"
               value={phonenumber}
               onChange={(e) =>
@@ -74,7 +74,7 @@ export default function ManualDial({
               className={`w-full py-5 px-8 font-bold text-lg flex items-center justify-center gap-3 rounded-2xl shadow-xl transition-all ${
                 isDisabled
                   ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
-                  : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] text-white"
+                  : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] btn-gradient"
               }`}
             >
               {loading ? (
@@ -90,12 +90,12 @@ export default function ManualDial({
 
       {/* DESKTOP: Original Side-by-Side (UNCHANGED) */}
       <div className="hidden lg:block">
-        <div className="bg-linear-to-r from-slate-900/95 to-slate-800/90 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl">
-          <div className="flex items-stretch bg-slate-900/50 rounded-3xl overflow-hidden">
+        <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl">
+          <div className="flex items-stretch theme-panel rounded-3xl overflow-hidden">
             <input
               type="text"
               maxLength={10}
-              className="flex-1 px-8 py-6 bg-transparent border-0 text-xl font-mono font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+              className="flex-1 px-8 py-6 bg-transparent border-0 text-xl font-mono font-bold text-foreground placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
               placeholder="Enter 10-digit number"
               value={phonenumber}
               onChange={(e) =>
@@ -109,7 +109,7 @@ export default function ManualDial({
               className={`px-10 py-6 font-bold text-lg flex items-center gap-3 whitespace-nowrap transition-all shadow-xl ${
                 isDisabled
                   ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
-                  : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] text-white"
+                  : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] btn-gradient"
               }`}
             >
               {loading ? (
