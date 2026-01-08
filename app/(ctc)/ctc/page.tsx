@@ -84,7 +84,9 @@ export default function CTCPage() {
 
   // CLEAN MAIN UI
   return (
-    <div className="min-h-screen pb-12 bg-background text-foreground pt-6 backdrop-blur-xl p-4 rounded-xl shadow-xl hover:shadow-teal-500/25">
+    <div
+      className={`group relative theme-card backdrop-blur-xl p-4 rounded-xl shadow-xl hover:shadow-teal-500/25 overflow-hidden ring-1 ring-white/5 min-h-screen pb-12 bg-background text-foreground pt-6`}
+    >
       <div className="max-w-6xl mx-auto px-6 pt-6">
         <ManualDial agentConfig={agentConfig} />
         <div className="flex justify-end mt-4 text-xs text-muted">
