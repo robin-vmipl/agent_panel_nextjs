@@ -12,9 +12,12 @@ import MissedCallsSkeleton from "@/app/components/ui/MissedCallsSkeleton";
 import AssignedCampaignsSkeleton from "@/app/components/ui/AssignedCampaignsSkeleton";
 import AutoDialerSkeleton from "@/app/components/ui/AutoDialerSkeleton";
 import { useAgentStatus } from "@/app/utils/useAgentStatus";
+import { useSipStatus } from "@/app/utils/useSipStatus";
 
 export default function CTCPage() {
-  useAgentStatus(); // CUSTOM HOOK FOR AGENT STATUS UPDATES
+  //CUSTOM HOOK FOR AGENT STATUS UPDATES
+  useAgentStatus(); // "C" flag
+  useSipStatus(); // Q/P/S flags (ignored for CTC)
 
   const [agentConfig, setAgentConfig] = useState<any>(null);
   const [missedCalls, setMissedCalls] = useState<any[]>([]);
