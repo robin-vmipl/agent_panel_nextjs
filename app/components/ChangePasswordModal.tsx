@@ -3,6 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { apiFetch } from "../lib/api";
+import { X } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -74,40 +75,57 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in duration-300">
-      {/* 🔥 FIXED GLASSMORPHISM MODAL */}
-      <div className="bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-2xl w-full max-w-md mx-4 rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 p-8 space-y-8 relative overflow-hidden animate-float">
-        {/* 🔥 BACKGROUND GLOW - FIXED */}
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in duration-300">
+      {/* BLUR ONLY MAIN CONTENT - NAVBAR & SIDEBAR STAY CRISP */}
+      <div className="fixed lg:left-64 left-0 right-0 top-20 bottom-0 backdrop-blur-sm bg-black/50 z-40" />
+
+      {/* MODAL - HIGHLIGHTED & SHARP */}
+      <div className="bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-2xl w-full max-w-md mx-auto rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 p-8 space-y-8 relative overflow-hidden animate-float z-50">
+        {/* BACKGROUND GLOW */}
         <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-purple-500/5 rounded-3xl blur-xl animate-pulse pointer-events-none -z-10" />
 
-        {/* 🔥 HEADER WITH ICON - FIXED */}
-        <div className="text-center space-y-4 pt-2 relative z-10">
-          <div className="w-20 h-20 mx-auto bg-linear-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl border-4 border-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl">
-            <svg
-              className="w-12 h-12 text-white drop-shadow-lg"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-3xl font-black bg-linear-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
-              Change Password
-            </h2>
-            <p className="text-slate-400 text-sm mt-1 font-medium tracking-wide">
-              Secure your account with a new password
-            </p>
+        {/* HEADER WITH X CLOSE BUTTON */}
+        <div className="relative z-10">
+          {/* X CLOSE BUTTON - RESPONSIVE TOP RIGHT CORNER */}
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="absolute top-4 right-4 w-10 h-10 sm:w-12 sm:h-12 bg-slate-900/90 hover:bg-slate-800/90 border-2 border-slate-600/50 rounded-3xl flex items-center justify-center shadow-2xl hover:shadow-slate-500/30 hover:scale-105 transition-all duration-200 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed z-60 group"
+            title="Close"
+          >
+            <X className="w-5 h-5 sm:w-6 sm:h-6 text-slate-300 group-hover:text-white transition-colors" />
+          </button>
+
+          {/* HEADER CONTENT */}
+          <div className="text-center space-y-4 pt-16 sm:pt-12 pr-14 sm:pr-16 relative z-10">
+            <div className="w-20 h-20 mx-auto bg-linear-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl border-4 border-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl">
+              <svg
+                className="w-12 h-12 text-white drop-shadow-lg"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black bg-linear-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
+                Change Password
+              </h2>
+              <p className="text-slate-400 text-sm mt-1 font-medium tracking-wide">
+                Secure your account with a new password
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* 🔥 FORM - FULLY FUNCTIONAL */}
+        {/* FORM */}
         <form
           onSubmit={handleChangePassword}
           className="space-y-6 relative z-20"
@@ -286,7 +304,7 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
             </button>
           </div>
 
-          {/* 🔥 FIXED BEAUTIFUL BUTTONS */}
+          {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4 relative z-20">
             <button
               type="button"
