@@ -144,6 +144,8 @@ export default function CallWidget() {
   const [loading, setLoading] = useState(false);
   const [hasOpenedCrm, setHasOpenedCrm] = useState(false);
 
+  const [isCtcCall, setIsCtcCall] = useState(false); // NEW STATE FOR CTC CALLS
+
   const durationRef = useRef(0);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const callStateCheckRef = useRef<NodeJS.Timeout | null>(null);
@@ -359,11 +361,17 @@ export default function CallWidget() {
         setSipStatus("Disconnected");
       }
 
-      // 🔥 USE GLOBAL SIP DATA INSTEAD OF DOM PARSING
+      // USE GLOBAL SIP DATA INSTEAD OF DOM PARSING
       const sipData = (window as any).SIP_CALL_DATA;
       if (sipData?.currentIncomingNumber) {
         setIncomingNumber(sipData.currentIncomingNumber);
       }
+
+      // CTC PAGE DETECTION - CHECK LOADED SCRIPT
+      const sipScript = Array.from(document.querySelectorAll("script")).find(
+        (script) => script.src?.includes("demo-1-ctc")
+      );
+      setIsCtcCall(!!sipScript); // true = CTC, false = Dashboard
     };
 
     callStateCheckRef.current = setInterval(checkStatus, 200);
@@ -445,10 +453,8 @@ export default function CallWidget() {
 
   return (
     <>
-      {/* 🔥 YOUR ORIGINAL SIP HTML - 100% UNCHANGED */}
       {SIP_HTML}
 
-      {/* 🔥 WEBPHONE COMPONENTS - 20 LINES ONLY! */}
       <WebPhoneToggle
         isInCall={isInCall}
         open={open}
@@ -477,6 +483,7 @@ export default function CallWidget() {
         closeTransfer={closeTransfer}
         selectGroup={selectGroup}
         handleTransfer={handleTransfer}
+        isCtcCall={isCtcCall}
       />
     </>
   );

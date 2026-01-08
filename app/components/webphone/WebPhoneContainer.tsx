@@ -25,10 +25,11 @@ interface Props {
   closeTransfer: () => void;
   selectGroup: (group: string) => void;
   handleTransfer: () => void;
+  isCtcCall?: boolean;
 }
 
 export const WebPhoneContainer = (props: Props) => {
-  const { isInCall, open, ...rest } = props;
+  const { isInCall, open, isCtcCall, ...rest } = props;
 
   if (!isInCall) return null;
 
@@ -58,6 +59,7 @@ export const WebPhoneContainer = (props: Props) => {
           handleHangup={props.handleHangup}
           handleTransferClick={props.handleTransferClick}
           handleFeedback={props.handleFeedback}
+          isCtcCall={isCtcCall}
         />
       </div>
 
