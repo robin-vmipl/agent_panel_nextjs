@@ -69,7 +69,7 @@ export default function NavbarCrmButton() {
   // HIDE BUTTON - SHOW PLACEHOLDER
   if (!showButton) {
     return (
-      <div className="w-30 h-10 bg-slate-800/50 rounded-2xl animate-pulse opacity-30" />
+      <div className="w-30 h-10 rounded-2xl animate-pulse opacity-30" />
     );
   }
 
