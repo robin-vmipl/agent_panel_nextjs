@@ -1,51 +1,98 @@
+"use client";
+
+import toast from "react-hot-toast";
+
 interface ApiFetchOptions extends RequestInit {
   /**
    * If true, don't trigger logout on 401.
-   * Used for /me auth checks where 401 is expected when not logged in.
+   * Used for /me auth checks where 401 is expected.
    */
   skipLogoutOn401?: boolean;
+
+  /**
+   * If false, suppress toast errors (useful for silent polling)
+   */
+  showToast?: boolean;
 }
 
-export async function apiFetch(url: string, options: ApiFetchOptions = {}) {
-  const { skipLogoutOn401 = false, ...fetchOptions } = options;
+let isHandlingLogout = false;
 
-  const res = await fetch(url, {
-    ...fetchOptions,
-    credentials: "include", // Include cookies in requests
-    headers: {
-      "Content-Type": "application/json",
-      ...fetchOptions.headers,
-    },
-  });
+export async function apiFetch(
+  url: string,
+  options: ApiFetchOptions = {}
+) {
+  const {
+    skipLogoutOn401 = false,
+    showToast = true,
+    ...fetchOptions
+  } = options;
 
-  let data;
+  /* 🌐 OFFLINE DETECTION */
+  if (typeof window !== "undefined" && !navigator.onLine) {
+    if (showToast) {
+      toast.error("You are offline. Please check your internet connection.");
+    }
+    throw new Error("Offline");
+  }
+
+  let res: Response;
+
+  try {
+    res = await fetch(url, {
+      ...fetchOptions,
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...fetchOptions.headers,
+      },
+    });
+  } catch (error) {
+    if (showToast) {
+      toast.error("Unable to reach server. Please try again.");
+    }
+    throw new Error("Network error");
+  }
+
+  let data: any = null;
   try {
     data = await res.json();
   } catch {
-    data = null;
+    /* ignore JSON parse errors */
   }
 
-  // Unauthorized → clear cookie and force logout
+  /* 🔐 UNAUTHORIZED */
   if (res.status === 401) {
-    // Only trigger logout if this isn't an expected 401 (like /me check on login page)
-    if (!skipLogoutOn401) {
-      // Dispatch a global logout event so client state can be cleared centrally
-      // Browser will clear the httpOnly cookie via Set-Cookie header from server
+    if (!skipLogoutOn401 && !isHandlingLogout) {
+      isHandlingLogout = true;
+
+      if (showToast) {
+        toast.error("Session expired. Please login again.");
+      }
+
       try {
         window.dispatchEvent(new Event("nextjs:logout"));
-      } catch (e) {
-        // fallback
-        window.location.href = "/login";
+      } finally {
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 800);
       }
     }
+
     throw new Error("Session expired");
   }
 
-  // Any other API error
+  /* ❌ OTHER API ERRORS */
   if (!res.ok) {
-    throw new Error(data?.message || "Something went wrong");
+    const message =
+      data?.message || data?.error || "Something went wrong";
+
+    if (showToast) {
+      toast.error(message);
+    }
+
+    throw new Error(message);
   }
 
-  // ✅ Success
+  /* ✅ SUCCESS */
   return data;
 }

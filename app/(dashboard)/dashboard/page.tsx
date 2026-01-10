@@ -30,13 +30,26 @@ export default function DashboardPage() {
   const { data, error, isLoading } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/agent/activity-report`,
     fetcher,
-    { refreshInterval: 30000, revalidateOnFocus: false }
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: false,
+      shouldRetryOnError: (err) => err.message !== "Offline",
+    }
   );
 
-  if (error)
+  if (error) {
     return (
-      <p className="text-red-400 p-8 text-center">Failed to load dashboard</p>
+      <div className="theme-surface backdrop-blur-3xl p-8 rounded-3xl border border-red-500/30">
+        <p className="text-red-400 font-semibold">
+          ⚠ Unable to load dashboard data
+        </p>
+        <p></p>
+        <p className="text-slate-400 text-sm mt-2">
+          Please check your connection or try again shortly.
+        </p>
+      </div>
     );
+  }
 
   return (
     <div className="space-y-6">
@@ -78,11 +91,31 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <TimeCard title="Login Hours" value={data.activity.loginHour} color="emerald" />
-              <TimeCard title="Active Hours" value={data.activity.activeHour} color="teal" />
-              <TimeCard title="Idle Hours" value={data.activity.idleHour} color="emerald" />
-              <TimeCard title="Break Hours" value={data.activity.breakHour} color="teal" />
-              <TimeCard title="Training Hours" value={data.activity.trainingBreakHour} color="emerald" />
+              <TimeCard
+                title="Login Hours"
+                value={data.activity.loginHour}
+                color="emerald"
+              />
+              <TimeCard
+                title="Active Hours"
+                value={data.activity.activeHour}
+                color="teal"
+              />
+              <TimeCard
+                title="Idle Hours"
+                value={data.activity.idleHour}
+                color="emerald"
+              />
+              <TimeCard
+                title="Break Hours"
+                value={data.activity.breakHour}
+                color="teal"
+              />
+              <TimeCard
+                title="Training Hours"
+                value={data.activity.trainingBreakHour}
+                color="emerald"
+              />
             </div>
           </div>
         </div>
@@ -110,20 +143,45 @@ export default function DashboardPage() {
               margin={{ top: 15, right: 20, left: 0, bottom: 5 }}
             >
               <defs>
-                <linearGradient id="answeredGradient" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient
+                  id="answeredGradient"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
                   <stop offset="0%" stopColor="#10b981" stopOpacity={0.9} />
                   <stop offset="50%" stopColor="#34d399" stopOpacity={0.8} />
                   <stop offset="100%" stopColor="#059669" stopOpacity={0.5} />
                 </linearGradient>
-                <linearGradient id="droppedGradient" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient
+                  id="droppedGradient"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
                   <stop offset="0%" stopColor="#EF4444" stopOpacity={0.9} />
                   <stop offset="50%" stopColor="#F87171" stopOpacity={0.8} />
                   <stop offset="100%" stopColor="#DC2626" stopOpacity={0.5} />
                 </linearGradient>
               </defs>
 
-              <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} fontWeight={600} tickLine={false} axisLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={12} fontWeight={500} tickLine={false} axisLine={false} />
+              <XAxis
+                dataKey="date"
+                stroke="#94a3b8"
+                fontSize={12}
+                fontWeight={600}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="#94a3b8"
+                fontSize={12}
+                fontWeight={500}
+                tickLine={false}
+                axisLine={false}
+              />
 
               <Tooltip
                 contentStyle={{
@@ -139,10 +197,26 @@ export default function DashboardPage() {
                 }}
               />
 
-              <Legend wrapperStyle={{ paddingTop: "16px" }} iconSize={12} iconType="circle" />
+              <Legend
+                wrapperStyle={{ paddingTop: "16px" }}
+                iconSize={12}
+                iconType="circle"
+              />
 
-              <Bar dataKey="answered" name="Answered" fill="url(#answeredGradient)" barSize={28} radius={[8, 8, 0, 0]} />
-              <Bar dataKey="dropped" name="Dropped" fill="url(#droppedGradient)" barSize={28} radius={[8, 8, 0, 0]} />
+              <Bar
+                dataKey="answered"
+                name="Answered"
+                fill="url(#answeredGradient)"
+                barSize={28}
+                radius={[8, 8, 0, 0]}
+              />
+              <Bar
+                dataKey="dropped"
+                name="Dropped"
+                fill="url(#droppedGradient)"
+                barSize={28}
+                radius={[8, 8, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -173,16 +247,23 @@ function Card({ title, value, icon, color }: CardProps) {
   };
 
   return (
-    <div className={`group relative theme-card backdrop-blur-xl p-4 rounded-xl shadow-xl hover:shadow-emerald-500/25 hover:-translate-y-1 transition-all duration-400 cursor-pointer overflow-hidden ring-1 ring-white/5 ${colors[color]}`}>
+    <div
+      className={`group relative theme-card backdrop-blur-xl p-4 rounded-xl shadow-xl hover:shadow-emerald-500/25 hover:-translate-y-1 transition-all duration-400 cursor-pointer overflow-hidden ring-1 ring-white/5 ${colors[color]}`}
+    >
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 -skew-x-12 -translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700 blur-xs -z-10" />
 
       <div className="relative z-10 text-center space-y-3 h-full flex flex-col justify-center">
-        <div className={`w-16 h-16 mx-auto card-badge rounded-2xl border-2 border-white/30 flex items-center justify-center shadow-xl group-hover:border-white/50 group-hover:shadow-lg group-hover:scale-105 transition-all duration-500 backdrop-blur-xl ring-2 ring-white/20`}>
+        <div
+          className={`w-16 h-16 mx-auto card-badge rounded-2xl border-2 border-white/30 flex items-center justify-center shadow-xl group-hover:border-white/50 group-hover:shadow-lg group-hover:scale-105 transition-all duration-500 backdrop-blur-xl ring-2 ring-white/20`}
+        >
           <div className="drop-shadow-xl">{icon}</div>
         </div>
 
         <div className="space-y-1">
-          <p className="text-sm font-black" style={{ color: "var(--foreground)" }}>
+          <p
+            className="text-sm font-black"
+            style={{ color: "var(--foreground)" }}
+          >
             {value}
           </p>
           <p className="text-xs font-bold uppercase tracking-wide">{title}</p>
@@ -210,16 +291,23 @@ function TimeCard({ title, value, color }: TimeCardProps) {
   };
 
   return (
-    <div className={`group relative theme-card backdrop-blur-xl p-4 rounded-xl shadow-xl hover:shadow-teal-500/25 hover:-translate-y-1 transition-all duration-400 cursor-pointer overflow-hidden ring-1 ring-white/5 ${colors[color]}`}>
+    <div
+      className={`group relative theme-card backdrop-blur-xl p-4 rounded-xl shadow-xl hover:shadow-teal-500/25 hover:-translate-y-1 transition-all duration-400 cursor-pointer overflow-hidden ring-1 ring-white/5 ${colors[color]}`}
+    >
       <div className="absolute inset-0 blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10" />
 
       <div className="relative z-10 text-center space-y-3 h-full flex flex-col justify-center">
-        <div className={`p-3 rounded-xl card-badge border border-white/30 shadow-xl mx-auto w-16 h-16 flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg group-hover:border-white/50 transition-all duration-400 backdrop-blur-xl ring-1 ring-white/20`}>
+        <div
+          className={`p-3 rounded-xl card-badge border border-white/30 shadow-xl mx-auto w-16 h-16 flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg group-hover:border-white/50 transition-all duration-400 backdrop-blur-xl ring-1 ring-white/20`}
+        >
           <div className="drop-shadow-xl">{getIcon(color)}</div>
         </div>
 
         <div className="space-y-1">
-          <p className="text-sm font-black" style={{ color: "var(--foreground)" }}>
+          <p
+            className="text-sm font-black"
+            style={{ color: "var(--foreground)" }}
+          >
             {value}
           </p>
           <p className="text-xs font-bold uppercase tracking-wide">{title}</p>

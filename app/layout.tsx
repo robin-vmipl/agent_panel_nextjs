@@ -26,9 +26,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        {/* ✅ SIP LEGACY STYLES */}
+        {/* SIP styles (only enable if needed) */}
         {/* <link rel="stylesheet" href="/sip/demo-1.css" /> */}
         {/* <link rel="stylesheet" href="/sip/style.css" /> */}
       </head>
@@ -36,8 +36,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* 🌗 Prevent theme flash */}
         <ThemeInitializer />
-        <Toaster position="top-right" />
+
+        {/* 🔔 Global Toasts */}
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#020617",
+              color: "#f8fafc",
+              borderRadius: "12px",
+              border: "1px solid rgba(255,255,255,0.1)",
+            },
+          }}
+        />
+
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

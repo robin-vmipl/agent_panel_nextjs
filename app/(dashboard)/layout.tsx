@@ -4,12 +4,15 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import CallWidget from "../components/ui/CallWidget";
 import SipMount from "../components/ui/SipMount";
+import { ErrorBoundary } from "../components/ErrorBoundary";
+import { useOffline } from "../utils/useOffline";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  useOffline();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -28,8 +31,15 @@ export default function DashboardLayout({
 
         <main className="flex-1 overflow-y-auto p-6 lg:p-8 relative">
           {children}
-          <SipMount />
-          <CallWidget />
+          <ErrorBoundary
+            fallback={<div className="text-yellow-400">SIP offline</div>}
+          >
+            <SipMount />
+          </ErrorBoundary>
+
+          <ErrorBoundary fallback={null}>
+            <CallWidget />
+          </ErrorBoundary>
         </main>
       </div>
     </div>
