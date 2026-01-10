@@ -1,6 +1,6 @@
 export default function AssignedCampaignsSkeleton() {
   return (
-    <div className="animate-pulse mb-12">
+    <div className="animate-pulse mb-12 mt-8">
       <div className="flex items-center gap-4 mb-8">
         <div className="w-12 h-12 bg-linear-to-r from-blue-500/30 to-cyan-500/30 rounded-2xl"></div>
         <div className="h-12 w-72 bg-linear-to-r from-slate-700/60 to-slate-600/60 rounded-2xl"></div>

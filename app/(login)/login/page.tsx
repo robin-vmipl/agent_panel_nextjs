@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
+import { logoutUser } from "@/app/lib/auth";
 
 export default function LoginPage() {
   const { setUser } = useAuth();
@@ -39,20 +40,56 @@ export default function LoginPage() {
         }
       );
 
+      //  API unreachable / server crashed
+      if (!res.ok) {
+        let message = "Login failed";
+
+        try {
+          const data = await res.json();
+          message = data?.message || message;
+        } catch {
+          message = "Server unreachable. Please try again.";
+        }
+
+        //  Invalid session / auth mismatch
+        if (res.status === 401 || res.status === 419) {
+          throw new Error("Invalid credentials or session expired");
+        }
+
+        throw new Error(message);
+      }
+
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
+      // Backend did not return user
+      if (!data?.user) {
+        throw new Error("Invalid login response from server");
       }
 
       setUser(data.user);
       router.replace("/dashboard");
     } catch (err: any) {
-      setError(err.message);
+      console.error("Login error:", err);
+
+      // Network / CORS / server down
+      if (err instanceof TypeError) {
+        setError("Unable to connect to server. Please check network.");
+      } else {
+        setError(err.message || "Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const handleForceLogout = () => {
+      logoutUser();
+    };
+
+    window.addEventListener("nextjs:logout", handleForceLogout);
+    return () => window.removeEventListener("nextjs:logout", handleForceLogout);
+  }, []);
 
   if (checkingAuth) {
     return (
