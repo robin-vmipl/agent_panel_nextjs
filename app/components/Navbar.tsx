@@ -7,6 +7,7 @@ import ChangePasswordModal from "./ChangePasswordModal";
 import { ChevronDown, Menu, ChevronLeft } from "lucide-react";
 import NavbarCrmButton from "./NavbarCrmButton";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function Navbar({
   onToggleMobileMenu,
@@ -14,8 +15,7 @@ export default function Navbar({
   onToggleMobileMenu: () => void;
 }) {
   const pathname = usePathname();
-  const [agentName, setAgentName] = useState("");
-  const [profilePic, setProfilePic] = useState("");
+  const { user } = useAuth();
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
   const [isMobileNavbarOpen, setIsMobileNavbarOpen] = useState(false);
 
@@ -26,14 +26,8 @@ export default function Navbar({
 
   const dynamicTitle = pageTitleMap[pathname] || "Dashboard";
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      const parsed = JSON.parse(user);
-      setAgentName(parsed.full_name || parsed.user || "");
-      setProfilePic(parsed.profilePic || "");
-    }
-  }, []);
+  const agentName = user?.full_name || user?.user || "Agent";
+  const profilePic = user?.profilePic || "";
 
   // Close mobile navbar on route change
   useEffect(() => {

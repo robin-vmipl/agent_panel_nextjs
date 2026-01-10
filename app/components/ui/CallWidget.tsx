@@ -336,7 +336,7 @@ export default function CallWidget() {
   useEffect(() => {
     if (sipConfig.username && sipConfig.password && isAuthenticated) {
       (window as any).SIP_USERNAME = sipConfig.username;
-      (window as any).SIP_PASSWORD = sipConfig.username;
+      (window as any).SIP_PASSWORD = sipConfig.password;
       (window as any).WEBSOCKET_HOST = "vconrtc.smartping.io";
       (window as any).WEBSOCKET_PORT = 8080;
       (window as any).SIP_PORT = 8443;

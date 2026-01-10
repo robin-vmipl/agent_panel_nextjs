@@ -17,15 +17,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        router.replace("/dashboard");
-        return;
-      }
-    } catch (e) {
-      // ignore
-    }
     setCheckingAuth(false);
   }, [router]);
 
@@ -35,23 +26,24 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user: username,
-          pass: password,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/nextjs/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            user: username,
+            pass: password,
+          }),
+        }
+      );
 
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error(data.message || "Login failed");
       }
-
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
 
       setUser(data.user);
       router.replace("/dashboard");
@@ -79,22 +71,22 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#0b151d] relative overflow-hidden">
-      {/* 🔥 FLOATING BACKGROUND ELEMENTS */}
+      {/*FLOATING BACKGROUND ELEMENTS */}
       <div className="absolute inset-0">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-linear-to-r from-blue-500/5 to-emerald-500/5 rounded-full blur-3xl animate-[spin_20s_linear_infinite]" />
       </div>
 
-      {/* 🔥 MAIN LOGIN FORM - EXACT CHANGE PASSWORD STYLE */}
+      {/*MAIN LOGIN FORM - EXACT CHANGE PASSWORD STYLE */}
       <form
         onSubmit={handleLogin}
         className="theme-panel bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl w-full max-w-md mx-4 p-10 rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 relative z-10 overflow-hidden animate-[float_6s_ease-in-out_infinite]"
       >
-        {/* 🔥 BACKGROUND GLOW */}
+        {/*BACKGROUND GLOW */}
         <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-purple-500/5 rounded-3xl blur-xl animate-pulse pointer-events-none -z-10" />
 
-        {/* 🔥 LOGO HEADER */}
+        {/*LOGO HEADER */}
         <div className="text-center space-y-6 mb-10 relative z-20">
           <div className="w-28 h-28 mx-auto bg-linear-to-br from-emerald-500/30 via-blue-500/30 to-purple-500/30 rounded-3xl border-4 border-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl">
             <User
@@ -112,7 +104,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* 🔥 INPUT FIELDS */}
+        {/*INPUT FIELDS */}
         <div className="space-y-6 relative z-20">
           {/* AGENT ID */}
           <div className="relative group">
@@ -196,7 +188,7 @@ export default function LoginPage() {
           )}
         </div>
 
-        {/* 🔥 LOGIN BUTTON */}
+        {/*LOGIN BUTTON */}
         <button
           type="submit"
           disabled={loading}
@@ -215,7 +207,7 @@ export default function LoginPage() {
           </span>
         </button>
 
-        {/* 🔥 FOOTER TEXT */}
+        {/*FOOTER TEXT */}
         <div className="text-center mt-8 pt-6 border-t border-white/10 relative z-20">
           <p className="text-slate-400 text-sm font-medium">
             © 2025 Agent Portal. All rights reserved.
