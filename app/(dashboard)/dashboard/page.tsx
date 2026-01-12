@@ -43,10 +43,17 @@ export default function DashboardPage() {
         <p className="text-red-400 font-semibold">
           ⚠ Unable to load dashboard data
         </p>
-        <p></p>
         <p className="text-slate-400 text-sm mt-2">
-          Please check your connection or try again shortly.
+          {error.message === "Offline"
+            ? "No internet connection"
+            : "Please check your connection or try again shortly."}
         </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-emerald-600/80 hover:bg-emerald-500 rounded-xl text-sm"
+        >
+          Retry
+        </button>
       </div>
     );
   }

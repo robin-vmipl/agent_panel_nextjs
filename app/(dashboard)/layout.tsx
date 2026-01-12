@@ -32,11 +32,20 @@ export default function DashboardLayout({
         <main className="flex-1 overflow-y-auto p-6 lg:p-8 relative">
           {children}
           <ErrorBoundary
-            fallback={<div className="text-yellow-400">SIP offline</div>}
+            fallback={
+              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-xs">
+                <span className="text-red-400">📞 SIP Error</span>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="ml-2 text-emerald-400 hover:text-emerald-300"
+                >
+                  Retry
+                </button>
+              </div>
+            }
           >
             <SipMount />
           </ErrorBoundary>
-
           <ErrorBoundary fallback={null}>
             <CallWidget />
           </ErrorBoundary>

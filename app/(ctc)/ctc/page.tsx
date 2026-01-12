@@ -62,6 +62,24 @@ export default function CTCPage() {
     });
   };
 
+  // Error handling - show retry UI:
+  if (!isLoading && !agentConfig) {
+    return (
+      <div className="theme-surface backdrop-blur-3xl p-8 rounded-3xl border border-red-500/30">
+        <p className="text-red-400 font-semibold">⚠ CTC data unavailable</p>
+        <p className="text-slate-400 text-sm mt-2">
+          Failed to load agent config and campaigns.
+        </p>
+        <button
+          onClick={loadData}
+          className="mt-4 px-4 py-2 bg-emerald-600/80 hover:bg-emerald-500 rounded-xl text-sm"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   // SKELETON UI - Page refresh loading
   if (isLoading) {
     return (
