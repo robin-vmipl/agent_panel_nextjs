@@ -20,30 +20,50 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const [isInCall, setIsInCall] = useState(false);
+  const [agentStatus, setAgentStatus] = useState("INACTIVE"); // 🔥 NEW STATE
 
+  // 🔥 AGENT STATUS + CALL STATUS
   useEffect(() => {
-    const checkCallStatus = () => {
+    const checkStatus = () => {
+      // Agent status from localStorage (updated by StatusDropdown)
+      const status = localStorage.getItem("agentStatus") || "INACTIVE";
+      setAgentStatus(status);
+
+      // Call status
       const sipData = (window as any).SIP_CALL_DATA;
       setIsInCall(
         sipData?.callState === "ringing" || sipData?.callState === "answered"
       );
     };
-    const interval = setInterval(checkCallStatus, 500);
+
+    checkStatus(); // Initial check
+    const interval = setInterval(checkStatus, 1000); // 1s sync
     return () => clearInterval(interval);
   }, []);
 
   const handleMenuClick = (href: string) => {
     if (isInCall) {
-      toast.error("📞 End call before switching pages!");
+      toast.error("📞 End call before switching pages!", {
+        id: "sidebar-call-block",
+      });
       return false;
     }
-    onClose(); // Close mobile menu
+
+    // 🔥 CTC BLOCK - STATUS NOT ACTIVE
+    if (href === "/ctc" && agentStatus !== "ACTIVE") {
+      toast.error("👤 Activate status from Dashboard first!", {
+        id: "sidebar-ctc-block",
+      });
+      return false;
+    }
+
+    onClose();
     return true;
   };
 
   const handleLogout = () => {
     if (isInCall) {
-      toast.error("📞 End call before logout!");
+      toast.error("📞 End call before logout!", { id: "sidebar-logout-block" });
       return;
     }
     logoutUser();
@@ -51,7 +71,7 @@ export default function Sidebar({
 
   return (
     <>
-      {/* 🔥 MOBILE OVERLAY */}
+      {/* MOBILE OVERLAY */}
       {isMobileOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/60 z-45"
@@ -59,7 +79,7 @@ export default function Sidebar({
         />
       )}
 
-      {/* 🔥 SIDEBAR */}
+      {/* SIDEBAR */}
       <aside
         className={`
           w-64 h-screen theme-surface
@@ -77,7 +97,6 @@ export default function Sidebar({
             alt="Logo"
             className="h-12 w-auto mx-auto lg:mx-0"
           />
-          {/* Mobile Close Button */}
           <button
             onClick={onClose}
             className="lg:hidden p-2 rounded-xl hover:bg-slate-700/50"
@@ -91,7 +110,11 @@ export default function Sidebar({
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
-            const isDisabled = isInCall;
+
+            // 🔥 DISABLE CTC WHEN NOT ACTIVE + CALL
+            const isCtcItem = item.href === "/ctc";
+            const isDisabled =
+              isInCall || (isCtcItem && agentStatus !== "ACTIVE");
 
             return (
               <Link
@@ -106,20 +129,27 @@ export default function Sidebar({
                   isActive
                     ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-semibold"
                     : isDisabled
-                    ? "opacity-70 cursor-not-allowed text-slate-500 bg-slate-700/50"
-                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                    ? "opacity-60 cursor-not-allowed text-slate-400 bg-slate-800/50 border border-slate-600/30"
+                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white hover:border-slate-500/50 border border-transparent"
                 }`}
               >
                 <Icon
-                  className={`w-5 h-5 shrink-0 ${
+                  className={`w-5 h-5 shrink-0 transition-colors ${
                     isActive
                       ? "text-emerald-400"
                       : isDisabled
-                      ? "text-slate-500"
-                      : "group-hover:text-emerald-400"
+                      ? "text-slate-400"
+                      : "group-hover:text-emerald-400 text-slate-300"
                   }`}
                 />
-                <span className="truncate">{item.name}</span>
+                <span className="truncate flex-1">
+                  {item.name}
+                  {isCtcItem && agentStatus !== "ACTIVE" && (
+                    <span className="ml-2 px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded-full font-mono">
+                      OFF
+                    </span>
+                  )}
+                </span>
               </Link>
             );
           })}
@@ -132,7 +162,7 @@ export default function Sidebar({
             disabled={isInCall}
             className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
               isInCall
-                ? "bg-slate-700/60 opacity-70 cursor-not-allowed text-muted"
+                ? "bg-slate-700/60 opacity-70 cursor-not-allowed text-slate-400"
                 : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20 text-white"
             }`}
           >

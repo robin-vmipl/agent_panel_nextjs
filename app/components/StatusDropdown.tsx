@@ -19,7 +19,7 @@ const STATUS_OPTIONS = [
 ] as const;
 
 export default function StatusDropdown() {
-  const [currentStatus, setCurrentStatus] = useState("INACTIVE");
+  const [currentStatus, setCurrentStatus] = useState("INACTIVE"); // 🔥 DEFAULT INACTIVE
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
@@ -37,37 +37,44 @@ export default function StatusDropdown() {
     return () => clearInterval(interval);
   }, []);
 
-  // IMMEDIATE LOCALSTORAGE RESTORE + SIP CONNECT (FIXES REFRESH)
+  // 🔥 ALWAYS SYNC WITH DB FIRST (CRITICAL FIX)
   useEffect(() => {
-    const savedStatus = localStorage.getItem("agentStatus");
-    if (savedStatus) {
-      setCurrentStatus(savedStatus);
-      syncSipStatus(savedStatus);
-      setInitialized(true);
-    } else {
-      fetchCurrentStatus();
-    }
+    syncWithDatabase(); // 🔥 FORCE DB SYNC ON EVERY LOAD
   }, []);
 
-  // API FETCH BACKUP (only if no localStorage)
-  const fetchCurrentStatus = async () => {
+  // 🔥 DATABASE SYNC - PRIORITY #1
+  const syncWithDatabase = async () => {
+    setLoading(true);
     try {
       const data = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/agent/get-status`
       );
+
       if (data?.status) {
+        // 🔥 DB STATUS OVERRIDES EVERYTHING
         setCurrentStatus(data.status);
-        localStorage.setItem("agentStatus", data.status);
+        localStorage.setItem("agentStatus", data.status); // Update localStorage
         syncSipStatus(data.status);
+        console.log("✅ DB Status:", data.status);
+      } else {
+        // No status in DB → INACTIVE
+        setCurrentStatus("INACTIVE");
+        localStorage.setItem("agentStatus", "INACTIVE");
+        syncSipStatus("INACTIVE");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to fetch status");
+      console.error("Status sync failed:", err);
+      // Fallback to INACTIVE
+      setCurrentStatus("INACTIVE");
+      localStorage.setItem("agentStatus", "INACTIVE");
+      syncSipStatus("INACTIVE");
     } finally {
+      setLoading(false);
       setInitialized(true);
     }
   };
 
-  // INSTANT SIP STATUS SYNC (no delay!)
+  // 🔥 SIP STATUS SYNC
   const syncSipStatus = (status: string) => {
     const statusElement = document.getElementById("sipStatus");
     if (status === "ACTIVE") {
@@ -85,15 +92,12 @@ export default function StatusDropdown() {
     }
   };
 
-  // STATUS CHANGE HANDLER (immediate sync)
-  useEffect(() => {
-    if (!initialized || !currentStatus) return;
-    syncSipStatus(currentStatus);
-  }, [currentStatus, initialized]);
-
+  // 🔥 STATUS CHANGE - UPDATE DB + LOCALSTORAGE + SIP
   const handleStatusChange = async (newStatus: string) => {
     if (isInCall) {
-      toast.error("Cannot change status during active call!");
+      toast.error("Cannot change status during active call!", {
+        id: "status-call-block",
+      });
       setOpen(false);
       return;
     }
@@ -109,26 +113,38 @@ export default function StatusDropdown() {
           body: JSON.stringify({ status: newStatus }),
         }
       );
+
       if (data?.error) {
-        toast.error(data.error);
+        toast.error(data.error, { id: "status-update-error" });
         return;
       }
 
-      // IMMEDIATE UPDATE + SIP SYNC
+      // 🔥 ALL THREE UPDATES
       setCurrentStatus(newStatus);
       localStorage.setItem("agentStatus", newStatus);
       syncSipStatus(newStatus);
-      toast.success("Status updated successfully!");
+      toast.success("Status updated successfully!", { id: "status-success" });
     } catch (err: any) {
-      toast.error(err.message || "Update failed");
+      toast.error(err.message || "Update failed", {
+        id: "status-update-error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  // 🔥 PERIODIC SYNC - EVERY 30s (Background)
+  useEffect(() => {
+    if (!initialized) return;
+    const interval = setInterval(syncWithDatabase, 30000); // 30s sync
+    return () => clearInterval(interval);
+  }, [initialized]);
+
   const getStatusConfig = (status: string) => {
-    const option =
-      STATUS_OPTIONS.find((opt) => opt.value === status) || STATUS_OPTIONS[0];
+    const option = STATUS_OPTIONS.find((opt) => opt.value === status) || {
+      color: "slate",
+      value: "INACTIVE",
+    };
     return {
       color: option.color,
       bg:
@@ -145,7 +161,6 @@ export default function StatusDropdown() {
 
   return (
     <div className="relative group">
-      {/* 🔥 MAIN BUTTON - GLASSMORPHISM */}
       <button
         type="button"
         onClick={() => !isDisabled && setOpen(!open)}
@@ -166,7 +181,6 @@ export default function StatusDropdown() {
               : "bg-slate-500 shadow-slate-500/50"
           }`}
         />
-
         <div className="relative z-10 flex items-center gap-2.5 pl-8">
           <span className="font-bold tracking-wide">
             {loading ? "Updating..." : currentStatus.replace(/_/g, " ")}
@@ -179,11 +193,10 @@ export default function StatusDropdown() {
         </div>
       </button>
 
-      {/* 🔥 DROPDOWN - EYE CATCHING */}
+      {/* DROPDOWN - SAME AS BEFORE */}
       {open && !isInCall && (
         <div className="absolute right-0 mt-3 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-slate-900/50 z-100 animate-in slide-in-from-top-2 duration-200 overflow-hidden">
           <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-2xl blur-xl animate-pulse -z-10 pointer-events-none" />
-
           <div className="p-2 space-y-1">
             {STATUS_OPTIONS.map((option) => {
               const isActive = option.value === currentStatus;
@@ -201,7 +214,6 @@ export default function StatusDropdown() {
                   }`}
                 >
                   <div className="absolute inset-0 bg-linear-to-r from-emerald-400/0 via-white/20 to-transparent opacity-0 group-hover:opacity-100 rounded-xl -skew-x-12 -translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700" />
-
                   <div
                     className={`w-3 h-3 rounded-full shrink-0 shadow-sm border-2 border-white/20 ${
                       isActive
@@ -209,7 +221,6 @@ export default function StatusDropdown() {
                         : "bg-slate-600/50 group-hover:bg-emerald-400/50"
                     }`}
                   />
-
                   <div className="flex-1 min-w-0">
                     <p
                       className={`font-semibold text-sm truncate ${
@@ -224,7 +235,6 @@ export default function StatusDropdown() {
                       {option.value}
                     </p>
                   </div>
-
                   {isActive && (
                     <div className="ml-auto w-5 h-5 bg-linear-to-r from-emerald-400 to-emerald-500 rounded-lg shadow-lg flex items-center justify-center text-white font-bold text-xs drop-shadow-md animate-pulse">
                       ✓

@@ -19,6 +19,15 @@ export default function Navbar({
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
   const [isMobileNavbarOpen, setIsMobileNavbarOpen] = useState(false);
 
+  // 🔥 STATUSDROPDOWN WRAPPER - DISABLE ON CTC
+  const StatusDropdownWrapper = () => (
+    <div
+      className={pathname === "/ctc" ? "pointer-events-none opacity-50" : ""}
+    >
+      <StatusDropdown />
+    </div>
+  );
+
   const pageTitleMap: Record<string, string> = {
     "/dashboard": "Dashboard",
     "/ctc": "Outbound Calls",
@@ -69,7 +78,7 @@ export default function Navbar({
               <ChevronLeft className="w-5 h-5 rotate-180 group-hover:rotate-0 transition-transform duration-200" />
             </button>
 
-            {/* 🔥 MOBILE NAVBAR DROPDOWN - ONLY NAVBAR ITEMS */}
+            {/* 🔥 MOBILE NAVBAR DROPDOWN */}
             {isMobileNavbarOpen && (
               <div className="absolute top-full right-0 mt-2 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl z-75 py-3">
                 <div className="px-3 space-y-2">
@@ -78,9 +87,13 @@ export default function Navbar({
                     <NavbarCrmButton />
                   </div>
 
-                  {/* StatusDropdown */}
-                  <div className="p-3 rounded-xl hover:bg-slate-700/50 transition-colors">
-                    <StatusDropdown />
+                  {/* 🔥 STATUSDROPDOWN WRAPPER - DISABLED ON CTC */}
+                  <div
+                    className={`p-3 rounded-xl hover:bg-slate-700/50 transition-colors ${
+                      pathname === "/ctc" ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    <StatusDropdownWrapper />
                   </div>
 
                   {/* MyIngroupsButton */}
@@ -132,7 +145,10 @@ export default function Navbar({
           {/* 🔥 DESKTOP: Show All Controls Inline */}
           <div className="hidden lg:flex items-center gap-3">
             <NavbarCrmButton />
-            <StatusDropdown />
+
+            {/* 🔥 STATUSDROPDOWN WRAPPER - DISABLED ON CTC */}
+            <StatusDropdownWrapper />
+
             <MyIngroupsButton />
             <ThemeToggle />
 
