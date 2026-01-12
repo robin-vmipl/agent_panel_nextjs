@@ -28466,6 +28466,28 @@ THE SOFTWARE.
             }
         };
 
+        const API_BASE_URL = '/api';        
+        console.log("API_BASE_URL:", API_BASE_URL);
+
+        async function logHoldTimeToLaravel(action, holdDuration = 0) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/agent/call-logs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        totalHoldTime: holdDuration
+                    }),
+                    credentials: 'include'
+                });
+                console.log(`✅ ${action}: ${holdDuration}s logged`);
+            } catch (error) {
+                console.error('Hold logging failed:', error);
+            }
+        }
 
         // WebSocket Server URL
         const webSocketServer = `wss://${WEBSOCKET_HOST}:${WEBSOCKET_PORT}/ws`;
@@ -28682,7 +28704,11 @@ THE SOFTWARE.
             }
         });
         // Add click listener to hangup button
-        hangupButton.addEventListener("click", () => {
+        hangupButton.addEventListener("click",async () => {
+            if (holdTimer) {
+                const elapsedTime = Math.floor((Date.now() - holdStartTime) / 1000);
+                await logHoldTimeToLaravel('hangup', elapsedTime);
+            }
             callButton.innerHTML = BUTTONS_TEXT.ANSWER;
             disableCall();
             disableHangup();
@@ -28739,63 +28765,55 @@ THE SOFTWARE.
             //dtmfSpan.innerHTML = "";
         };
         // Add change listener to hold checkbox
-        holdCheckbox.addEventListener("change", () => {
-            console.log("on hold click");
+        holdCheckbox.addEventListener("change", async () => {
+            console.log("Hold clicked - Total so far:", totalHoldTime);
+    
             if (holdCheckbox.checked) {
-                // Checkbox is checked..
+                // 🔥 START HOLD
                 holdButtonDiv.style.color = "darkcyan";
                 pauseIcon.classList.add("line-through");
-
-                // Start the timer
+                
                 holdStartTime = Date.now();
                 holdTimer = setInterval(() => {
-                    const elapsedTime = Math.floor(
-                        (Date.now() - holdStartTime) / 1000
-                    );
-                    console.log(`Hold time: ${elapsedTime} seconds`);
+                    const elapsedTime = Math.floor((Date.now() - holdStartTime) / 1000);
+                    console.log(`Hold: ${elapsedTime}s | Total: ${totalHoldTime + elapsedTime}s`);
                 }, 1000);
 
                 simpleUser.hold().catch((error) => {
                     holdCheckbox.checked = false;
-                    holdButtonDiv.style.color = ""; // Reset color if hold fails
+                    holdButtonDiv.style.color = "";
                     pauseIcon.classList.remove("line-through");
-                    console.error(`[${simpleUser.id}] failed to hold call`);
-                    console.error(error);
-                    alert("Failed to hold call.\n" + error);
                     clearInterval(holdTimer);
+                    holdTimer = null;
+                    console.error('Hold failed:', error);
                 });
+                
             } else {
-                // Checkbox is not checked..
+                // 🔥 END HOLD → SEND TO LARAVEL
+                if (holdTimer) {
+                    const elapsedTime = Math.floor((Date.now() - holdStartTime) / 1000);
+                    totalHoldTime += elapsedTime; // Accumulate
+                    
+                    // 🔥 API CALL
+                    await logHoldTimeToLaravel('hold_end', elapsedTime);
+                    
+                    clearInterval(holdTimer);
+                    holdTimer = null;
+                    console.log(`✅ Hold session ended: ${totalHoldTime}s total`);
+                }
+
                 holdButtonDiv.style.color = "";
                 pauseIcon.classList.remove("line-through");
 
-                // Stop the timer and store the elapsed time
-                if (holdTimer) {
-                    const elapsedTime = Math.floor(
-                        (Date.now() - holdStartTime) / 1000
-                    );
-                    totalHoldTime += elapsedTime;
-                    clearInterval(holdTimer);
-                    holdTimer = null;
-                    console.log(`Total hold time: ${totalHoldTime} seconds`);
-                }
-
                 simpleUser.unhold().catch((error) => {
                     holdCheckbox.checked = true;
-                    holdButtonDiv.style.color = "darkcyan"; // Set color back if unhold fails
+                    holdButtonDiv.style.color = "darkcyan";
                     pauseIcon.classList.add("line-through");
-                    console.error(`[${simpleUser.id}] failed to unhold call`);
-                    console.error(error);
-                    alert("Failed to unhold call.\n" + error);
-                    holdTimer = setInterval(() => {
-                        const elapsedTime = Math.floor(
-                            (Date.now() - holdStartTime) / 1000
-                        );
-                        console.log(`Hold time: ${elapsedTime} seconds`);
-                    }, 1000);
+                    console.error('Unhold failed:', error);
                 });
             }
         });
+
         // Hold helper function
         const holdCheckboxDisabled = (disabled) => {
             holdCheckbox.checked = disabled;
@@ -28883,21 +28901,22 @@ THE SOFTWARE.
         };
 
         const closeCrmModal = () => {
-           
+            // 🔥 FINAL HOLD TIME ON CALL END
             if (holdTimer) {
-                const elapsedTime = Math.floor(
-                    (Date.now() - holdStartTime) / 1000
-                );
+                const elapsedTime = Math.floor((Date.now() - holdStartTime) / 1000);
                 totalHoldTime += elapsedTime;
+                
+                // 🔥 SEND FINAL HOLD TIME TO LARAVEL
+                logHoldTimeToLaravel('hangup', elapsedTime);
+                
                 clearInterval(holdTimer);
                 holdTimer = null;
                 holdButtonDiv.style.color = "";
                 pauseIcon.classList.remove("line-through");
             }
-            // handleReadyState(totalHoldTime);
+            
             holdStartTime = 0;
-            totalHoldTime = 0;
-         
+            totalHoldTime = 0; // Reset for next call
         };
 
         const callInQueue = () => {
