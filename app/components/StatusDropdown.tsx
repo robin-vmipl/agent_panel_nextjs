@@ -37,6 +37,19 @@ export default function StatusDropdown() {
     return () => clearInterval(interval);
   }, []);
 
+  // IMMEDIATE LOCALSTORAGE RESTORE + SIP CONNECT (FIXES REFRESH)
+  useEffect(() => {
+    const savedStatus = localStorage.getItem("agentStatus");
+    if (savedStatus) {
+      setCurrentStatus(savedStatus);
+      syncSipStatus(savedStatus);
+      setInitialized(true);
+    } else {
+      fetchCurrentStatus();
+    }
+  }, []);
+
+  // API FETCH BACKUP (only if no localStorage)
   const fetchCurrentStatus = async () => {
     try {
       const data = await apiFetch(
@@ -45,6 +58,7 @@ export default function StatusDropdown() {
       if (data?.status) {
         setCurrentStatus(data.status);
         localStorage.setItem("agentStatus", data.status);
+        syncSipStatus(data.status);
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to fetch status");
@@ -53,30 +67,28 @@ export default function StatusDropdown() {
     }
   };
 
-  useEffect(() => {
-    fetchCurrentStatus();
-  }, []);
-
-  useEffect(() => {
-    if (!initialized) return;
-    const timer = setTimeout(() => {
-      if (currentStatus === "ACTIVE") {
-        sipConnect();
-        const statusElement = document.getElementById("sipStatus");
-        if (statusElement) {
-          statusElement.textContent = "REGISTERED";
-          statusElement.className = "text-xs text-emerald-400";
-        }
-      } else {
-        sipDisconnect();
-        const statusElement = document.getElementById("sipStatus");
-        if (statusElement) {
-          statusElement.textContent = "Disconnected";
-          statusElement.className = "text-xs text-red-400";
-        }
+  // INSTANT SIP STATUS SYNC (no delay!)
+  const syncSipStatus = (status: string) => {
+    const statusElement = document.getElementById("sipStatus");
+    if (status === "ACTIVE") {
+      sipConnect();
+      if (statusElement) {
+        statusElement.textContent = "REGISTERED";
+        statusElement.className = "text-xs text-emerald-400";
       }
-    }, 500);
-    return () => clearTimeout(timer);
+    } else {
+      sipDisconnect();
+      if (statusElement) {
+        statusElement.textContent = "Disconnected";
+        statusElement.className = "text-xs text-red-400";
+      }
+    }
+  };
+
+  // STATUS CHANGE HANDLER (immediate sync)
+  useEffect(() => {
+    if (!initialized || !currentStatus) return;
+    syncSipStatus(currentStatus);
   }, [currentStatus, initialized]);
 
   const handleStatusChange = async (newStatus: string) => {
@@ -86,6 +98,7 @@ export default function StatusDropdown() {
       return;
     }
     if (newStatus === currentStatus || loading) return;
+
     setLoading(true);
     setOpen(false);
     try {
@@ -100,8 +113,11 @@ export default function StatusDropdown() {
         toast.error(data.error);
         return;
       }
+
+      // IMMEDIATE UPDATE + SIP SYNC
       setCurrentStatus(newStatus);
       localStorage.setItem("agentStatus", newStatus);
+      syncSipStatus(newStatus);
       toast.success("Status updated successfully!");
     } catch (err: any) {
       toast.error(err.message || "Update failed");
@@ -143,8 +159,6 @@ export default function StatusDropdown() {
           isInCall ? "📞 Call in progress - End call first" : "Change Status"
         }
       >
-        {/* 🔥 BACKGROUND SHINE */}
-        {/* 🔥 MAIN BUTTON - LESS SPACING */}
         <div
           className={`absolute left-3 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 border-white/20 shadow-lg ${
             currentStatus === "ACTIVE"
@@ -168,7 +182,6 @@ export default function StatusDropdown() {
       {/* 🔥 DROPDOWN - EYE CATCHING */}
       {open && !isInCall && (
         <div className="absolute right-0 mt-3 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-slate-900/50 z-100 animate-in slide-in-from-top-2 duration-200 overflow-hidden">
-          {/* 🔥 DROPDOWN GLOW */}
           <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-2xl blur-xl animate-pulse -z-10 pointer-events-none" />
 
           <div className="p-2 space-y-1">
@@ -187,7 +200,6 @@ export default function StatusDropdown() {
                       : "hover:bg-linear-to-r hover:from-slate-700/50 hover:to-slate-800/50 text-slate-300 hover:text-white hover:border-slate-500/50 border border-transparent"
                   }`}
                 >
-                  {/* 🔥 OPTION SHINE */}
                   <div className="absolute inset-0 bg-linear-to-r from-emerald-400/0 via-white/20 to-transparent opacity-0 group-hover:opacity-100 rounded-xl -skew-x-12 -translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700" />
 
                   <div
