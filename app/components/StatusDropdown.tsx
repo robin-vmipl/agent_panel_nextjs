@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { apiFetch } from "../lib/api";
 import { sipConnect, sipDisconnect } from "../lib/sipControls";
-import { ChevronDown, Circle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 const STATUS_OPTIONS = [
   { label: "Active", value: "ACTIVE", color: "emerald" },
@@ -19,80 +19,74 @@ const STATUS_OPTIONS = [
 ] as const;
 
 export default function StatusDropdown() {
-  const [currentStatus, setCurrentStatus] = useState("INACTIVE"); // 🔥 DEFAULT INACTIVE
+  const [currentStatus, setCurrentStatus] = useState("INACTIVE");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [isInCall, setIsInCall] = useState(false);
 
-  // 🔥 CHECK CALL STATUS
+  // 🔹 Helper to update state, localStorage, and SIP
+  const updateLocalStatus = (status: string) => {
+    setCurrentStatus(status);
+    localStorage.setItem("agentStatus", status);
+    syncSipStatus(status);
+  };
+
+  // 🔹 Poll SIP call status
   useEffect(() => {
-    const checkCallStatus = () => {
+    const interval = setInterval(() => {
       const sipData = (window as any).SIP_CALL_DATA;
       setIsInCall(
         sipData?.callState === "ringing" || sipData?.callState === "answered"
       );
-    };
-    const interval = setInterval(checkCallStatus, 500);
+    }, 500);
     return () => clearInterval(interval);
   }, []);
 
-  // 🔥 ALWAYS SYNC WITH DB FIRST (CRITICAL FIX)
-  useEffect(() => {
-    syncWithDatabase(); // 🔥 FORCE DB SYNC ON EVERY LOAD
-  }, []);
-
-  // 🔥 DATABASE SYNC - PRIORITY #1
-  const syncWithDatabase = async () => {
+  // 🔹 Initial DB sync
+  const syncWithDatabase = useCallback(async () => {
     setLoading(true);
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/get-status`
+        `${process.env.NEXT_PUBLIC_API_URL}/agent/get-status`,
+        {
+          showToast: false, // silent background sync
+        }
       );
-
-      if (data?.status) {
-        // 🔥 DB STATUS OVERRIDES EVERYTHING
-        setCurrentStatus(data.status);
-        localStorage.setItem("agentStatus", data.status); // Update localStorage
-        syncSipStatus(data.status);
-        console.log("✅ DB Status:", data.status);
-      } else {
-        // No status in DB → INACTIVE
-        setCurrentStatus("INACTIVE");
-        localStorage.setItem("agentStatus", "INACTIVE");
-        syncSipStatus("INACTIVE");
-      }
-    } catch (err: any) {
+      const status = data?.status || "INACTIVE";
+      updateLocalStatus(status);
+    } catch (err) {
       console.error("Status sync failed:", err);
-      // Fallback to INACTIVE
-      setCurrentStatus("INACTIVE");
-      localStorage.setItem("agentStatus", "INACTIVE");
-      syncSipStatus("INACTIVE");
+      updateLocalStatus("INACTIVE");
     } finally {
       setLoading(false);
       setInitialized(true);
     }
-  };
+  }, []);
 
-  // 🔥 SIP STATUS SYNC
+  useEffect(() => {
+    syncWithDatabase();
+  }, [syncWithDatabase]);
+
+  // 🔹 SIP status update
   const syncSipStatus = (status: string) => {
-    const statusElement = document.getElementById("sipStatus");
+    const statusEl = document.getElementById("sipStatus");
     if (status === "ACTIVE") {
       sipConnect();
-      if (statusElement) {
-        statusElement.textContent = "REGISTERED";
-        statusElement.className = "text-xs text-emerald-400";
+      if (statusEl) {
+        statusEl.textContent = "REGISTERED";
+        statusEl.className = "text-xs text-emerald-400";
       }
     } else {
       sipDisconnect();
-      if (statusElement) {
-        statusElement.textContent = "Disconnected";
-        statusElement.className = "text-xs text-red-400";
+      if (statusEl) {
+        statusEl.textContent = "Disconnected";
+        statusEl.className = "text-xs text-red-400";
       }
     }
   };
 
-  // 🔥 STATUS CHANGE - UPDATE DB + LOCALSTORAGE + SIP
+  // 🔹 Handle status change from dropdown
   const handleStatusChange = async (newStatus: string) => {
     if (isInCall) {
       toast.error("Cannot change status during active call!", {
@@ -101,45 +95,36 @@ export default function StatusDropdown() {
       setOpen(false);
       return;
     }
-    if (newStatus === currentStatus || loading) return;
+    if (loading || newStatus === currentStatus) return;
 
     setLoading(true);
     setOpen(false);
+
     try {
-      const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/update-status`,
-        {
-          method: "POST",
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-
-      if (data?.error) {
-        toast.error(data.error, { id: "status-update-error" });
-        return;
-      }
-
-      // 🔥 ALL THREE UPDATES
-      setCurrentStatus(newStatus);
-      localStorage.setItem("agentStatus", newStatus);
-      syncSipStatus(newStatus);
-      toast.success("Status updated successfully!", { id: "status-success" });
-    } catch (err: any) {
-      toast.error(err.message || "Update failed", {
-        id: "status-update-error",
+      await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/agent/update-status`, {
+        method: "POST",
+        body: JSON.stringify({ status: newStatus }),
+        showToast: true, // api.ts will handle errors
       });
+
+      // ✅ Sync local state & show success toast
+      updateLocalStatus(newStatus);
+      toast.success("Status updated successfully!", { id: "status-success" });
+    } catch (err) {
+      console.error("Status update failed:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔥 PERIODIC SYNC - EVERY 30s (Background)
+  // 🔹 Periodic background DB sync
   useEffect(() => {
     if (!initialized) return;
-    const interval = setInterval(syncWithDatabase, 30000); // 30s sync
+    const interval = setInterval(syncWithDatabase, 30000); // every 30s
     return () => clearInterval(interval);
-  }, [initialized]);
+  }, [initialized, syncWithDatabase]);
 
+  // 🔹 Status styling helper
   const getStatusConfig = (status: string) => {
     const option = STATUS_OPTIONS.find((opt) => opt.value === status) || {
       color: "slate",
@@ -161,6 +146,7 @@ export default function StatusDropdown() {
 
   return (
     <div className="relative group">
+      {/* STATUS BUTTON */}
       <button
         type="button"
         onClick={() => !isDisabled && setOpen(!open)}
@@ -193,21 +179,20 @@ export default function StatusDropdown() {
         </div>
       </button>
 
-      {/* DROPDOWN - SAME AS BEFORE */}
+      {/* DROPDOWN */}
       {open && !isInCall && (
-        <div className="absolute right-0 mt-3 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-slate-900/50 z-100 animate-in slide-in-from-top-2 duration-200 overflow-hidden">
+        <div className="absolute right-0 mt-3 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl z-50 animate-in slide-in-from-top-2 duration-200 overflow-hidden">
           <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-2xl blur-xl animate-pulse -z-10 pointer-events-none" />
           <div className="p-2 space-y-1">
             {STATUS_OPTIONS.map((option) => {
               const isActive = option.value === currentStatus;
-              const config = getStatusConfig(option.value);
               return (
                 <button
                   key={option.value}
                   type="button"
                   disabled={isActive || loading}
                   onClick={() => handleStatusChange(option.value)}
-                  className={`group relative w-full text-left p-4 rounded-xl transition-all duration-300 cursor-pointer overflow-hidden flex items-center gap-3 hover:scale-[1.02] ${
+                  className={`group relative w-full text-left p-4 rounded-xl transition-all duration-300 cursor-pointer overflow-hidden flex items-center gap-3 ${
                     isActive
                       ? "bg-linear-to-r from-emerald-500/30 to-emerald-600/30 border-2 border-emerald-500/50 text-emerald-300 shadow-emerald-500/40 cursor-default"
                       : "hover:bg-linear-to-r hover:from-slate-700/50 hover:to-slate-800/50 text-slate-300 hover:text-white hover:border-slate-500/50 border border-transparent"

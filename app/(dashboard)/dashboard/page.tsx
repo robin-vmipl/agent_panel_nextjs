@@ -41,23 +41,56 @@ export default function DashboardPage() {
     }
   );
 
+  // if (error) {
+  //   return (
+  //     <div className="theme-surface backdrop-blur-3xl p-8 rounded-3xl border border-red-500/30">
+  //       <p className="text-red-400 font-semibold">
+  //         ⚠ Unable to load dashboard data
+  //       </p>
+  //       <p className="text-slate-400 text-sm mt-2">
+  //         {error.message === "Offline"
+  //           ? "No internet connection"
+  //           : "Please check your connection or try again shortly."}
+  //       </p>
+  //       <button
+  //         onClick={() => window.location.reload()}
+  //         className="mt-4 px-4 py-2 bg-emerald-600/80 hover:bg-emerald-500 rounded-xl text-sm"
+  //       >
+  //         Retry
+  //       </button>
+  //     </div>
+  //   );
+  // }
+
   if (error) {
+    // Show the actual error message dynamically
+    const errorMsg =
+      error.message === "Offline"
+        ? "No internet connection"
+        : error.message || "Failed to load dashboard data";
+
     return (
       <div className="theme-surface backdrop-blur-3xl p-8 rounded-3xl border border-red-500/30">
         <p className="text-red-400 font-semibold">
           ⚠ Unable to load dashboard data
         </p>
-        <p className="text-slate-400 text-sm mt-2">
-          {error.message === "Offline"
-            ? "No internet connection"
-            : "Please check your connection or try again shortly."}
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-emerald-600/80 hover:bg-emerald-500 rounded-xl text-sm"
-        >
-          Retry
-        </button>
+        <p className="text-slate-400 text-sm mt-2">{errorMsg}</p>
+
+        <div className="mt-4 flex gap-3">
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-emerald-600/80 hover:bg-emerald-500 rounded-xl text-sm"
+          >
+            Retry
+          </button>
+
+          <a
+            href="/dashboard"
+            className="px-4 py-2 bg-slate-700/80 hover:bg-slate-600 rounded-xl text-sm text-center no-underline"
+          >
+            Go to Dashboard
+          </a>
+        </div>
       </div>
     );
   }

@@ -2,28 +2,21 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function HomePage() {
   const router = useRouter();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    // Check if user has auth cookie (via API call)
-    const checkAuth = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/me`, {
-          credentials: "include",
-        });
-        if (res.ok) {
-          router.replace("/dashboard");
-        } else {
-          router.replace("/login");
-        }
-      } catch (e) {
+    if (!isLoading) {
+      if (user) {
+        router.replace("/dashboard");
+      } else {
         router.replace("/login");
       }
-    };
-    checkAuth();
-  }, [router]);
+    }
+  }, [user, isLoading, router]);
 
   return null;
 }
