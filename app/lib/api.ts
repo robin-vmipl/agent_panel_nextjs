@@ -56,12 +56,19 @@ export async function apiFetch(
         ...fetchOptions.headers,
       },
     });
-  } catch (error) {
-    if (shouldShowToast) {
-      toast.error("Unable to reach server. Please try again.");
+  } catch (error: any) {
+  // 🔕 Ignore fetch aborts (route change, logout, RSC reload)
+      if (error?.name === "AbortError") {
+        throw error;
+      }
+
+      if (shouldShowToast) {
+        toast.error("Unable to reach server. Please try again.");
+      }
+
+      throw new Error("Network error");
     }
-    throw new Error("Network error");
-  }
+
 
   let data: any = null;
   try {
@@ -82,9 +89,14 @@ export async function apiFetch(
       try {
         window.dispatchEvent(new Event("nextjs:logout"));
       } finally {
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 800);
+        if (
+          typeof window !== "undefined" &&
+          window.location.pathname !== "/login"
+        ) {
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 800);
+        }
       }
     }
 

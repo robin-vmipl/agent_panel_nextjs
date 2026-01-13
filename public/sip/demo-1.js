@@ -28467,7 +28467,7 @@ THE SOFTWARE.
         };
 
         const API_BASE_URL = '/api';        
-        console.log("API_BASE_URL:", API_BASE_URL);
+        // console.log("API_BASE_URL:", API_BASE_URL);
 
         async function logHoldTimeToLaravel(action, holdDuration = 0) {
             try {
@@ -28483,7 +28483,13 @@ THE SOFTWARE.
                     }),
                     credentials: 'include'
                 });
-                console.log(`✅ ${action}: ${holdDuration}s logged`);
+
+                if (!response.ok) {
+                    console.error(`Failed to log hold time: ${response.status} ${response.statusText}`);
+                    return;
+                }
+
+                console.log(`${action}: ${holdDuration}s logged successfully`);
             } catch (error) {
                 console.error('Hold logging failed:', error);
             }
@@ -28703,24 +28709,31 @@ THE SOFTWARE.
                     });
             }
         });
+
         // Add click listener to hangup button
-        hangupButton.addEventListener("click",async () => {
+        hangupButton.addEventListener("click", async () => {
             if (holdTimer) {
                 const elapsedTime = Math.floor((Date.now() - holdStartTime) / 1000);
-                await logHoldTimeToLaravel('hangup', elapsedTime);
+                totalHoldTime += elapsedTime;
+                clearInterval(holdTimer);
+                holdTimer = null;
             }
+
+            await logHoldTimeToLaravel('hangup', totalHoldTime);
+
+            // Reset UI and state
             callButton.innerHTML = BUTTONS_TEXT.ANSWER;
             disableCall();
             disableHangup();
             disableDialer();
             hideCallDetail();
-            simpleUser.hangup().catch((error) => {
-                // console.error(`[${simpleUser.id}] failed to hangup call`);
-                // console.error(error);
-                // alert("Failed to hangup call.\n" + error);
-            });
+            simpleUser.hangup().catch(() => {});
             localStorage.removeItem("simpleUser");
+
+            holdStartTime = 0;
+            totalHoldTime = 0;
         });
+
         // Add click listener to disconnect button
         disconnectButton.addEventListener("click", () => {
             connectButton.disabled = true;
@@ -28766,13 +28779,11 @@ THE SOFTWARE.
         };
         // Add change listener to hold checkbox
         holdCheckbox.addEventListener("change", async () => {
-            console.log("Hold clicked - Total so far:", totalHoldTime);
-    
             if (holdCheckbox.checked) {
-                // 🔥 START HOLD
+                // START HOLD
                 holdButtonDiv.style.color = "darkcyan";
                 pauseIcon.classList.add("line-through");
-                
+
                 holdStartTime = Date.now();
                 holdTimer = setInterval(() => {
                     const elapsedTime = Math.floor((Date.now() - holdStartTime) / 1000);
@@ -28787,16 +28798,12 @@ THE SOFTWARE.
                     holdTimer = null;
                     console.error('Hold failed:', error);
                 });
-                
+
             } else {
-                // 🔥 END HOLD → SEND TO LARAVEL
+                // END HOLD → just accumulate time
                 if (holdTimer) {
                     const elapsedTime = Math.floor((Date.now() - holdStartTime) / 1000);
-                    totalHoldTime += elapsedTime; // Accumulate
-                    
-                    // 🔥 API CALL
-                    await logHoldTimeToLaravel('hold_end', elapsedTime);
-                    
+                    totalHoldTime += elapsedTime;
                     clearInterval(holdTimer);
                     holdTimer = null;
                     console.log(`✅ Hold session ended: ${totalHoldTime}s total`);
@@ -28901,20 +28908,15 @@ THE SOFTWARE.
         };
 
         const closeCrmModal = () => {
-            // 🔥 FINAL HOLD TIME ON CALL END
+            // Just clear hold state for UI, no DB call here
             if (holdTimer) {
-                const elapsedTime = Math.floor((Date.now() - holdStartTime) / 1000);
-                totalHoldTime += elapsedTime;
-                
-                // 🔥 SEND FINAL HOLD TIME TO LARAVEL
-                logHoldTimeToLaravel('hangup', elapsedTime);
-                
                 clearInterval(holdTimer);
                 holdTimer = null;
-                holdButtonDiv.style.color = "";
-                pauseIcon.classList.remove("line-through");
             }
-            
+
+            holdButtonDiv.style.color = "";
+            pauseIcon.classList.remove("line-through");
+
             holdStartTime = 0;
             totalHoldTime = 0; // Reset for next call
         };

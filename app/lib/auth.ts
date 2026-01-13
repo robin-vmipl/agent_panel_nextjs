@@ -1,25 +1,25 @@
 import { apiFetch } from "./api";
 import toast from "react-hot-toast";
 
+let didLogout = false;
+
 export const logoutUser = async () => {
+  if (didLogout) return;
+  didLogout = true;
+
   try {
-    // ✅ Clear server-side session
     await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/nextjs/logout`, {
       method: "POST",
-      showToast: false, // suppress toast for smooth logout
+      skipLogoutOn401: true,
+      showToast: false,
     });
-  } catch (e) {
-    console.warn("Server logout failed, forcing client logout", e);
-  }
+  } catch {}
 
-  // ✅ Clear client-side state
-  try {
-    window.dispatchEvent(new Event("nextjs:logout"));
-  } catch (e) {
-    console.warn("Event dispatch failed, redirecting manually", e);
-    window.location.href = "/login";
-  } finally {
-    toast.success("You have been logged out");
+  window.dispatchEvent(new Event("nextjs:logout"));
+  toast.success("You have been logged out");
+
+  if (window.location.pathname !== "/login") {
     window.location.href = "/login";
   }
 };
+

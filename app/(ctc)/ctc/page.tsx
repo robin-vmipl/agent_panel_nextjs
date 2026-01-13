@@ -48,7 +48,9 @@ export default function CTCPage() {
       const data = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-data`,
         {
-          isCtcPage: true, // SILENT
+          isCtcPage: true,
+          showToast: false,
+          skipLogoutOn401: true,
         }
       );
 

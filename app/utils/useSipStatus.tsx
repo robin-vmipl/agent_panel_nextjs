@@ -16,6 +16,9 @@ export function useSipStatus() {
         await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/agent/update-park`, {
           method: "POST",
           body: JSON.stringify({ external_park: flag }),
+          isCtcPage: true,
+          showToast: false,
+          skipLogoutOn401: true,
         });
       }
     },

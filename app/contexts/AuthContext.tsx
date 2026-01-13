@@ -53,15 +53,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
+    // 🔒 Do NOT fetch /me on login page
+    if (window.location.pathname === "/login") {
+      setIsLoading(false);
+      return;
+    }
+
     const fetchMe = async () => {
       try {
         const data = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/me`, {
-          credentials: "include",
           skipLogoutOn401: true,
+          showToast: false,
         });
         if (!mounted) return;
         setUser(data?.user ?? null);
-      } catch (e) {
+      } catch {
         if (mounted) setUser(null);
       } finally {
         if (mounted) setIsLoading(false);
@@ -72,7 +78,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const onLogout = () => {
       setUser(null);
-      router.replace("/login");
     };
 
     window.addEventListener("nextjs:logout", onLogout);
@@ -80,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       mounted = false;
       window.removeEventListener("nextjs:logout", onLogout);
     };
-  }, [router]);
+  }, []);
 
   return (
     <AuthContext.Provider

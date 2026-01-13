@@ -11,7 +11,10 @@ export function useAgentStatus() {
     const updateStatus = async () => {
       try {
         if (pathname.includes("/ctc")) {
-          await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-visit`);
+          await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-visit`, {
+            isCtcPage: true,
+            showToast: false,
+          });
         } else if (pathname === "/dashboard" || pathname === "/") {
           await apiFetch(
             `${process.env.NEXT_PUBLIC_API_URL}/agent/dashboard-visit`

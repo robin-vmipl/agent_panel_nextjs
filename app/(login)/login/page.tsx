@@ -84,6 +84,8 @@ export default function LoginPage() {
 
   useEffect(() => {
     const handleForceLogout = () => {
+      // 🔒 Already on login, do nothing
+      if (window.location.pathname === "/login") return;
       logoutUser();
     };
 

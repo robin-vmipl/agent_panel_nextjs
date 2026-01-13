@@ -21,7 +21,11 @@ import {
 import { useAgentStatus } from "@/app/utils/useAgentStatus";
 import { useSipStatus } from "@/app/utils/useSipStatus";
 
-const fetcher = (url: string) => apiFetch(url);
+const fetcher = (url: string) =>
+  apiFetch(url, {
+    isCtcPage: true,
+    showToast: false,
+  });
 
 export default function DashboardPage() {
   useAgentStatus();
