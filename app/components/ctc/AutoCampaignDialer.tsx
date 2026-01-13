@@ -196,7 +196,7 @@ export default function AutoCampaignDialer({
           <button
             onClick={refreshCampaigns}
             disabled={refreshing}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-sm flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center gap-2 disabled:opacity-50"
           >
             {refreshing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
