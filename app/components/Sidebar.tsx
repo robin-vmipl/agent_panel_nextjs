@@ -51,7 +51,7 @@ export default function Sidebar({
 
     // 🔥 CTC BLOCK - STATUS NOT ACTIVE
     if (href === "/ctc" && agentStatus !== "ACTIVE") {
-      toast.error("👤 Activate status from Dashboard first!", {
+      toast.error("Activate status from Dashboard first!", {
         id: "sidebar-ctc-block",
       });
       return false;
@@ -63,9 +63,17 @@ export default function Sidebar({
 
   const handleLogout = () => {
     if (isInCall) {
-      toast.error("📞 End call before logout!", { id: "sidebar-logout-block" });
+      toast.error("End call before logout!", { id: "sidebar-logout-block" });
       return;
     }
+
+    if (pathname === "/ctc") {
+      toast.error("Cannot logout while on CTC page!", {
+        id: "sidebar-logout-ctc-block",
+      });
+      return;
+    }
+
     logoutUser();
   };
 
@@ -159,11 +167,11 @@ export default function Sidebar({
         <div className="p-6 border-t border-slate-700/50 shrink-0">
           <button
             onClick={handleLogout}
-            disabled={isInCall}
+            disabled={isInCall || pathname === "/ctc"}
             className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
-              isInCall
+              isInCall || pathname === "/ctc"
                 ? "bg-slate-700/60 opacity-70 cursor-not-allowed text-slate-400"
-                : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20 text-white"
+                : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20 text-white cursor-pointer"
             }`}
           >
             <LogOut className="w-5 h-5" />

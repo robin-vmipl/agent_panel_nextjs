@@ -59,7 +59,7 @@ export default function MissedCallsTable({
       );
 
       if (response.status_code === "0005") {
-        toast.error("👤 Agent already on another call");
+        toast.error("Agent already on another call");
         return;
       }
 
@@ -73,7 +73,8 @@ export default function MissedCallsTable({
 
       toast.error("Call data not found");
     } catch (error: any) {
-      toast.error(error.message || "Call failed");
+      // toast.error(error.message || "Call failed");
+      console.error("Dialing failed:", error);
     } finally {
       setDialingCalls((prev) => ({ ...prev, [call.id]: false }));
     }
@@ -157,7 +158,13 @@ export default function MissedCallsTable({
                   <button
                     onClick={() => handleTableDial(call)}
                     disabled={dialingCalls[call.id]}
-                    className="mx-auto px-6 py-2.5 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:scale-[1.02] transition-all text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 w-full group-hover:scale-[1.01]"
+                    className="px-5 py-2 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600
+                                text-white text-sm font-semibold
+                                rounded-xl
+                                flex items-center gap-2
+                                mx-auto
+                                transition-all
+                                disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {dialingCalls[call.id] ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

@@ -40,7 +40,8 @@ export default function ManualDial({
       toast.success(`Calling ${phonenumber.slice(-4)}...`);
       setPhonenumber("");
     } catch (error: any) {
-      toast.error(error.message || "Call failed");
+      // toast.error(error.message || "Call failed");
+      console.error("Manual dial failed:", error);
     } finally {
       setLoading(false);
     }

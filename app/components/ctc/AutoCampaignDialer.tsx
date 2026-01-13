@@ -60,7 +60,8 @@ export default function AutoCampaignDialer({
       setAutoData(response.data || []);
       toast.success(`Loaded ${response.data?.length || 0} auto dial records`);
     } catch (error: any) {
-      toast.error(error.message || "Failed to fetch auto campaign data");
+      // toast.error(error.message || "Failed to fetch auto campaign data");
+      console.error("Fetching auto campaign data failed:", error);
       setAutoData([]);
     } finally {
       setTableLoading(false);
@@ -130,7 +131,8 @@ export default function AutoCampaignDialer({
         );
       }
     } catch (error: any) {
-      toast.error(error.message || "Auto dial failed");
+      // toast.error(error.message || "Auto dial failed");
+      console.error("Auto dial failed:", error);
     } finally {
       setDialingCalls((prev) => ({ ...prev, [rowKey]: false }));
     }

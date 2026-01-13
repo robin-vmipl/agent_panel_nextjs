@@ -85,20 +85,20 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
         <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-purple-500/5 rounded-3xl blur-xl animate-pulse pointer-events-none -z-10" />
 
         {/* HEADER WITH X CLOSE BUTTON */}
-        <div className="relative z-10">
-          {/* X CLOSE BUTTON - RESPONSIVE TOP RIGHT CORNER */}
+        <div className="relative z-10 text-center">
+          {/* X CLOSE BUTTON - MOBILE ONLY */}
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="absolute top-4 right-4 w-10 h-10 sm:w-12 sm:h-12 bg-slate-900/90 hover:bg-slate-800/90 border-2 border-slate-600/50 rounded-3xl flex items-center justify-center shadow-2xl hover:shadow-slate-500/30 hover:scale-105 transition-all duration-200 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed z-60 group"
+            className="absolute top-4 right-4 w-10 h-10 sm:w-12 sm:h-12 bg-slate-900/90 hover:bg-slate-800/90 border-2 border-slate-600/50 rounded-3xl flex items-center justify-center shadow-2xl hover:shadow-slate-500/30 hover:scale-105 transition-all duration-200 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed z-60 group lg:hidden"
             title="Close"
           >
             <X className="w-5 h-5 sm:w-6 sm:h-6 text-slate-300 group-hover:text-white transition-colors" />
           </button>
 
-          {/* HEADER CONTENT */}
-          <div className="text-center space-y-4 pt-16 sm:pt-12 pr-14 sm:pr-16 relative z-10">
+          {/* HEADER CONTENT - ICON + TITLE + SUBTITLE */}
+          <div className="flex flex-col items-center space-y-4 pt-12 relative z-10">
             <div className="w-20 h-20 mx-auto bg-linear-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl border-4 border-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl">
               <svg
                 className="w-12 h-12 text-white drop-shadow-lg"
@@ -114,7 +114,8 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
                 />
               </svg>
             </div>
-            <div>
+
+            <div className="text-center">
               <h2 className="text-2xl sm:text-3xl font-black bg-linear-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
                 Change Password
               </h2>
