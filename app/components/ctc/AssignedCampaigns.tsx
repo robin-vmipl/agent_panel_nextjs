@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Loader2, Download } from "lucide-react";
+import { Phone, Loader2, Download, RefreshCcw } from "lucide-react";
 import { apiFetch } from "@/app/lib/api";
 import toast from "react-hot-toast";
 
@@ -34,8 +34,42 @@ export default function AssignedCampaigns({
   const [assignedData, setAssignedData] = useState<AssignedData[]>([]);
   const [tableLoading, setTableLoading] = useState(false);
   const [dialingRow, setDialingRow] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [localCampaigns, setLocalCampaigns] = useState<Campaign[]>(campaigns);
 
-  /* 🔹 FETCH ASSIGNED DATA */
+  /* REFRESH CAMPAIGN DROPDOWN */
+  const refreshCampaigns = async () => {
+    setRefreshing(true);
+    try {
+      const data = await apiFetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-campaigns`,
+        {
+          showToast: false,
+        }
+      );
+
+      const updatedCampaigns = data?.campaigns || [];
+      setLocalCampaigns(updatedCampaigns);
+
+      // reset selection if removed from backend
+      if (
+        selectedCampaign &&
+        !updatedCampaigns.some((c: Campaign) => c.DA_ID === selectedCampaign)
+      ) {
+        setSelectedCampaign("");
+        setAssignedData([]);
+      }
+
+      toast.success("Campaign list updated");
+    } catch (error) {
+      console.error("Failed to refresh campaigns:", error);
+      toast.error("Failed to refresh campaigns");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  /* FETCH ASSIGNED DATA */
   const fetchAssignedData = async () => {
     if (!selectedCampaign) {
       toast.error("Please select a campaign");
@@ -90,7 +124,6 @@ export default function AssignedCampaigns({
 
       toast.success(`✅ Calling ${row.CUST_NUM.slice(-4)}...`);
 
-      // REMOVE ONLY THIS ROW (QUEUE BEHAVIOR)
       setAssignedData((prev) => prev.filter((_, i) => i !== index));
     } catch (error) {
       console.error("Dialing failed:", error);
@@ -104,20 +137,35 @@ export default function AssignedCampaigns({
     <div className="mt-12">
       <div className="theme-surface border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
         {/* HEADER */}
-        <div className="flex items-center gap-4 mb-8">
-          <Download className="w-10 h-10 text-blue-400" />
-          <div>
-            <h2 className="text-3xl font-bold text-blue-400">
-              Assigned Campaigns{" "}
-              <span className="text-3xl font-bold text-blue-400">
-                ({assignedData.length})
-              </span>
-            </h2>
-
-            <p className="text-slate-400 mt-1">
-              Select campaign to view assigned leads
-            </p>
+        <div className="flex items-start justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Download className="w-10 h-10 text-blue-400" />
+            <div>
+              <h2 className="text-3xl font-bold text-blue-400">
+                Assigned Campaigns{" "}
+                <span className="text-3xl font-bold text-blue-400">
+                  ({assignedData.length})
+                </span>
+              </h2>
+              <p className="text-slate-400 mt-1">
+                Select campaign to view assigned leads
+              </p>
+            </div>
           </div>
+
+          {/* 🔄 REFRESH BUTTON (TOP RIGHT) */}
+          <button
+            onClick={refreshCampaigns}
+            disabled={refreshing}
+            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center gap-2 disabled:opacity-50"
+          >
+            {refreshing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <RefreshCcw className="w-4 h-4" />
+            )}
+            Refresh
+          </button>
         </div>
 
         {/* CAMPAIGN SELECT */}
@@ -128,7 +176,7 @@ export default function AssignedCampaigns({
             onChange={(e) => setSelectedCampaign(e.target.value)}
           >
             <option value="">Select Campaign</option>
-            {campaigns.map((camp) => (
+            {localCampaigns.map((camp) => (
               <option key={camp.DA_ID} value={camp.DA_ID}>
                 {camp.CAMPAIGN_NAME}
               </option>
@@ -150,13 +198,20 @@ export default function AssignedCampaigns({
         </div>
 
         {/* TABLE */}
+        {/* TABLE */}
         {tableLoading ? (
           <div className="text-center py-20 text-slate-400">
             Loading assigned data...
           </div>
         ) : assignedData.length === 0 ? (
-          <div className="text-center py-20 text-slate-400">
-            No assigned data
+          <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-slate-900/30 backdrop-blur-sm p-12">
+            <Download className="w-20 h-20 mx-auto mb-6 text-slate-500" />
+            <h3 className="text-2xl font-bold text-slate-400 mb-2">
+              No assigned data
+            </h3>
+            <p className="text-slate-500">
+              Select a campaign to view assigned leads
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -174,7 +229,6 @@ export default function AssignedCampaigns({
               <tbody className="divide-y divide-slate-700">
                 {assignedData.map((row, index) => {
                   const rowKey = `${row.DA_ID}-${index}`;
-
                   return (
                     <tr key={rowKey} className="hover:bg-slate-800">
                       <td className="px-4 py-3">{index + 1}</td>

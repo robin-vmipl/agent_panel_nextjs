@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Loader2, Play, ChevronDown } from "lucide-react";
+import { Phone, Loader2, Play, ChevronDown, Download } from "lucide-react";
 import { apiFetch } from "@/app/lib/api";
 import toast from "react-hot-toast";
 
@@ -36,7 +36,11 @@ export default function AutoCampaignDialer({
   const [dialingCalls, setDialingCalls] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [refreshing, setRefreshing] = useState(false);
+  const [localDialerCampaigns, setLocalDialerCampaigns] =
+    useState<AutoCampaign[]>(dialerCampaigns);
 
+  // 🔹 FETCH AUTO CAMPAIGN DATA
   const fetchAutoCampaignData = async () => {
     if (!selectedCampaign) {
       toast.error("Please select an auto campaign");
@@ -60,7 +64,6 @@ export default function AutoCampaignDialer({
       setAutoData(response.data || []);
       toast.success(`Loaded ${response.data?.length || 0} auto dial records`);
     } catch (error: any) {
-      // toast.error(error.message || "Failed to fetch auto campaign data");
       console.error("Fetching auto campaign data failed:", error);
       setAutoData([]);
     } finally {
@@ -68,12 +71,12 @@ export default function AutoCampaignDialer({
     }
   };
 
+  // 🔹 HANDLE AUTO DIAL
   const handleAutoDial = async (row: AutoCampaignData) => {
     const rowKey = row.campaign_id + row.customer_number;
     setDialingCalls((prev) => ({ ...prev, [rowKey]: true }));
 
     try {
-      // First API call - AutoCampaign
       const params1 = new URLSearchParams({
         action: "AutoCampaign",
         customer_number: row.customer_number,
@@ -82,7 +85,7 @@ export default function AutoCampaignDialer({
         user_group: agentConfig.user_group,
         vispl_id: agentConfig.vispl_id,
         dialType: "ASD",
-        DA_ID: "0", // Default as per your code
+        DA_ID: "0",
         campaign_id: row.campaign_id,
       });
 
@@ -100,7 +103,6 @@ export default function AutoCampaignDialer({
       if (response1.message.startsWith("00")) {
         const rowId = response1.message.split("-")[1];
 
-        // Second API call - AUTOCAMP
         const params2 = new URLSearchParams({
           action: "AUTOCAMP",
           customer_number: row.customer_number,
@@ -121,7 +123,6 @@ export default function AutoCampaignDialer({
           )}... Webphone ringing!`
         );
 
-        // Remove from table
         setAutoData((prev) =>
           prev.filter(
             (item) =>
@@ -131,66 +132,113 @@ export default function AutoCampaignDialer({
         );
       }
     } catch (error: any) {
-      // toast.error(error.message || "Auto dial failed");
       console.error("Auto dial failed:", error);
     } finally {
       setDialingCalls((prev) => ({ ...prev, [rowKey]: false }));
     }
   };
 
+  // 🔹 FORMAT TIME
   const formatTime = (timeString: string) => {
     return new Date(timeString).toLocaleString("en-IN");
+  };
+
+  // 🔹 REFRESH CAMPAIGNS
+  const refreshCampaigns = async () => {
+    setRefreshing(true);
+    try {
+      const data = await apiFetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-campaigns`,
+        { showToast: false }
+      );
+      const updatedCampaigns = data?.dialer_campaigns || [];
+      setLocalDialerCampaigns(updatedCampaigns);
+
+      if (
+        selectedCampaign &&
+        !updatedCampaigns.some(
+          (c: AutoCampaign) => c.CAMPAIGN_NAME === selectedCampaign
+        )
+      ) {
+        setSelectedCampaign("");
+        setAutoData([]);
+      }
+
+      toast.success("Campaign list refreshed");
+    } catch (error) {
+      console.error("Failed to refresh campaigns:", error);
+      toast.error("Failed to refresh campaigns");
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   return (
     <div className="mt-12">
       <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 bg-panel rounded-2xl flex items-center justify-center shadow-lg">
-            <Play className="w-6 h-6 text-foreground" />
+        {/* HEADER */}
+        <div className="flex items-start justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-panel rounded-2xl flex items-center justify-center shadow-lg">
+              <Play className="w-6 h-6 text-foreground" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold bg-linear-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
+                Auto Campaign Dialer
+              </h2>
+              <p className="text-slate-400 mt-1">
+                Automated campaigns - Ready to dial
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-3xl font-bold bg-linear-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
-              Auto Campaign Dialer
-            </h2>
-            <p className="text-slate-400 mt-1">
-              Automated campaigns - Ready to dial
-            </p>
-          </div>
+
+          {/* 🔄 REFRESH BUTTON (TOP RIGHT) */}
+          <button
+            onClick={refreshCampaigns}
+            disabled={refreshing}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-sm flex items-center gap-2 disabled:opacity-50"
+          >
+            {refreshing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            Refresh
+          </button>
         </div>
 
         {/* Campaign Selector */}
-        <div className="theme-panel rounded-2xl p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-            <select
-              className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white font-medium focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-              value={selectedCampaign}
-              onChange={(e) => setSelectedCampaign(e.target.value)}
-            >
-              <option value="">Select Auto Campaign</option>
-              {dialerCampaigns.map((camp) => (
-                <option key={camp.CAMPAIGN_NAME} value={camp.CAMPAIGN_NAME}>
-                  {camp.CAMPAIGN_NAME}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={fetchAutoCampaignData}
-              disabled={loading || !selectedCampaign}
-              className={`px-8 py-3 font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 ${
-                loading || !selectedCampaign
-                  ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
-                  : "bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 hover:shadow-orange-500/50 hover:scale-[1.02] text-white"
-              }`}
-            >
-              {tableLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <ChevronDown className="w-5 h-5" />
-              )}
-              Load Campaign
-            </button>
-          </div>
+        <div className="theme-panel rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-4 items-start md:items-center">
+          <select
+            className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white font-medium focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+            value={selectedCampaign}
+            onChange={(e) => setSelectedCampaign(e.target.value)}
+          >
+            <option value="">Select Auto Campaign</option>
+            {localDialerCampaigns.map((camp) => (
+              <option key={camp.CAMPAIGN_NAME} value={camp.CAMPAIGN_NAME}>
+                {camp.CAMPAIGN_NAME}
+              </option>
+            ))}
+          </select>
+
+          {/* Load Campaign Button */}
+          <button
+            onClick={fetchAutoCampaignData}
+            disabled={loading || !selectedCampaign}
+            className={`px-8 py-3 font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 ${
+              loading || !selectedCampaign
+                ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
+                : "bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 hover:shadow-orange-500/50 hover:scale-[1.02] text-white"
+            }`}
+          >
+            {tableLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <ChevronDown className="w-5 h-5" />
+            )}
+            Load Campaign
+          </button>
         </div>
 
         {/* Auto Campaign Table */}
@@ -223,9 +271,6 @@ export default function AutoCampaignDialer({
                     <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-35">
                       Number
                     </th>
-                    {/* <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-40">
-                      Start Time
-                    </th> */}
                     <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider min-w-25">
                       Status
                     </th>
@@ -244,7 +289,7 @@ export default function AutoCampaignDialer({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
-                  {autoData.map((row, index) => {
+                  {autoData.map((row) => {
                     const rowKey = row.campaign_id + row.customer_number;
                     return (
                       <tr key={rowKey} className="hover:bg-slate-800/50 group">
@@ -254,9 +299,6 @@ export default function AutoCampaignDialer({
                         <td className="px-4 py-4 text-sm font-mono text-emerald-400 font-semibold">
                           {row.customer_number}
                         </td>
-                        {/* <td className="px-4 py-4 text-sm text-slate-300">
-                          {formatTime(row.start_time)}
-                        </td> */}
                         <td className="px-4 py-4">
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-semibold ${
