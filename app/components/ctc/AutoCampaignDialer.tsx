@@ -180,7 +180,7 @@ export default function AutoCampaignDialer({
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-panel rounded-2xl flex items-center justify-center shadow-lg">
-              <Play className="w-6 h-6 text-foreground" />
+              <Play className="w-6 h-6 text-orange-400" />
             </div>
             <div>
               <h2 className="text-3xl font-bold bg-linear-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">

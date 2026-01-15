@@ -186,7 +186,11 @@ export default function AssignedCampaigns({
           <button
             onClick={fetchAssignedData}
             disabled={!selectedCampaign || tableLoading}
-            className="px-8 py-3 bg-blue-600 text-white rounded-xl flex items-center gap-2 disabled:opacity-50"
+            className={`px-8 py-3 font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 ${
+              !selectedCampaign || tableLoading
+                ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
+                : "bg-linear-to-r from-blue-600 to-indigo-500 hover:from-blue-700 hover:to-indigo-600 hover:shadow-blue-500/50 hover:scale-[1.02] text-white"
+            }`}
           >
             {tableLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -197,7 +201,6 @@ export default function AssignedCampaigns({
           </button>
         </div>
 
-        {/* TABLE */}
         {/* TABLE */}
         {tableLoading ? (
           <div className="text-center py-20 text-slate-400">
@@ -219,10 +222,10 @@ export default function AssignedCampaigns({
               <thead className="bg-slate-900 border-b border-slate-700">
                 <tr>
                   <th className="px-4 py-3 text-left">Sr</th>
+                  <th className="px-4 py-3 text-left">Number</th>
+                  <th className="px-4 py-3 text-left">Name</th>
                   <th className="px-4 py-3 text-left">State</th>
                   <th className="px-4 py-3 text-left">District</th>
-                  <th className="px-4 py-3 text-left">Name</th>
-                  <th className="px-4 py-3 text-left">Number</th>
                   <th className="px-4 py-3 text-center">Action</th>
                 </tr>
               </thead>
@@ -231,16 +234,24 @@ export default function AssignedCampaigns({
                   const rowKey = `${row.DA_ID}-${index}`;
                   return (
                     <tr key={rowKey} className="hover:bg-slate-800">
-                      <td className="px-4 py-3">{index + 1}</td>
-                      <td className="px-4 py-3">{row.State}</td>
-                      <td className="px-4 py-3">{row.District}</td>
-                      <td className="px-4 py-3">{row.VLEName}</td>
-                      <td className="px-4 py-3 font-mono">{row.CUST_NUM}</td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-3 text-sm">{index + 1}</td>
+                      <td className="px-4 py-3 font-mono text-emerald-400 font-semibold text-sm">
+                        {row.CUST_NUM}
+                      </td>
+                      <td className="px-4 py-3 text-sm">{row.VLEName}</td>
+                      <td className="px-4 py-3 text-sm">{row.State}</td>
+                      <td className="px-4 py-3 text-sm">{row.District}</td>
+                      <td className="px-4 py-3 text-center text-sm">
                         <button
                           onClick={() => handleDial(row, index)}
                           disabled={dialingRow === rowKey}
-                          className="px-5 py-2 bg-blue-600 text-white rounded-xl flex items-center gap-2 mx-auto disabled:opacity-50"
+                          className="mx-auto px-6 py-2.5 bg-linear-to-r from-blue-600 to-indigo-500
+                            hover:from-blue-700 hover:to-indigo-600
+                            text-white font-semibold rounded-xl
+                            shadow-lg hover:shadow-blue-500/50
+                            hover:scale-[1.02] transition-all
+                            flex items-center gap-2
+                            disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
                         >
                           {dialingRow === rowKey ? (
                             <Loader2 className="w-4 h-4 animate-spin" />

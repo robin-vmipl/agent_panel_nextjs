@@ -37,10 +37,10 @@ export default function ManualDial({
           process.env.NEXT_PUBLIC_API_URL
         }/agent/click-to-call?${params.toString()}`
       );
+
       toast.success(`Calling ${phonenumber.slice(-4)}...`);
       setPhonenumber("");
     } catch (error: any) {
-      // toast.error(error.message || "Call failed");
       console.error("Manual dial failed:", error);
     } finally {
       setLoading(false);
@@ -51,11 +51,25 @@ export default function ManualDial({
 
   return (
     <div className={`w-full ${className}`}>
+      <div className="flex items-center gap-4 mb-6  ">
+        <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 flex items-center justify-center shadow-lg">
+          <Phone className="w-6 h-6 text-emerald-400" />
+        </div>
+
+        <div>
+          <h2 className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent transition-all]">Manual Dial
+          </h2>
+
+          <p className="text-slate-400 text-sm mt-1">
+            Quickly dial any 10-digit number manually
+          </p>
+        </div>
+      </div>
+
       {/* MOBILE: Stacked Layout */}
       <div className="block lg:hidden">
         <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl">
           <div className="theme-panel rounded-3xl p-3 space-y-3">
-            {/* Input - Full Width */}
             <input
               type="text"
               maxLength={10}
@@ -68,7 +82,6 @@ export default function ManualDial({
               disabled={loading}
             />
 
-            {/* Button Below - Mobile Only */}
             <button
               onClick={handleManualDial}
               disabled={isDisabled}
