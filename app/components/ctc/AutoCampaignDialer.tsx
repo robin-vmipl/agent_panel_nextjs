@@ -177,7 +177,8 @@ export default function AutoCampaignDialer({
     <div className="mt-12">
       <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
         {/* HEADER */}
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-8">
+          {" "}
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-panel rounded-2xl flex items-center justify-center shadow-lg">
               <Play className="w-6 h-6 text-orange-400" />
@@ -191,12 +192,18 @@ export default function AutoCampaignDialer({
               </p>
             </div>
           </div>
-
           {/* 🔄 REFRESH BUTTON (TOP RIGHT) */}
           <button
             onClick={refreshCampaigns}
             disabled={refreshing}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center gap-2 disabled:opacity-50 text-slate-400"
+            className="
+                w-full md:w-auto
+                px-4 py-2
+                bg-slate-700 hover:bg-slate-600
+                rounded-xl text-sm
+                flex items-center justify-center gap-2
+                disabled:opacity-50 text-slate-400
+              "
           >
             {refreshing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -210,7 +217,14 @@ export default function AutoCampaignDialer({
         {/* Campaign Selector */}
         <div className="theme-panel rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-4 items-start md:items-center">
           <select
-            className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white font-medium focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+            className="
+              w-full md:flex-1
+              px-4 py-3
+              bg-slate-800/50 border border-slate-600
+              rounded-xl text-white font-medium
+              focus:ring-2 focus:ring-orange-500 focus:border-transparent
+              transition-all
+                   "
             value={selectedCampaign}
             onChange={(e) => setSelectedCampaign(e.target.value)}
           >
@@ -226,11 +240,17 @@ export default function AutoCampaignDialer({
           <button
             onClick={fetchAutoCampaignData}
             disabled={loading || !selectedCampaign}
-            className={`px-8 py-3 font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 ${
-              loading || !selectedCampaign
-                ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
-                : "bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 hover:shadow-orange-500/50 hover:scale-[1.02] text-white"
-            }`}
+            className={`
+              w-full md:w-auto
+              px-8 py-3
+              font-bold rounded-xl shadow-lg transition-all
+              flex items-center justify-center gap-2
+              ${
+                loading || !selectedCampaign
+                  ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
+                  : "bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 hover:shadow-orange-500/50 hover:scale-[1.02] text-white"
+              }
+            `}
           >
             {tableLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
