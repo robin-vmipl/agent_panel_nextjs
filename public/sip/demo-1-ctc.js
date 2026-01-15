@@ -28495,7 +28495,7 @@ THE SOFTWARE.
             },
             onCallAnswered: () => {
                 console.log(`[${displayName}] Call answered`);
-                if (window.onCallAnswered) window.onCallAnswered(); // 🔥 ANSWERED
+                if (window.onCallAnswered) window.onCallAnswered(); //   ANSWERED
 
                 //UPDATE SIP DATA
                 window.SIP_CALL_DATA.update(
@@ -28512,7 +28512,7 @@ THE SOFTWARE.
             },
             onCallHangup: () => {
                 console.log(`[${displayName}] Call hangup`);
-                if (window.onCallHangup) window.onCallHangup(); // 🔥 ENDED
+                if (window.onCallHangup) window.onCallHangup(); //   ENDED
                 window.SIP_CALL_DATA.update("", "", "ended");
 
                 STATE = STATES.DEFAULT;
@@ -28534,7 +28534,7 @@ THE SOFTWARE.
             },
             onCallReceived: async () => {
                 console.log("Incoming Call!");
-                if (window.onCallReceived) window.onCallReceived(); // 🔥 RINGING
+                if (window.onCallReceived) window.onCallReceived(); //   RINGING
                 STATE = STATES.INCOMING;
                 // console.log("SIP HEADER : ",simpleUser);
                 const incomingNum = getIncomingRequestNumber(simpleUser);

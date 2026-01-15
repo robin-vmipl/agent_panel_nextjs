@@ -47,7 +47,7 @@ export default function NavbarCrmButton() {
     }
   };
 
-  // 🔥 SIP GLOBAL DATA CHECK (NO DOM PARSING!)
+  //   SIP GLOBAL DATA CHECK (NO DOM PARSING!)
   useEffect(() => {
     const checkSipStatus = () => {
       const sipData = (window as any).SIP_CALL_DATA;
@@ -68,9 +68,7 @@ export default function NavbarCrmButton() {
 
   // HIDE BUTTON - SHOW PLACEHOLDER
   if (!showButton) {
-    return (
-      <div className="w-30 h-10 rounded-2xl animate-pulse opacity-30" />
-    );
+    return <div className="w-30 h-10 rounded-2xl animate-pulse opacity-30" />;
   }
 
   return (

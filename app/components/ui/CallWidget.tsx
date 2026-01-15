@@ -151,7 +151,7 @@ export default function CallWidget() {
   const callStateCheckRef = useRef<NodeJS.Timeout | null>(null);
   const currentCallIdRef = useRef<string>("");
 
-  // 🔥 ALL FUNCTIONS
+  //   ALL FUNCTIONS
   const handleToggle = useCallback(() => {
     setOpen((prev) => !prev);
   }, []);
@@ -277,7 +277,7 @@ export default function CallWidget() {
     resetTimer();
   };
 
-  // 🔥 SIP EVENT HANDLERS
+  //   SIP EVENT HANDLERS
   useEffect(() => {
     const handleCallReceived = () => {
       setIsInCall(true);
@@ -308,7 +308,7 @@ export default function CallWidget() {
     };
   }, []);
 
-  // 🔥 CALL DURATION TIMER
+  //   CALL DURATION TIMER
   useEffect(() => {
     if (isInCall && !durationIntervalRef.current) {
       durationIntervalRef.current = setInterval(() => {
@@ -332,7 +332,7 @@ export default function CallWidget() {
     };
   }, [isInCall]);
 
-  // 🔥 SIP CONFIG
+  //   SIP CONFIG
   useEffect(() => {
     if (sipConfig.username && sipConfig.password && isAuthenticated) {
       (window as any).SIP_USERNAME = sipConfig.username;
@@ -343,7 +343,7 @@ export default function CallWidget() {
     }
   }, [sipConfig.username, sipConfig.password, isAuthenticated]);
 
-  // 🔥 STATUS CHECK + GLOBAL SIP DATA
+  //   STATUS CHECK + GLOBAL SIP DATA
   useEffect(() => {
     const checkStatus = () => {
       const muteCheckbox = document.querySelector("#mute") as HTMLInputElement;
@@ -382,21 +382,21 @@ export default function CallWidget() {
     };
   }, []);
 
-  // 🔥 FETCH INGROUPS ON ANSWER
+  //   FETCH INGROUPS ON ANSWER
   useEffect(() => {
     if (isAnswered) {
       fetchIngroups();
     }
   }, [isAnswered, fetchIngroups]);
 
-  // 🔥 AUTO CRM - GLOBAL SIP DATA VERSION (NO DOM PARSING!)
+  //   AUTO CRM - GLOBAL SIP DATA VERSION (NO DOM PARSING!)
   useEffect(() => {
     if (isAnswered && !hasOpenedCrm) {
       console.log("🎤 SIP Call answered - Auto opening CRM...");
 
       const openCrmOnce = async () => {
         try {
-          // 🔥 USE GLOBAL SIP DATA DIRECTLY
+          //   USE GLOBAL SIP DATA DIRECTLY
           const sipData = (window as any).SIP_CALL_DATA;
           const incomingNum = sipData?.currentIncomingNumber || "";
 

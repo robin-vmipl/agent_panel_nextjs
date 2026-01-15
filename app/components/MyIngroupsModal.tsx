@@ -19,12 +19,12 @@ export default function MyIngroupsModal({
 
   return (
     <div className="fixed inset-0 z-1000 bg-black/30 backdrop-blur-sm">
-      {/* 🔥 POSITIONED LIKE StatusDropdown - RIGHT SIDE ALIGN */}
+      {/*   POSITIONED LIKE StatusDropdown - RIGHT SIDE ALIGN */}
       <div className="absolute right-0 mt-3 mr-6 w-80 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-slate-900/50 z-100 animate-in slide-in-from-right-2 duration-200 overflow-hidden max-h-[80vh]">
-        {/* 🔥 DROPDOWN GLOW */}
+        {/*   DROPDOWN GLOW */}
         <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-2xl blur-xl animate-pulse -z-10 pointer-events-none" />
 
-        {/* 🔥 HEADER */}
+        {/*   HEADER */}
         <div className="relative z-10 p-4 border-b border-slate-700/30 flex items-center justify-between">
           <div className="space-y-1">
             <h2 className="text-lg font-black bg-linear-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
@@ -42,7 +42,7 @@ export default function MyIngroupsModal({
           </button>
         </div>
 
-        {/* 🔥 CONTENT - SCROLLABLE - FIXED HEIGHT */}
+        {/*   CONTENT - SCROLLABLE - FIXED HEIGHT */}
         <div className="relative z-20 max-h-100 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/50 scrollbar-track-slate-900/20 p-4 space-y-3">
           {ingroups.length === 0 ? (
             <div className="text-center py-12">
@@ -97,7 +97,7 @@ export default function MyIngroupsModal({
           )}
         </div>
 
-        {/* 🔥 FOOTER */}
+        {/*   FOOTER */}
         <div className="relative z-20 p-4 border-t border-slate-700/30">
           <button
             onClick={onClose}

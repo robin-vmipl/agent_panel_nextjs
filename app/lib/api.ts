@@ -30,11 +30,11 @@ export async function apiFetch(
   const {
     skipLogoutOn401 = false,
     showToast = true,
-    isCtcPage = false, // 🔥 NEW: CTC SILENT MODE
+    isCtcPage = false, //   NEW: CTC SILENT MODE
     ...fetchOptions
   } = options;
 
-  // 🔥 SMART TOAST LOGIC
+  //   SMART TOAST LOGIC
   const shouldShowToast = showToast && !isCtcPage;
 
   /* 🌐 OFFLINE DETECTION */
@@ -107,7 +107,7 @@ export async function apiFetch(
   if (!res.ok) {
     const message = data?.message || data?.error || "Something went wrong";
 
-    // 🔥 NO TOASTS - Let caller handle (CTC UI, Dashboard lists)
+    //   NO TOASTS - Let caller handle (CTC UI, Dashboard lists)
     if (shouldShowToast) {
       toast.error(message);
     }

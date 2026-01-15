@@ -80,7 +80,7 @@ export default function CTCPage() {
     };
   }, [loadData]);
 
-  // 🔥 ERROR UI
+  //   ERROR UI
   if (apiError && hasShownError.current) {
     return (
       <div className="theme-surface backdrop-blur-3xl p-8 rounded-3xl border border-red-500/30 m-6">

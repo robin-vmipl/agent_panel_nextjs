@@ -19,7 +19,7 @@ export default function Navbar({
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
   const [isMobileNavbarOpen, setIsMobileNavbarOpen] = useState(false);
 
-  // 🔥 STATUSDROPDOWN WRAPPER - DISABLE ON CTC
+  //   STATUSDROPDOWN WRAPPER - DISABLE ON CTC
   const StatusDropdownWrapper = () => (
     <div
       className={pathname === "/ctc" ? "pointer-events-none opacity-50" : ""}
@@ -45,7 +45,7 @@ export default function Navbar({
 
   return (
     <>
-      {/* 🔥 NAVBAR OVERLAY - Mobile Only */}
+      {/*   NAVBAR OVERLAY - Mobile Only */}
       {isMobileNavbarOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/60 z-65"
@@ -69,7 +69,7 @@ export default function Navbar({
 
         {/* Right: Controls */}
         <div className="flex items-center gap-2 lg:gap-3 relative">
-          {/* 🔥 MOBILE: Breadcrumb Dropdown */}
+          {/*   MOBILE: Breadcrumb Dropdown */}
           <div className="lg:hidden">
             <button
               onClick={() => setIsMobileNavbarOpen(!isMobileNavbarOpen)}
@@ -78,7 +78,7 @@ export default function Navbar({
               <ChevronLeft className="w-5 h-5 rotate-180 group-hover:rotate-0 transition-transform duration-200" />
             </button>
 
-            {/* 🔥 MOBILE NAVBAR DROPDOWN */}
+            {/*   MOBILE NAVBAR DROPDOWN */}
             {isMobileNavbarOpen && (
               <div className="absolute top-full right-0 mt-2 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl z-75 py-3">
                 <div className="px-3 space-y-2">
@@ -87,7 +87,7 @@ export default function Navbar({
                     <NavbarCrmButton />
                   </div>
 
-                  {/* 🔥 STATUSDROPDOWN WRAPPER - DISABLED ON CTC */}
+                  {/*   STATUSDROPDOWN WRAPPER - DISABLED ON CTC */}
                   <div
                     className={`p-3 rounded-xl hover:bg-slate-700/50 transition-colors ${
                       pathname === "/ctc" ? "opacity-50 cursor-not-allowed" : ""
@@ -142,11 +142,11 @@ export default function Navbar({
             )}
           </div>
 
-          {/* 🔥 DESKTOP: Show All Controls Inline */}
+          {/*   DESKTOP: Show All Controls Inline */}
           <div className="hidden lg:flex items-center gap-3">
             <NavbarCrmButton />
 
-            {/* 🔥 STATUSDROPDOWN WRAPPER - DISABLED ON CTC */}
+            {/*   STATUSDROPDOWN WRAPPER - DISABLED ON CTC */}
             <StatusDropdownWrapper />
 
             <MyIngroupsButton />

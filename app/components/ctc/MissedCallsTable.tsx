@@ -22,7 +22,7 @@ interface MissedCallsTableProps {
   agentConfig: any;
   missedCalls: MissedCall[];
   loading: boolean;
-  onCallDialed: (dialedCallId: string) => void; // 🔥 CALLBACK ADDED
+  onCallDialed: (dialedCallId: string) => void; //   CALLBACK ADDED
 }
 
 export default function MissedCallsTable({
@@ -67,7 +67,7 @@ export default function MissedCallsTable({
         toast.success(
           `✅ Calling ${call.customer_number.slice(-4)}... Webphone ringing!`
         );
-        onCallDialed(call.id); // 🔥 REMOVE FROM PARENT STATE
+        onCallDialed(call.id); //   REMOVE FROM PARENT STATE
         return;
       }
 
