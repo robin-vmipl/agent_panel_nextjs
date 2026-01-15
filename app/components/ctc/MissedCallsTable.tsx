@@ -151,14 +151,14 @@ export default function MissedCallsTable({
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-400 min-w-45">
+                <td className="px-6 py-4 text-sm text-slate-400 min-w-45 font-mono">
                   {formatTime(call.call_start_time)}
                 </td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleTableDial(call)}
                     disabled={dialingCalls[call.id]}
-                    className="px-5 py-2 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600
+                    className="px-5 py-2 bg-linear-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600
                                 text-white text-sm font-semibold
                                 rounded-xl
                                 flex items-center gap-2

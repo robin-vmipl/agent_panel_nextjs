@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Loader2, Play, ChevronDown, Download } from "lucide-react";
+import { Phone, Loader2, Play, ChevronDown, RefreshCcw } from "lucide-react";
 import { apiFetch } from "@/app/lib/api";
 import toast from "react-hot-toast";
 
@@ -201,7 +201,7 @@ export default function AutoCampaignDialer({
             {refreshing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <Download className="w-4 h-4" />
+              <RefreshCcw className="w-4 h-4" />
             )}
             Refresh
           </button>
@@ -293,7 +293,7 @@ export default function AutoCampaignDialer({
                     const rowKey = row.campaign_id + row.customer_number;
                     return (
                       <tr key={rowKey} className="hover:bg-slate-800/50 group">
-                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                        <td className="px-4 py-4 text-sm font-mono text-slate-400">
                           {row.campaign_id}
                         </td>
                         <td className="px-4 py-4 text-sm font-mono text-emerald-400 font-semibold">
@@ -312,10 +312,10 @@ export default function AutoCampaignDialer({
                             {row.status}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-sm text-orange-400">
+                        <td className="px-4 py-4 text-sm text-orange-400 ">
                           {row.circle}
                         </td>
-                        <td className="px-4 py-4 text-sm text-slate-300">
+                        <td className="px-4 py-4 text-sm text-slate-400 font-mono">
                           {formatTime(row.event_date)}
                         </td>
                         <td className="px-4 py-4 text-sm font-medium text-orange-400">

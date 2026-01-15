@@ -139,10 +139,12 @@ export default function AssignedCampaigns({
         {/* HEADER */}
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Download className="w-10 h-10 text-blue-400" />
+            <div className="w-12 h-12 bg-panel rounded-2xl flex items-center justify-center shadow-lg">
+              <Download className="w-6 h-6 text-blue-400" />
+            </div>{" "}
             <div>
               <h2 className="text-3xl font-bold text-blue-400">
-                Assigned Campaigns
+                Assigned Campaigns{" "}
                 <span className="text-3xl font-bold text-blue-400">
                   ({assignedData.length})
                 </span>
@@ -253,13 +255,13 @@ export default function AssignedCampaigns({
                         <td className="px-4 py-4 font-mono text-emerald-400 font-semibold text-sm">
                           {row.CUST_NUM}
                         </td>
-                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                        <td className="px-4 py-4 text-sm font-mono text-slate-400">
                           {row.VLEName}
                         </td>
-                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                        <td className="px-4 py-4 text-sm font-mono text-slate-400">
                           {row.State}
                         </td>
-                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                        <td className="px-4 py-4 text-sm font-mono text-slate-400">
                           {row.District}
                         </td>
                         <td className="px-4 py-4 text-center text-sm">

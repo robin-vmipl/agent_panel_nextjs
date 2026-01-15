@@ -12,7 +12,7 @@ import AssignedCampaignsSkeleton from "@/app/components/ui/AssignedCampaignsSkel
 import AutoDialerSkeleton from "@/app/components/ui/AutoDialerSkeleton";
 import { useAgentStatus } from "@/app/utils/useAgentStatus";
 import { useSipStatus } from "@/app/utils/useSipStatus";
-import { useOffline } from "@/app/utils/useOffline";
+import { Phone } from "lucide-react";
 
 export default function CTCPage() {
   useAgentStatus();
@@ -28,14 +28,6 @@ export default function CTCPage() {
   const [dialerCampaigns, setDialerCampaigns] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
-
-  useEffect(() => {
-    isMounted.current = true;
-    loadData();
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
 
   const loadData = useCallback(async () => {
     if (hasShownError.current || !isMounted.current) return;
@@ -80,10 +72,18 @@ export default function CTCPage() {
     }
   }, []);
 
-  // 🔥 UNIFIED COMPACT ERROR UI (Dashboard Style)
+  useEffect(() => {
+    isMounted.current = true;
+    loadData();
+    return () => {
+      isMounted.current = false;
+    };
+  }, [loadData]);
+
+  // 🔥 ERROR UI
   if (apiError && hasShownError.current) {
     return (
-      <div className="theme-surface backdrop-blur-3xl p-8 rounded-3xl border border-red-500/30">
+      <div className="theme-surface backdrop-blur-3xl p-8 rounded-3xl border border-red-500/30 m-6">
         <p className="text-red-400 font-semibold">⚠ Unable to load CTC data</p>
         <p className="text-slate-400 text-sm mt-2">
           {apiError === "Offline" ? "No internet connection" : apiError}
@@ -112,17 +112,14 @@ export default function CTCPage() {
     );
   }
 
-  // LOADING
+  // LOADING SKELETON
   if (isLoading) {
     return (
       <div className="min-h-screen pb-12 bg-background text-foreground">
         <div className="max-w-6xl mx-auto px-6 pt-6">
           <ManualDialSkeleton />
-          <div className="flex justify-end mt-4">
-            <div className="h-6 w-32 bg-slate-700/50 rounded-lg animate-pulse"></div>
-          </div>
         </div>
-        <div className="max-w-6xl mx-auto px-6 mt-12">
+        <div className="max-w-6xl mx-auto px-6 mt-12 space-y-6">
           <MissedCallsSkeleton />
           <AssignedCampaignsSkeleton />
           <AutoDialerSkeleton />
@@ -145,44 +142,40 @@ export default function CTCPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 mt-12">
-        <div className="flex items-center gap-4 mb-8">
-          <svg
-            className="w-10 h-10 text-amber-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <div>
-            <h2 className="text-3xl font-bold bg-linear-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-              Missed Calls ({missedCalls.length})
-            </h2>
-            <p className="text-slate-400 mt-1">
-              Click DIAL to callback (dialed calls auto-remove)
-            </p>
+        <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl p-6">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-panel rounded-2xl flex items-center justify-center shadow-lg">
+              <Phone className="w-6 h-6 text-amber-600" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold bg-linear-to-r from-amber-600 to-amber-500 bg-clip-text text-transparent">
+                Missed Calls ({missedCalls.length})
+              </h2>
+              <p className="text-slate-400 mt-1">
+                Click DIAL to callback (dialed calls auto-remove)
+              </p>
+            </div>
           </div>
-        </div>
 
-        <MissedCallsTable
-          agentConfig={agentConfig}
-          missedCalls={missedCalls}
-          loading={tableLoading}
-          onCallDialed={(dialedCallId: string) => {
-            setMissedCalls((prev) => {
-              const newCalls = prev.filter((call) => call.id !== dialedCallId);
-              console.log(
-                `Removed dialed call ${dialedCallId}. Remaining: ${newCalls.length}`
+          {/* TABLE */}
+          <MissedCallsTable
+            agentConfig={agentConfig}
+            missedCalls={missedCalls}
+            loading={tableLoading}
+            onCallDialed={(dialedCallId: string) => {
+              setMissedCalls((prev) =>
+                prev.filter((call) => call.id !== dialedCallId)
               );
-              return newCalls;
-            });
-          }}
-        />
+            }}
+          />
+        </div>
+      </div>
 
+      <div className="max-w-6xl mx-auto px-6 mt-12">
         <AssignedCampaigns agentConfig={agentConfig} campaigns={campaigns} />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 mt-12">
         <AutoCampaignDialer
           agentConfig={agentConfig}
           dialerCampaigns={dialerCampaigns}

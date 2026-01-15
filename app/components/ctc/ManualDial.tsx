@@ -57,7 +57,8 @@ export default function ManualDial({
         </div>
 
         <div>
-          <h2 className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent transition-all]">Manual Dial
+          <h2 className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent transition-all]">
+            Manual Dial
           </h2>
 
           <p className="text-slate-400 text-sm mt-1">
