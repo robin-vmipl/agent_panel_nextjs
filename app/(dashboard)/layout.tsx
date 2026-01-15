@@ -19,13 +19,13 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-linear-to-br from-background/70 to-background/70 text-foreground flex">
       {/* <div className="min-h-screen bg-linear-to-br from-slate-800/70 to-slate-900/70 text-foreground flex"> */}
 
-      {/* 🔥 SIDEBAR */}
+      {/* SIDEBAR */}
       <Sidebar
         isMobileOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
       />
 
-      {/* 🔥 MAIN CONTENT */}
+      {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar
           onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

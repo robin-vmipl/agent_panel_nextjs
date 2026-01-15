@@ -9,12 +9,12 @@
   --accent: #10b981;
 }
 
-@theme inline {
+/* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
+} */
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -34,7 +34,7 @@ body {
 /* Theme variants applied to the root element */
 html[data-theme="light"] {
   --background: #f7fafc; /* light cool background */
-  --foreground: #0b1220; /* strong dark text for readability */
+  --foreground: #94a3b8; /* strong dark text for readability old:0b1220 */
   --muted: #475569; /* muted gray-blue */
   --accent: #2563eb; /* pleasant blue accent */
   --emerald: #059669;
@@ -46,7 +46,7 @@ html[data-theme="light"] {
 
 html[data-theme="dark"] {
   --background: #0b151d;
-  --foreground: #e6eef8;
+  --foreground: #94a3b8; /*old e6eef8*/
   --muted: #94a3b8;
   --accent: #10b981;
   --emerald: #10b981;

@@ -260,7 +260,7 @@ export default function AssignedCampaigns({
                     const rowKey = `${row.DA_ID}-${index}`;
                     return (
                       <tr key={rowKey} className="hover:bg-slate-800/50 group">
-                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                        <td className="px-4 py-4 text-sm font-mono text-slate-400">
                           {index + 1}
                         </td>
                         <td className="px-4 py-4 font-mono text-emerald-400 font-semibold text-sm">
