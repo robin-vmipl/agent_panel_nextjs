@@ -16,7 +16,9 @@ export default function DashboardLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-800/70 to-slate-900/70 text-foreground flex">
+    <div className="min-h-screen bg-linear-to-br from-background/70 to-background/70 text-foreground flex">
+      {/* <div className="min-h-screen bg-linear-to-br from-slate-800/70 to-slate-900/70 text-foreground flex"> */}
+
       {/* 🔥 SIDEBAR */}
       <Sidebar
         isMobileOpen={isMobileMenuOpen}
