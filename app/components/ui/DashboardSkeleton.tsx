@@ -15,7 +15,7 @@ export function SummarySkeleton() {
 
 export function ActivitySkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mt-5">
       {[...Array(5)].map((_, i) => (
         <div
           key={i}

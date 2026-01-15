@@ -20,9 +20,9 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const [isInCall, setIsInCall] = useState(false);
-  const [agentStatus, setAgentStatus] = useState("INACTIVE"); // 🔥 NEW STATE
+  const [agentStatus, setAgentStatus] = useState("INACTIVE"); 
 
-  // 🔥 AGENT STATUS + CALL STATUS
+  //  AGENT STATUS + CALL STATUS
   useEffect(() => {
     const checkStatus = () => {
       // Agent status from localStorage (updated by StatusDropdown)
@@ -49,7 +49,7 @@ export default function Sidebar({
       return false;
     }
 
-    // 🔥 CTC BLOCK - STATUS NOT ACTIVE
+    //  CTC BLOCK - STATUS NOT ACTIVE
     if (href === "/ctc" && agentStatus !== "ACTIVE") {
       toast.error("Activate status from Dashboard first!", {
         id: "sidebar-ctc-block",
@@ -119,7 +119,7 @@ export default function Sidebar({
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
-            // 🔥 DISABLE CTC WHEN NOT ACTIVE + CALL
+            //  DISABLE CTC WHEN NOT ACTIVE + CALL
             const isCtcItem = item.href === "/ctc";
             const isDisabled =
               isInCall || (isCtcItem && agentStatus !== "ACTIVE");

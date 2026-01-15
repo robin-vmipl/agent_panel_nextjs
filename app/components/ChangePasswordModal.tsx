@@ -3,7 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { apiFetch } from "../lib/api";
-import { X } from "lucide-react";
+import { X, AlertCircle } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -21,16 +21,48 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
     confirm: false,
   });
 
+  // VALIDATION FUNCTIONS
+  const isCurrentPasswordValid = () => !!currentPassword.trim();
+  const isStrongPassword = (password: string) => {
+    if (!password || password.length < 8) return false;
+    if (!/[A-Z]/.test(password)) return false;
+    if (!/[0-9]/.test(password)) return false;
+    if (!/[!@#$%^&*]/.test(password)) return false;
+    return true;
+  };
+
+  const getNewPasswordError = () => {
+    if (!newPassword.trim()) return "New password is required";
+    if (!isStrongPassword(newPassword))
+      return "Password must be 8+ chars, 1 uppercase, 1 number, 1 special char";
+    return "";
+  };
+
+  const getConfirmPasswordError = () => {
+    if (!confirmPassword.trim()) return "Confirm password is required";
+    if (newPassword !== confirmPassword) return "Passwords do not match";
+    return "";
+  };
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error("All fields are required");
+    // CURRENT PASSWORD REQUIRED CHECK
+    if (!isCurrentPasswordValid()) {
+      toast.error("Current password is required");
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
+    // STRONG PASSWORD CHECKS
+    const newPassError = getNewPasswordError();
+    if (newPassError) {
+      toast.error(newPassError);
+      return;
+    }
+
+    const confirmPassError = getConfirmPasswordError();
+    if (confirmPassError) {
+      toast.error(confirmPassError);
       return;
     }
 
@@ -49,7 +81,7 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
         {
           method: "POST",
           body: JSON.stringify({
-            current_password: currentPassword,
+            current_password: currentPassword.trim(),
             new_password: newPassword,
             new_password_confirmation: confirmPassword,
           }),
@@ -66,27 +98,29 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
         onClose();
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to update password");
+      // toast.error(err.message || "Failed to update password");
+      console.log(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const currentError = !isCurrentPasswordValid()
+    ? "Current password is required"
+    : "";
+  const newError = getNewPasswordError();
+  const confirmError = getConfirmPasswordError();
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in duration-300">
-      {/* BLUR ONLY MAIN CONTENT - NAVBAR & SIDEBAR STAY CRISP */}
       <div className="fixed lg:left-64 left-0 right-0 top-20 bottom-0 backdrop-blur-sm bg-black/50 z-40" />
 
-      {/* MODAL - HIGHLIGHTED & SHARP */}
       <div className="bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-2xl w-full max-w-md mx-auto rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 p-8 space-y-8 relative overflow-hidden animate-float z-50">
-        {/* BACKGROUND GLOW */}
         <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-purple-500/5 rounded-3xl blur-xl animate-pulse pointer-events-none -z-10" />
 
-        {/* HEADER WITH X CLOSE BUTTON */}
         <div className="relative z-10 text-center">
-          {/* X CLOSE BUTTON - MOBILE ONLY */}
           <button
             type="button"
             onClick={onClose}
@@ -97,7 +131,6 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
             <X className="w-5 h-5 sm:w-6 sm:h-6 text-slate-300 group-hover:text-white transition-colors" />
           </button>
 
-          {/* HEADER CONTENT - ICON + TITLE + SUBTITLE */}
           <div className="flex flex-col items-center space-y-4 pt-12 relative z-10">
             <div className="w-20 h-20 mx-auto bg-linear-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl border-4 border-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl">
               <svg
@@ -126,7 +159,6 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
           </div>
         </div>
 
-        {/* FORM */}
         <form
           onSubmit={handleChangePassword}
           className="space-y-6 relative z-20"
@@ -138,7 +170,11 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
               placeholder="Current Password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full h-14 px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-sm border-2 border-slate-700/50 text-white font-medium text-lg placeholder-slate-400 focus:border-emerald-500/60 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 group-hover:border-slate-600/70 relative z-30 peer"
+              className={`w-full h-14 px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-sm border-2 text-white font-medium text-lg placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-300 group-hover:border-slate-600/70 relative z-30 peer ${
+                currentError
+                  ? "border-rose-500/70 focus:border-rose-500/60 focus:ring-rose-500/20"
+                  : "border-slate-700/50 focus:border-emerald-500/60 focus:ring-emerald-500/20"
+              }`}
               required
             />
             <label className="absolute -top-3 left-3 px-2 text-xs font-bold bg-slate-900 text-emerald-400 shadow-sm z-40">
@@ -187,6 +223,12 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
                 </svg>
               )}
             </button>
+            {/* CURRENT PASSWORD ERROR */}
+            {currentError && (
+              <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
+                <AlertCircle className="w-4 h-4" /> {currentError}
+              </p>
+            )}
           </div>
 
           {/* NEW PASSWORD */}
@@ -196,7 +238,11 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full h-14 px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-sm border-2 border-slate-700/50 text-white font-medium text-lg placeholder-slate-400 focus:border-emerald-500/60 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 group-hover:border-slate-600/70 relative z-30 peer"
+              className={`w-full h-14 px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-sm border-2 text-white font-medium text-lg placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-300 group-hover:border-slate-600/70 relative z-30 peer ${
+                newError
+                  ? "border-rose-500/70 focus:border-rose-500/60 focus:ring-rose-500/20"
+                  : "border-slate-700/50 focus:border-emerald-500/60 focus:ring-emerald-500/20"
+              }`}
               required
             />
             <label className="absolute -top-3 left-3 px-2 text-xs font-bold bg-slate-900 text-blue-400 shadow-sm z-40">
@@ -245,6 +291,12 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
                 </svg>
               )}
             </button>
+            {/* NEW PASSWORD ERROR */}
+            {newError && (
+              <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
+                <AlertCircle className="w-4 h-4" /> {newError}
+              </p>
+            )}
           </div>
 
           {/* CONFIRM PASSWORD */}
@@ -254,7 +306,11 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
               placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full h-14 px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-sm border-2 border-slate-700/50 text-white font-medium text-lg placeholder-slate-400 focus:border-emerald-500/60 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 group-hover:border-slate-600/70 relative z-30 peer"
+              className={`w-full h-14 px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-sm border-2 text-white font-medium text-lg placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-300 group-hover:border-slate-600/70 relative z-30 peer ${
+                confirmError
+                  ? "border-rose-500/70 focus:border-rose-500/60 focus:ring-rose-500/20"
+                  : "border-slate-700/50 focus:border-emerald-500/60 focus:ring-emerald-500/20"
+              }`}
               required
             />
             <label className="absolute -top-3 left-3 px-2 text-xs font-bold bg-slate-900 text-purple-400 shadow-sm z-40">
@@ -303,9 +359,14 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
                 </svg>
               )}
             </button>
+            {/* CONFIRM PASSWORD ERROR */}
+            {confirmError && (
+              <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
+                <AlertCircle className="w-4 h-4" /> {confirmError}
+              </p>
+            )}
           </div>
 
-          {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4 relative z-20">
             <button
               type="button"
@@ -317,7 +378,9 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={
+                loading || !!currentError || !!newError || !!confirmError
+              }
               className="flex-1 h-14 px-6 rounded-2xl bg-linear-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 border-2 border-emerald-500/60 text-white font-black text-lg uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl shadow-emerald-500/30 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-4 focus:ring-emerald-500/40 relative z-30"
             >
               {loading ? (
