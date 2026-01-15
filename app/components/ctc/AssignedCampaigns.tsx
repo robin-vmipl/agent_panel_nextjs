@@ -142,7 +142,7 @@ export default function AssignedCampaigns({
             <Download className="w-10 h-10 text-blue-400" />
             <div>
               <h2 className="text-3xl font-bold text-blue-400">
-                Assigned Campaigns{" "}
+                Assigned Campaigns
                 <span className="text-3xl font-bold text-blue-400">
                   ({assignedData.length})
                 </span>
@@ -171,7 +171,7 @@ export default function AssignedCampaigns({
         {/* CAMPAIGN SELECT */}
         <div className="theme-panel rounded-2xl p-6 mb-8 flex gap-4">
           <select
-            className="flex-1 px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white"
+            className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white"
             value={selectedCampaign}
             onChange={(e) => setSelectedCampaign(e.target.value)}
           >
@@ -217,55 +217,77 @@ export default function AssignedCampaigns({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full table-auto">
-              <thead className="bg-slate-900 border-b border-slate-700">
-                <tr>
-                  <th className="px-4 py-3 text-left">Sr</th>
-                  <th className="px-4 py-3 text-left">Number</th>
-                  <th className="px-4 py-3 text-left">Name</th>
-                  <th className="px-4 py-3 text-left">State</th>
-                  <th className="px-4 py-3 text-left">District</th>
-                  <th className="px-4 py-3 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-700">
-                {assignedData.map((row, index) => {
-                  const rowKey = `${row.DA_ID}-${index}`;
-                  return (
-                    <tr key={rowKey} className="hover:bg-slate-800">
-                      <td className="px-4 py-3 text-sm">{index + 1}</td>
-                      <td className="px-4 py-3 font-mono text-emerald-400 font-semibold text-sm">
-                        {row.CUST_NUM}
-                      </td>
-                      <td className="px-4 py-3 text-sm">{row.VLEName}</td>
-                      <td className="px-4 py-3 text-sm">{row.State}</td>
-                      <td className="px-4 py-3 text-sm">{row.District}</td>
-                      <td className="px-4 py-3 text-center text-sm">
-                        <button
-                          onClick={() => handleDial(row, index)}
-                          disabled={dialingRow === rowKey}
-                          className="mx-auto px-6 py-2.5 bg-linear-to-r from-blue-600 to-indigo-500
-                            hover:from-blue-700 hover:to-indigo-600
-                            text-white font-semibold rounded-xl
-                            shadow-lg hover:shadow-blue-500/50
-                            hover:scale-[1.02] transition-all
-                            flex items-center gap-2
-                            disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
-                        >
-                          {dialingRow === rowKey ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Phone className="w-4 h-4" />
-                          )}
-                          Dial
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="theme-surface backdrop-blur-xl border border-slate-700/50 rounded-3xl p-1 shadow-2xl overflow-hidden">
+            <div className="theme-panel rounded-3xl overflow-x-auto">
+              <table className="w-full table-auto">
+                <thead className="bg-slate-900/70 border-b border-slate-700/50">
+                  <tr>
+                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      Sr
+                    </th>
+                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      Number
+                    </th>
+                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      State
+                    </th>
+                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      District
+                    </th>
+                    <th className="px-4 py-4 text-center text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-700/50">
+                  {assignedData.map((row, index) => {
+                    const rowKey = `${row.DA_ID}-${index}`;
+                    return (
+                      <tr key={rowKey} className="hover:bg-slate-800/50 group">
+                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                          {index + 1}
+                        </td>
+                        <td className="px-4 py-4 font-mono text-emerald-400 font-semibold text-sm">
+                          {row.CUST_NUM}
+                        </td>
+                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                          {row.VLEName}
+                        </td>
+                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                          {row.State}
+                        </td>
+                        <td className="px-4 py-4 text-sm font-mono text-slate-300">
+                          {row.District}
+                        </td>
+                        <td className="px-4 py-4 text-center text-sm">
+                          <button
+                            onClick={() => handleDial(row, index)}
+                            disabled={dialingRow === rowKey}
+                            className="mx-auto px-6 py-2.5 bg-linear-to-r from-blue-600 to-indigo-500
+                              hover:from-blue-700 hover:to-indigo-600
+                              text-white font-semibold rounded-xl
+                              shadow-lg hover:shadow-blue-500/50
+                              hover:scale-[1.02] transition-all
+                              flex items-center gap-2
+                              disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+                          >
+                            {dialingRow === rowKey ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Phone className="w-4 h-4" />
+                            )}
+                            Dial
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
