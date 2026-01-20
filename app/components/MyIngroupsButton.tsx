@@ -31,11 +31,11 @@ export default function MyIngroupsButton() {
   };
 
   return (
-    <>
+    <div className="relative group">
       {/*   GLASSMORPHISM BUTTON */}
       <button
         onClick={fetchIngoups}
-        className="group relative overflow-hidden px-5 py-2.5 text-sm font-semibold rounded-2xl bg-linear-to-r from-slate-800/80 via-slate-700/70 to-slate-900/80 backdrop-blur-xl border border-slate-600/50 shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 hover:bg-linear-to-r hover:border-emerald-400/40 transition-all duration-400 flex items-center gap-2 text-slate-200 hover:text-white cursor-pointer"
+        className="navbar-btn group relative overflow-hidden px-5 py-2.5 text-sm font-semibold rounded-2xl bg-linear-to-r from-slate-800/80 via-slate-700/70 to-slate-900/80 backdrop-blur-xl border border-slate-600/50 shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 hover:bg-linear-to-r hover:border-emerald-400/40 transition-all duration-400 flex items-center gap-2 text-slate-200 hover:text-white cursor-pointer"
       >
         {/* ✨ Shine effect */}
         <div className="absolute inset-0 bg-linear-to-r from-white/20 via-white/40 to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 -skew-x-12" />
@@ -50,6 +50,6 @@ export default function MyIngroupsButton() {
         ingroups={ingroups}
         status={status}
       />
-    </>
+    </div>
   );
 }

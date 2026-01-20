@@ -115,7 +115,7 @@ export default function ManualDial({
             <button
               onClick={handleManualDial}
               disabled={isDisabled}
-              className={`w-full py-5 px-8 font-bold text-lg flex items-center justify-center gap-3 rounded-2xl shadow-xl transition-all ${
+              className={`manual-dial-btn w-full py-5 px-8 font-bold text-lg flex items-center justify-center gap-3 rounded-2xl shadow-xl transition-all ${
                 isDisabled
                   ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
                   : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] btn-gradient"
@@ -152,7 +152,7 @@ export default function ManualDial({
             <button
               onClick={handleManualDial}
               disabled={isDisabled}
-              className={`px-10 py-6 font-bold text-lg flex items-center gap-3 whitespace-nowrap transition-all shadow-xl ${
+              className={`manual-dial-btn px-10 py-6 font-bold text-lg flex items-center gap-3 whitespace-nowrap transition-all shadow-xl ${
                 isDisabled
                   ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
                   : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] btn-gradient"

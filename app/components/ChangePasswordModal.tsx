@@ -114,10 +114,10 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in duration-300">
+    <div className="modal-dropdown fixed inset-0 flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in duration-300">
       <div className="fixed lg:left-64 left-0 right-0 top-20 bottom-0 backdrop-blur-sm bg-black/50 z-40" />
 
-      <div className="bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-2xl w-full max-w-md mx-auto rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 p-8 space-y-8 relative overflow-hidden animate-float z-50">
+      <div className="modal-content bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-2xl w-full max-w-md mx-auto rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 p-8 space-y-8 relative overflow-hidden animate-float z-50">
         <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-purple-500/5 rounded-3xl blur-xl animate-pulse pointer-events-none -z-10" />
 
         <div className="relative z-10 text-center">
@@ -149,7 +149,7 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
             </div>
 
             <div className="text-center">
-              <h2 className="text-2xl sm:text-3xl font-black bg-linear-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-300">
                 Change Password
               </h2>
               <p className="text-slate-400 text-sm mt-1 font-medium tracking-wide">

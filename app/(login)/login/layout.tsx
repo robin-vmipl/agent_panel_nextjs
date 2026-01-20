@@ -11,5 +11,20 @@ export default function LoginServerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function () {
+              try {
+                document.documentElement.setAttribute("data-theme", "dark");
+              } catch (e) {}
+            })();
+          `,
+        }}
+      />
+      {children}
+    </>
+  );
 }

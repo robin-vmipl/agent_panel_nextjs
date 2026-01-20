@@ -196,7 +196,7 @@ export default function AutoCampaignDialer({
           <button
             onClick={refreshCampaigns}
             disabled={refreshing}
-            className="
+            className="ctc-refresh-btn
                 w-full md:w-auto
                 px-4 py-2
                 bg-slate-700 hover:bg-slate-600
@@ -240,7 +240,7 @@ export default function AutoCampaignDialer({
           <button
             onClick={fetchAutoCampaignData}
             disabled={loading || !selectedCampaign}
-            className={`
+            className={`ctc-fetch-btn
               w-full md:w-auto
               px-8 py-3
               font-bold rounded-xl shadow-lg transition-all
@@ -345,7 +345,7 @@ export default function AutoCampaignDialer({
                           <button
                             onClick={() => handleAutoDial(row)}
                             disabled={dialingCalls[rowKey]}
-                            className="mx-auto px-6 py-2.5 bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-orange-500/50 hover:scale-[1.02] transition-all text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 w-full group-hover:scale-[1.01]"
+                            className="ctc-dial-btn mx-auto px-6 py-2.5 bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-orange-500/50 hover:scale-[1.02] transition-all text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 w-full group-hover:scale-[1.01]"
                           >
                             {dialingCalls[rowKey] ? (
                               <Loader2 className="w-4 h-4 animate-spin" />

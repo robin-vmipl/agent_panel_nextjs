@@ -159,7 +159,7 @@ export default function AssignedCampaigns({
           <button
             onClick={refreshCampaigns}
             disabled={refreshing}
-            className="w-full md:w-auto px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 text-slate-300"
+            className="ctc-refresh-btn w-full md:w-auto px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 text-slate-300"
           >
             {refreshing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -193,7 +193,7 @@ export default function AssignedCampaigns({
           <button
             onClick={fetchAssignedData}
             disabled={!selectedCampaign || tableLoading}
-            className={`
+            className={`ctc-fetch-btn
                 w-full md:w-auto
                 px-8 py-3
                 font-bold rounded-xl shadow-lg transition-all
@@ -279,7 +279,7 @@ export default function AssignedCampaigns({
                           <button
                             onClick={() => handleDial(row, index)}
                             disabled={dialingRow === rowKey}
-                            className="mx-auto px-6 py-2.5 bg-linear-to-r from-blue-600 to-indigo-500
+                            className="ctc-dial-btn mx-auto px-6 py-2.5 bg-linear-to-r from-blue-600 to-indigo-500
                               hover:from-blue-700 hover:to-indigo-600
                               text-white font-semibold rounded-xl
                               shadow-lg hover:shadow-blue-500/50

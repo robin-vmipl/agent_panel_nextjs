@@ -9,13 +9,6 @@
   --accent: #10b981;
 }
 
-/* @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-} */
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -33,10 +26,10 @@ body {
 
 /* Theme variants applied to the root element */
 html[data-theme="light"] {
-  --background: #f7fafc; /* light cool background */
-  --foreground: #94a3b8; /* strong dark text for readability old:0b1220 */
-  --muted: #475569; /* muted gray-blue */
-  --accent: #2563eb; /* pleasant blue accent */
+  --background: #f7fafc;
+  --foreground: #94a3b8;
+  --muted: #475569;
+  --accent: #2563eb;
   --emerald: #059669;
   --emerald-20: rgba(5,150,105,0.12);
   --emerald-300: #34d399;
@@ -46,7 +39,7 @@ html[data-theme="light"] {
 
 html[data-theme="dark"] {
   --background: #0b151d;
-  --foreground: #94a3b8; /*old e6eef8*/
+  --foreground: #94a3b8;
   --muted: #94a3b8;
   --accent: #10b981;
   --emerald: #10b981;
@@ -63,17 +56,15 @@ html[data-theme="dark"] {
   background: linear-gradient(180deg, var(--surface-start), var(--surface-end));
 }
 
-
 html[data-theme="light"] .theme-surface {
   --surface-start: rgba(255, 255, 255, 0.98);
   --surface-end: rgba(247, 250, 252, 0.98);
 }
 
 html[data-theme="dark"] .theme-surface {
-  --surface-start: rgba(11, 17, 29, 0.95); /* from-slate-900/95 */
-  --surface-end: rgba(20, 30, 40, 0.95); /* to-slate-800/95 */
+  --surface-start: rgba(11, 17, 29, 0.95);
+  --surface-end: rgba(20, 30, 40, 0.95);
 }
-
 
 /* Make aside and major containers use the theme-surface by default when present */
 aside.theme-surface {
@@ -87,13 +78,50 @@ header {
 }
 
 html[data-theme="light"] header {
-  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,250,252,0.98));
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,250,252,0.98)) !important;
+  border-bottom-color: rgba(15,23,42,0.08) !important;
 }
 
 html[data-theme="dark"] header {
   background: linear-gradient(180deg, rgba(11,21,29,0.95), rgba(11,21,29,0.95));
 }
 
+/* 🔥 LIGHT THEME NAVBAR BUTTONS = SIDEBAR STYLE */
+html[data-theme="light"] .navbar-btn {
+  background: rgba(248,250,252,0.9) !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  color: #94a3b8 !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="light"] .navbar-btn:hover {
+  background: rgba(241,245,249,0.92) !important;
+  border-color: rgba(15,23,42,0.15) !important;
+  color: #64748b !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  transform: translateY(-1px) !important;
+}
+
+html[data-theme="light"] .navbar-btn-active {
+  background: rgba(5,150,105,0.12) !important;
+  border-color: rgba(5,150,105,0.4) !important;
+  color: #059669 !important;
+}
+
+html[data-theme="light"] .navbar-profile-btn {
+  background: rgba(248,250,252,0.9) !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  color: #94a3b8 !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+}
+
+html[data-theme="light"] .navbar-profile-btn:hover {
+  background: rgba(241,245,249,0.92) !important;
+  border-color: rgba(15,23,42,0.15) !important;
+  color: #475569 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
 
 /* Make the main form panels use CSS vars where possible */
 .theme-panel {
@@ -104,7 +132,6 @@ html[data-theme="dark"] header {
 html[data-theme="light"] .theme-panel {
   background-color: rgba(15,23,42,0.03);
 }
-
 
 /* Card surface and accent helpers */
 .theme-card {
@@ -177,4 +204,455 @@ html[data-theme="light"] .btn-gradient {
   background: linear-gradient(180deg, var(--card-start, rgba(15,23,42,0.9)), var(--card-end, rgba(30,41,59,0.85)));
   color: var(--foreground);
   border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* 🔥 LIGHT THEME LOGOUT BUTTON - Sidebar perfect match */
+html[data-theme="light"] .logout-btn {
+  background: rgba(248,250,252,0.92) !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  color: #94a3b8 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04) !important;
+}
+
+html[data-theme="light"] .logout-btn:hover {
+  background: rgba(241,245,249,0.95) !important;
+  border-color: rgba(15,23,42,0.15) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.08) !important;
+  transform: translateY(-1px) !important;
+}
+
+html[data-theme="light"] .logout-btn:disabled {
+  background: rgba(248,250,252,0.6) !important;
+  border-color: rgba(15,23,42,0.1) !important;
+  color: #64748b !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+}
+
+/* 🔥 LIGHT THEME - CTC BUTTONS (Dial, Refresh, Fetch) */
+html[data-theme="light"] .btn-gradient {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: white !important;
+}
+
+html[data-theme="light"] .btn-gradient:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  box-shadow: 0 8px 24px rgba(5,150,105,0.3) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+html[data-theme="light"] .btn-gradient:disabled {
+  background: rgba(248,250,252,0.6) !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed !important;
+}
+
+/* Light theme table heading */
+html[data-theme="light"] thead {
+  background: rgba(248,250,252,0.5) !important;
+  border-bottom-color: rgba(15,23,42,0.08) !important;
+}
+
+html[data-theme="light"] thead th {
+  color: #475569 !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="light"] tbody tr {
+  border-bottom-color: rgba(15,23,42,0.08) !important;
+}
+
+html[data-theme="light"] tbody tr:hover {
+  background: rgba(15,23,42,0.04) !important;
+}
+
+/* Light theme table cells */
+html[data-theme="light"] tbody td {
+  color: #475569 !important;
+}
+
+/* 🔥 LIGHT THEME - CTC SPECIFIC BUTTONS */
+
+/* Refresh buttons */
+html[data-theme="light"] .ctc-refresh-btn {
+  background: rgba(248,250,252,0.92) !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .ctc-refresh-btn:hover:not(:disabled) {
+  background: rgba(241,245,249,0.95) !important;
+  color: #1e293b !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+html[data-theme="light"] .ctc-refresh-btn:disabled {
+  background: rgba(248,250,252,0.6) !important;
+  color: #94a3b8 !important;
+}
+
+/* Fetch buttons */
+html[data-theme="light"] .ctc-fetch-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+html[data-theme="light"] .ctc-fetch-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%) !important;
+  box-shadow: 0 8px 24px rgba(37,99,235,0.3) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+html[data-theme="light"] .ctc-fetch-btn:disabled {
+  background: rgba(248,250,252,0.6) !important;
+  color: #94a3b8 !important;
+}
+
+/* Dial buttons in tables */
+html[data-theme="light"] .ctc-dial-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.2) !important;
+}
+
+html[data-theme="light"] .ctc-dial-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%) !important;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.35) !important;
+  transform: scale(1.02) !important;
+}
+
+html[data-theme="light"] .ctc-dial-btn:disabled {
+  background: rgba(248,250,252,0.6) !important;
+  color: #94a3b8 !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+}
+
+/* Manual dial buttons */
+html[data-theme="light"] .manual-dial-btn {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(5,150,105,0.2) !important;
+}
+
+html[data-theme="light"] .manual-dial-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
+  box-shadow: 0 8px 24px rgba(5,150,105,0.3) !important;
+  transform: scale(1.02) !important;
+}
+
+html[data-theme="light"] .manual-dial-btn:disabled {
+  background: rgba(248,250,252,0.6) !important;
+  color: #94a3b8 !important;
+}
+
+/* Light theme select dropdowns */
+html[data-theme="light"] select {
+  background-color: rgba(248,250,252,0.92) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  color: #94a3b8 !important;
+}
+
+html[data-theme="light"] select:hover {
+  border-color: rgba(15,23,42,0.15) !important;
+}
+
+html[data-theme="light"] select:focus {
+  border-color: rgba(37,99,235,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+}
+
+/* Light theme surfaces and panels */
+html[data-theme="light"] .theme-surface {
+  background: rgba(255,255,255,0.98) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+
+html[data-theme="light"] .theme-panel {
+  background: rgba(248,250,252,0.95) !important;
+  color: #475569 !important;
+}
+
+/* Light theme input fields */
+html[data-theme="light"] input[type="text"],
+html[data-theme="light"] input[type="number"],
+html[data-theme="light"] input[type="email"] {
+  background: rgba(255,255,255,0.95) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  color: #1e293b !important;
+}
+
+html[data-theme="light"] input:focus {
+  border-color: rgba(37,99,235,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+}
+
+html[data-theme="light"] input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* 🔥 LIGHT THEME - SKELETON CARDS */
+html[data-theme="light"] .skeleton-card {
+  background: rgba(248,250,252,0.92) !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+
+html[data-theme="light"] .skeleton-card .bg-white\/10 {
+  background: rgba(15,23,42,0.1) !important;
+}
+
+/* 🔥 LIGHT THEME - MODALS AND DROPDOWNS */
+html[data-theme="light"] .modal-dropdown {
+  background: rgba(255,255,255,0.98) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+}
+
+html[data-theme="light"] .modal-dropdown {
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1) !important;
+}
+
+html[data-theme="light"] .modal-content {
+  background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.95) 100%) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12) !important;
+}
+
+/* Light theme status dropdown */
+html[data-theme="light"] .status-dropdown {
+  background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+}
+
+/* Light theme: Green color for ACTIVE status button */
+html[data-theme="light"] .status-dropdown button:has(.bg-emerald-400) {
+  color: #10b981 !important;
+  background: rgba(16,185,129,0.08) !important;
+  border-color: rgba(16,185,129,0.2) !important;
+}
+
+html[data-theme="light"] .status-dropdown button:has(.bg-emerald-400) p {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Light theme: Other status buttons stay #94a3b8 */
+html[data-theme="light"] .status-dropdown button:not(:has(.bg-emerald-400)) {
+  color: #94a3b8 !important;
+  background: rgba(248,250,252,0.9) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+}
+
+html[data-theme="light"] .status-dropdown button:not(:has(.bg-emerald-400)):hover {
+  background: rgba(241,245,249,0.95) !important;
+  border-color: rgba(15,23,42,0.15) !important;
+  color: #64748b !important;
+}
+
+/* Modal and dropdown text */
+html[data-theme="light"] .modal-dropdown h2,
+html[data-theme="light"] .modal-dropdown h3,
+html[data-theme="light"] .modal-content h2,
+html[data-theme="light"] .status-dropdown p {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="light"] .modal-dropdown p,
+html[data-theme="light"] .modal-content p,
+html[data-theme="light"] .status-dropdown span {
+  color: #94a3b8 !important;
+}
+
+/* Light theme modal text elements - ingroups and other text */
+html[data-theme="light"] .modal-dropdown h4,
+html[data-theme="light"] .modal-content h4 {
+  color: #94a3b8 !important;
+}
+
+/* Light theme modal titles */
+html[data-theme="light"] .modal-content h2 {
+  color: #94a3b8 !important;
+}
+
+/* Light theme modal buttons and items */
+html[data-theme="light"] .modal-dropdown button,
+html[data-theme="light"] .modal-content button,
+html[data-theme="light"] .status-dropdown button {
+  background: rgba(248,250,252,0.9) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  color: #94a3b8 !important;
+}
+
+html[data-theme="light"] .modal-dropdown button:hover,
+html[data-theme="light"] .modal-content button:hover,
+html[data-theme="light"] .status-dropdown button:hover {
+  background: rgba(241,245,249,0.95) !important;
+  border-color: rgba(15,23,42,0.15) !important;
+  color: #64748b !important;
+}
+
+/* Modal input fields */
+html[data-theme="light"] .modal-content input,
+html[data-theme="light"] .modal-dropdown input {
+  background: rgba(255,255,255,0.95) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  color: #1e293b !important;
+}
+
+html[data-theme="light"] .modal-content input:focus,
+html[data-theme="light"] .modal-dropdown input:focus {
+  border-color: rgba(37,99,235,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+}
+
+/* Border separators in modals */
+html[data-theme="light"] .modal-dropdown > div > div,
+html[data-theme="light"] .modal-content > div > div {
+  border-color: rgba(15,23,42,0.08) !important;
+}
+
+/* Icons in modals */
+html[data-theme="light"] .modal-dropdown svg,
+html[data-theme="light"] .modal-content svg,
+html[data-theme="light"] .status-dropdown svg {
+  color: #1e293b !important;
+}
+
+/* Light theme modal form elements */
+html[data-theme="light"] .modal-content label {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .modal-content .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="light"] .modal-content .text-slate-300 {
+  color: #64748b !important;
+}
+
+/* Light theme status button (in StatusDropdown) */
+html[data-theme="light"] .status-button {
+  background: rgba(248,250,252,0.92) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  color: #94a3b8 !important;
+}
+
+/* Light theme: Status button green when ACTIVE */
+html[data-theme="light"] .status-button[data-status="ACTIVE"] {
+  background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(5,150,105,0.08) 100%) !important;
+  border-color: rgba(16,185,129,0.3) !important;
+  color: #10b981 !important;
+}
+
+html[data-theme="light"] .status-button:hover:not(:disabled) {
+  background: rgba(241,245,249,0.95) !important;
+  border-color: rgba(37,99,235,0.3) !important;
+  color: #64748b !important;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.15) !important;
+}
+
+html[data-theme="light"] .status-button:disabled {
+  background: rgba(248,250,252,0.6) !important;
+  color: #94a3b8 !important;
+}
+
+/* Light theme for all white/10 backgrounds (transparency) */
+html[data-theme="light"] .bg-white\/5 {
+  background: rgba(248,250,252,0.92) !important;
+}
+
+html[data-theme="light"] input[type="password"],
+html[data-theme="light"] input[type="text"] {
+  background: rgba(255,255,255,0.95) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  color: #1e293b !important;
+}
+
+html[data-theme="light"] input[type="password"]:focus,
+html[data-theme="light"] input[type="text"]:focus {
+  border-color: rgba(37,99,235,0.5) !important;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.1) !important;
+}
+
+html[data-theme="light"] input[type="password"]::placeholder,
+html[data-theme="light"] input[type="text"]::placeholder {
+  color: #cbd5e1 !important;
+}
+
+/* Light theme for modal labels */
+html[data-theme="light"] .modal-content label,
+html[data-theme="light"] .modal-content .absolute.-top-3 {
+  background: rgba(248,250,252,0.95) !important;
+  color: #0ea5e9 !important;
+}
+
+/* Light theme error styling */
+html[data-theme="light"] .text-rose-400,
+html[data-theme="light"] .border-rose-500\/70 {
+  color: #ef4444 !important;
+  border-color: rgba(239,68,68,0.5) !important;
+}
+
+/* Light theme success styling */
+html[data-theme="light"] .text-emerald-400,
+html[data-theme="light"] .border-emerald-500\/60 {
+  color: #10b981 !important;
+  border-color: rgba(16,185,129,0.5) !important;
+}
+
+/* Light theme sidebar borders and separators */
+html[data-theme="light"] .border-slate-700\/50 {
+  border-color: rgba(15,23,42,0.08) !important;
+}
+
+/* Light theme modal backdrop - reduced opacity to keep sidebar visible */
+html[data-theme="light"] .modal-dropdown ~ div,
+html[data-theme="light"] .fixed.lg\:left-64 {
+  background: rgba(0,0,0,0.15) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* Light theme profile dropdown (in navbar) */
+html[data-theme="light"] .absolute.top-full.right-0 {
+  background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+}
+
+html[data-theme="light"] .absolute.top-full.right-0 button {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="light"] .absolute.top-full.right-0 button:hover {
+  background: rgba(241,245,249,0.95) !important;
+  color: #64748b !important;
+}
+
+html[data-theme="light"] .absolute.top-full.right-0 button svg {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="light"] .absolute.top-full.right-0 button:hover svg {
+  color: #10b981 !important;
+}
+
+/* Light theme profile dropdown section header (Theme) */
+html[data-theme="light"] .absolute.top-full.right-0 .text-xs.text-slate-400 {
+  color: #94a3b8 !important;
+  border-color: rgba(15,23,42,0.08) !important;
+}
+
+html[data-theme="light"] .border-b-slate-300\/50 {
+  border-bottom-color: rgba(15,23,42,0.08) !important;
+}
+
+/* Ensure light theme backdrop is subtle */
+html[data-theme="light"] .backdrop-blur-xl,
+html[data-theme="light"] .backdrop-blur-3xl,
+html[data-theme="light"] .backdrop-blur-2xl {
+  backdrop-filter: blur(8px) !important;
 }

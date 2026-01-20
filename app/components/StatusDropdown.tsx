@@ -151,7 +151,8 @@ export default function StatusDropdown() {
         type="button"
         onClick={() => !isDisabled && setOpen(!open)}
         disabled={isDisabled}
-        className={`relative overflow-hidden px-5 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 hover:scale-[1.02] backdrop-blur-xl border-2 shadow-2xl ${
+        data-status={currentStatus}
+        className={`status-button relative overflow-hidden px-5 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 hover:scale-[1.02] backdrop-blur-xl border-2 shadow-2xl ${
           isDisabled
             ? "bg-slate-800/60 border-slate-700/50 opacity-70 cursor-not-allowed"
             : `${currentConfig.bg} ${currentConfig.ring} border-emerald-500/30 hover:border-emerald-400/50 hover:shadow-emerald-500/30 cursor-pointer ${currentConfig.text}`
@@ -181,7 +182,7 @@ export default function StatusDropdown() {
 
       {/* DROPDOWN */}
       {open && !isInCall && (
-        <div className="absolute right-0 mt-3 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl z-50 animate-in slide-in-from-top-2 duration-200 overflow-hidden">
+        <div className="status-dropdown absolute right-0 mt-3 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl z-50 animate-in slide-in-from-top-2 duration-200 overflow-hidden">
           <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-2xl blur-xl animate-pulse -z-10 pointer-events-none" />
           <div className="p-2 space-y-1">
             {STATUS_OPTIONS.map((option) => {

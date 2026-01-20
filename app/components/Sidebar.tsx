@@ -20,7 +20,7 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const [isInCall, setIsInCall] = useState(false);
-  const [agentStatus, setAgentStatus] = useState("INACTIVE"); 
+  const [agentStatus, setAgentStatus] = useState("INACTIVE");
 
   //  AGENT STATUS + CALL STATUS
   useEffect(() => {
@@ -137,8 +137,8 @@ export default function Sidebar({
                   isActive
                     ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-semibold"
                     : isDisabled
-                    ? "opacity-60 cursor-not-allowed text-slate-400 bg-slate-800/50 border border-slate-600/30"
-                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white hover:border-slate-500/50 border border-transparent"
+                      ? "opacity-60 cursor-not-allowed text-slate-400 bg-slate-800/50 border border-slate-600/30"
+                      : "text-slate-300 hover:bg-slate-700/50 hover:text-white hover:border-slate-500/50 border border-transparent"
                 }`}
               >
                 <Icon
@@ -146,8 +146,8 @@ export default function Sidebar({
                     isActive
                       ? "text-emerald-400"
                       : isDisabled
-                      ? "text-slate-400"
-                      : "group-hover:text-emerald-400 text-slate-300"
+                        ? "text-slate-400"
+                        : "group-hover:text-emerald-400 text-slate-300"
                   }`}
                 />
                 <span className="truncate flex-1">
@@ -168,7 +168,7 @@ export default function Sidebar({
           <button
             onClick={handleLogout}
             disabled={isInCall || pathname === "/ctc"}
-            className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
+            className={`logout-btn w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
               isInCall || pathname === "/ctc"
                 ? "bg-slate-700/60 opacity-70 cursor-not-allowed text-slate-400"
                 : "bg-slate-800 hover:bg-slate-700 border border-slate-600/50 hover:shadow-slate-500/20 text-white cursor-pointer"
