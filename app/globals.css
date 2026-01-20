@@ -593,10 +593,26 @@ html[data-theme="light"] .modal-content .absolute.-top-3 {
 /* Light theme error styling */
 html[data-theme="light"] .text-rose-400,
 html[data-theme="light"] .border-rose-500\/70 {
-  color: #ef4444 !important;
-  border-color: rgba(239,68,68,0.5) !important;
+  color: #dc2626 !important;
+  border-color: rgba(220,38,38,0.5) !important;
+}
+/* Ensure error messages are visible in modals */
+html[data-theme="light"] .modal-content .text-rose-400,
+html[data-theme="light"] .modal-dropdown .text-rose-400 {
+  color: #dc2626 !important;
 }
 
+/* Light theme: Error input borders and styling */
+html[data-theme="light"] .modal-content input.border-rose-500\/70 {
+  border-color: #dc2626 !important;
+  background: rgba(255,255,255,0.95) !important;
+  color: #1e293b !important;
+}
+
+html[data-theme="light"] .modal-content input.border-rose-500\/70:focus {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.1) !important;
+}
 /* Light theme success styling */
 html[data-theme="light"] .text-emerald-400,
 html[data-theme="light"] .border-emerald-500\/60 {
@@ -614,6 +630,36 @@ html[data-theme="light"] .modal-dropdown ~ div,
 html[data-theme="light"] .fixed.lg\:left-64 {
   background: rgba(0,0,0,0.15) !important;
   backdrop-filter: blur(3px) !important;
+}
+
+html[data-theme="light"] .bg-black\/50 {
+  background: rgba(0,0,0,0.15) !important;
+}
+
+/* Light theme CTC skeleton styling - match dashboard skeletons */
+html[data-theme="light"] .bg-slate-800\/50 {
+  background: rgba(248,250,252,0.92) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+}
+
+html[data-theme="light"] .bg-slate-700\/60,
+html[data-theme="light"] .bg-slate-700\/50 {
+  background: rgba(15,23,42,0.1) !important;
+}
+
+html[data-theme="light"] .border-slate-700\/50 {
+  border-color: rgba(15,23,42,0.08) !important;
+}
+
+/* Light theme skeleton cards - gradient background */
+html[data-theme="light"] .skeleton-card {
+  background: rgba(248,250,252,0.92) !important;
+  border: 1px solid rgba(15,23,42,0.08) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+
+html[data-theme="light"] .skeleton-card .bg-white\/10 {
+  background: rgba(15,23,42,0.1) !important;
 }
 
 /* Light theme profile dropdown (in navbar) */

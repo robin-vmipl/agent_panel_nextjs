@@ -205,9 +205,9 @@ export default function DashboardPage() {
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#EF4444" stopOpacity={0.9} />
-                  <stop offset="50%" stopColor="#F87171" stopOpacity={0.8} />
-                  <stop offset="100%" stopColor="#DC2626" stopOpacity={0.5} />
+                  <stop offset="0%" stopColor="#ccbb83" stopOpacity={0.9} />
+                  <stop offset="50%" stopColor="#ccbb83" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#ccbb83" stopOpacity={0.5} />
                 </linearGradient>
               </defs>
 

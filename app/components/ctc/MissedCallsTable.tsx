@@ -95,7 +95,7 @@ export default function MissedCallsTable({
 
   if (missedCalls.length === 0) {
     return (
-      <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-panel backdrop-blur-sm p-12">
+      <div className="text-center py-20 border-2 border-dashed border-slate-700/40 rounded-3xl bg-panel backdrop-blur-sm p-12">
         <svg
           className="w-20 h-20 mx-auto mb-6 text-slate-500"
           fill="currentColor"

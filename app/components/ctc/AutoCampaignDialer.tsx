@@ -270,7 +270,7 @@ export default function AutoCampaignDialer({
             </span>
           </div>
         ) : autoData.length === 0 ? (
-          <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-panel backdrop-blur-sm p-12">
+          <div className="text-center py-20 border-2 border-dashed border-slate-700/40 rounded-3xl bg-panel backdrop-blur-sm p-12">
             <Play className="w-20 h-20 mx-auto mb-6 text-slate-500" />
             <h3 className="text-2xl font-bold text-slate-400 mb-2">
               No auto campaign data
