@@ -1,6 +1,8 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useModalContext } from "@/app/contexts/ModalContext";
 
 interface Props {
   open: boolean;
@@ -15,10 +17,32 @@ export default function MyIngroupsModal({
   ingroups,
   status,
 }: Props) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const { closeModal } = useModalContext();
+
+  // 🔹 Click outside handler
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+        closeModal("myIngroupsModal");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open, onClose, closeModal]);
+
   if (!open) return null;
 
   return (
-    <div className="modal-dropdown absolute right-0 top-full mt-3 w-80 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-slate-900/50 z-100 animate-in slide-in-from-top-2 duration-200 overflow-hidden max-h-[80vh]">
+    <div
+      ref={modalRef}
+      onClick={(e) => e.stopPropagation()}
+      className="modal-dropdown absolute right-0 top-full mt-3 w-80 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-3xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-slate-900/50 z-100 animate-in slide-in-from-top-2 duration-200 overflow-hidden max-h-[80vh]"
+    >
       {/*   DROPDOWN GLOW */}
       <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-2xl blur-xl animate-pulse -z-10 pointer-events-none" />
 

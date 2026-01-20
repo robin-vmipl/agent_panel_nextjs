@@ -32,7 +32,7 @@ export default function Sidebar({
       // Call status
       const sipData = (window as any).SIP_CALL_DATA;
       setIsInCall(
-        sipData?.callState === "ringing" || sipData?.callState === "answered"
+        sipData?.callState === "ringing" || sipData?.callState === "answered",
       );
     };
 
@@ -99,7 +99,7 @@ export default function Sidebar({
         `}
       >
         {/* Logo */}
-        <div className="p-4 border-b border-slate-300/50 shrink-0 flex items-center justify-center">
+        <div className="p-4 border-b border-slate-700/50 shrink-0 flex items-center justify-center">
           <img
             src="/logo.png"
             alt="Logo"

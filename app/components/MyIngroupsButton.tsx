@@ -1,20 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import MyIngroupsModal from "./MyIngroupsModal";
 import { apiFetch } from "../lib/api";
 import { Users } from "lucide-react";
+import { useModalContext } from "@/app/contexts/ModalContext";
 
 export default function MyIngroupsButton() {
   const [open, setOpen] = useState(false);
   const [ingroups, setIngroups] = useState<string[]>([]);
   const [status, setStatus] = useState("INACTIVE");
+  const { openModal, closeModal, closeAllModals } = useModalContext();
 
-  const fetchIngoups = async () => {
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    closeModal("myIngroupsModal");
+  }, [closeModal]);
+
+  const fetchIngoups = useCallback(async () => {
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/my-ingroups`
+        `${process.env.NEXT_PUBLIC_API_URL}/agent/my-ingroups`,
       );
 
       if (data.status === "error") {
@@ -24,11 +31,13 @@ export default function MyIngroupsButton() {
 
       setIngroups(data.ingroups || []);
       setStatus(data.status || "INACTIVE");
+      closeAllModals();
       setOpen(true);
+      openModal("myIngroupsModal");
     } catch (err) {
       toast.error("Unable to fetch ingroups");
     }
-  };
+  }, [openModal, closeAllModals]);
 
   return (
     <div className="relative group">
@@ -46,7 +55,7 @@ export default function MyIngroupsButton() {
 
       <MyIngroupsModal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={handleClose}
         ingroups={ingroups}
         status={status}
       />

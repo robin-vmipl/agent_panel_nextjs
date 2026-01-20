@@ -2,11 +2,12 @@
 import { usePathname } from "next/navigation";
 import StatusDropdown from "./StatusDropdown";
 import MyIngroupsButton from "./MyIngroupsButton";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import ChangePasswordModal from "./ChangePasswordModal";
 import { ChevronDown, Menu, ChevronLeft, User, Sun, Moon } from "lucide-react";
 import NavbarCrmButton from "./NavbarCrmButton";
 import { useAuth } from "@/app/contexts/AuthContext";
+import { useModalContext } from "@/app/contexts/ModalContext";
 
 export default function Navbar({
   onToggleMobileMenu,
@@ -15,15 +16,18 @@ export default function Navbar({
 }) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { openModal, closeModal, closeAllModals, openMenus } =
+    useModalContext();
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
   const [isMobileNavbarOpen, setIsMobileNavbarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("dark");
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   const agentName = user?.full_name || user?.user || "Agent";
   const profilePic = user?.profilePic || "";
 
-  // 🔥 Memoized StatusDropdown - No re-renders from Profile
+  // Memoized StatusDropdown - No re-renders from Profile
   const StatusDropdownWrapper = useCallback(
     () => (
       <div
@@ -32,12 +36,12 @@ export default function Navbar({
         <StatusDropdown />
       </div>
     ),
-    [pathname]
+    [pathname],
   );
 
   const MemoizedStatusDropdown = useMemo(
     () => StatusDropdownWrapper,
-    [StatusDropdownWrapper]
+    [StatusDropdownWrapper],
   );
 
   const pageTitleMap: Record<string, string> = {
@@ -59,6 +63,35 @@ export default function Navbar({
     setProfileOpen(false);
   }, [pathname]);
 
+  // 🔹 Click outside handler for profile menu (Desktop only)
+  useEffect(() => {
+    if (!profileOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(e.target as Node)
+      ) {
+        setProfileOpen(false);
+        closeModal("profileMenu");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profileOpen, closeModal]);
+
+  // 🔹 Close profile menu when other modals open
+  useEffect(() => {
+    if (
+      profileOpen &&
+      (openMenus.has("statusDropdown") || openMenus.has("myIngroupsModal"))
+    ) {
+      setProfileOpen(false);
+      closeModal("profileMenu");
+    }
+  }, [openMenus, profileOpen, closeModal]);
+
   const changeTheme = useCallback((theme: "light" | "dark") => {
     if (typeof window !== "undefined") {
       document.documentElement.setAttribute("data-theme", theme);
@@ -71,7 +104,14 @@ export default function Navbar({
   const handleProfileClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    setProfileOpen((prev) => !prev);
+    if (!profileOpen) {
+      closeAllModals();
+      setProfileOpen(true);
+      openModal("profileMenu");
+    } else {
+      setProfileOpen(false);
+      closeModal("profileMenu");
+    }
   };
 
   const handleMobileToggle = (e: React.MouseEvent) => {
@@ -86,7 +126,7 @@ export default function Navbar({
   const handlePasswordClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    // 🔥 AUTO CLOSE MOBILE PROFILE ON PASSWORD CLICK
+    // AUTO CLOSE MOBILE PROFILE ON PASSWORD CLICK
     setIsMobileNavbarOpen(false);
     setProfileOpen(false);
     setOpenPasswordModal(true);
@@ -152,7 +192,7 @@ export default function Navbar({
                     <div className="h-px bg-linear-to-r from-transparent via-slate-700/50 to-transparent" />
                   </div>
 
-                  {/* 🔥 MOBILE PROFILE WITH CHANGE PASSWORD */}
+                  {/* MOBILE PROFILE WITH CHANGE PASSWORD */}
                   <div className="p-3 rounded-xl hover:bg-slate-700/50 transition-colors space-y-3">
                     <div className="flex items-center gap-3">
                       {profilePic ? (
@@ -174,7 +214,7 @@ export default function Navbar({
                       </div>
                     </div>
 
-                    {/* 🔥 MOBILE CHANGE PASSWORD BUTTON */}
+                    {/* MOBILE CHANGE PASSWORD BUTTON */}
                     <button
                       onClick={handlePasswordClick}
                       className="flex items-center gap-3 w-full px-3 py-2 rounded-xl hover:bg-slate-600/50 transition-all duration-200 text-left group text-white mb-3 border border-slate-700/50"
@@ -235,7 +275,11 @@ export default function Navbar({
             <MemoizedStatusDropdown />
             <MyIngroupsButton />
 
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="relative"
+              ref={profileMenuRef}
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
                 onClick={handleProfileClick}
                 className="navbar-profile-btn group bg-linear-to-r from-slate-800/70 to-slate-900/70 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-slate-600/50 shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 text-sm font-semibold"
@@ -311,7 +355,7 @@ export default function Navbar({
         </div>
       </header>
 
-      {/* 🔥 MODAL z-[999] - ALWAYS ON TOP */}
+      {/* MODAL z-[999] - ALWAYS ON TOP */}
       <ChangePasswordModal
         open={openPasswordModal}
         onClose={() => setOpenPasswordModal(false)}

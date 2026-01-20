@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { apiFetch } from "../lib/api";
 import { sipConnect, sipDisconnect } from "../lib/sipControls";
 import { ChevronDown } from "lucide-react";
+import { useModalContext } from "@/app/contexts/ModalContext";
 
 const STATUS_OPTIONS = [
   { label: "Active", value: "ACTIVE", color: "emerald" },
@@ -24,8 +25,39 @@ export default function StatusDropdown() {
   const [initialized, setInitialized] = useState(false);
   const [isInCall, setIsInCall] = useState(false);
   const prevStatusRef = useRef("INACTIVE"); // 🔥 Track previous status
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { openModal, closeModal, closeAllModals, openMenus } =
+    useModalContext();
 
-  // 🔹 SIP status update - FIXED (No spam!)
+  // 🔹 Click outside handler
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+        closeModal("statusDropdown");
+      }
+    };
+
+    // Listen for clicks on document
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open, closeModal]);
+
+  // 🔹 Close dropdown when other modals open
+  useEffect(() => {
+    if (
+      open &&
+      (openMenus.has("myIngroupsModal") || openMenus.has("profileMenu"))
+    ) {
+      setOpen(false);
+      closeModal("statusDropdown");
+    }
+  }, [openMenus, open, closeModal]);
   const syncSipStatus = useCallback((status: string, forceConnect = false) => {
     const statusEl = document.getElementById("sipStatus");
 
@@ -56,7 +88,7 @@ export default function StatusDropdown() {
     const interval = setInterval(() => {
       const sipData = (window as any).SIP_CALL_DATA;
       setIsInCall(
-        sipData?.callState === "ringing" || sipData?.callState === "answered"
+        sipData?.callState === "ringing" || sipData?.callState === "answered",
       );
     }, 500);
     return () => clearInterval(interval);
@@ -70,7 +102,7 @@ export default function StatusDropdown() {
         `${process.env.NEXT_PUBLIC_API_URL}/agent/get-status`,
         {
           showToast: false,
-        }
+        },
       );
       const status = data?.status || "INACTIVE";
 
@@ -98,11 +130,13 @@ export default function StatusDropdown() {
   const handleStatusChange = async (newStatus: string) => {
     if (isInCall || loading || newStatus === currentStatus) {
       setOpen(false);
+      closeModal("statusDropdown");
       return;
     }
 
     setLoading(true);
     setOpen(false);
+    closeModal("statusDropdown");
 
     try {
       await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/agent/update-status`, {
@@ -155,12 +189,29 @@ export default function StatusDropdown() {
   const currentConfig = getStatusConfig(currentStatus);
   const isDisabled = isInCall || loading;
 
+  const handleDropdownToggle = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (isDisabled) return;
+
+      if (!open) {
+        closeAllModals();
+        setOpen(true);
+        openModal("statusDropdown");
+      } else {
+        setOpen(false);
+        closeModal("statusDropdown");
+      }
+    },
+    [open, isDisabled, openModal, closeModal, closeAllModals],
+  );
+
   return (
-    <div className="relative group">
+    <div className="relative group" ref={dropdownRef}>
       {/* STATUS BUTTON */}
       <button
         type="button"
-        onClick={() => !isDisabled && setOpen(!open)}
+        onClick={handleDropdownToggle}
         disabled={isDisabled}
         data-status={currentStatus}
         className={`status-button relative overflow-hidden px-5 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 hover:scale-[1.02] backdrop-blur-xl border-2 shadow-2xl ${
@@ -201,7 +252,10 @@ export default function StatusDropdown() {
                   key={option.value}
                   type="button"
                   disabled={isActive || loading}
-                  onClick={() => handleStatusChange(option.value)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStatusChange(option.value);
+                  }}
                   className={`group relative w-full text-left p-4 rounded-xl transition-all duration-300 cursor-pointer overflow-hidden flex items-center gap-3 ${
                     isActive
                       ? "bg-linear-to-r from-emerald-500/30 to-emerald-600/30 border-2 border-emerald-500/50 text-emerald-300 shadow-emerald-500/40 cursor-default"
