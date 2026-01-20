@@ -202,13 +202,13 @@ export default function AutoCampaignDialer({
                 bg-slate-700 hover:bg-slate-600
                 rounded-xl text-sm
                 flex items-center justify-center gap-2
-                disabled:opacity-50 text-slate-400
+                disabled:opacity-50 text-slate-300
               "
           >
             {refreshing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <RefreshCcw className="w-4 h-4 text-slate-400" />
+              <RefreshCcw className="w-4 h-4 text-slate-300" />
             )}
             Refresh
           </button>
@@ -220,7 +220,7 @@ export default function AutoCampaignDialer({
             className="
               w-full md:flex-1
               px-4 py-3
-              bg-slate-800/50 border border-slate-600
+              bg-panel border border-slate-600
               rounded-xl text-white font-medium
               focus:ring-2 focus:ring-orange-500 focus:border-transparent
               transition-all
@@ -244,10 +244,10 @@ export default function AutoCampaignDialer({
               w-full md:w-auto
               px-8 py-3
               font-bold rounded-xl shadow-lg transition-all
-              flex items-center justify-center gap-2
+              flex items-center justify-center gap-2 bg-panel
               ${
                 loading || !selectedCampaign
-                  ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
+                  ? "bg-slate-800/70 text-slate-300 cursor-not-allowed"
                   : "bg-linear-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 hover:shadow-orange-500/50 hover:scale-[1.02] text-white"
               }
             `}
@@ -270,7 +270,7 @@ export default function AutoCampaignDialer({
             </span>
           </div>
         ) : autoData.length === 0 ? (
-          <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-slate-900/30 backdrop-blur-sm p-12">
+          <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-panel backdrop-blur-sm p-12">
             <Play className="w-20 h-20 mx-auto mb-6 text-slate-500" />
             <h3 className="text-2xl font-bold text-slate-400 mb-2">
               No auto campaign data
@@ -325,8 +325,8 @@ export default function AutoCampaignDialer({
                               row.status === "P"
                                 ? "bg-green-500/20 text-green-400"
                                 : row.status === "C"
-                                ? "bg-orange-500/20 text-orange-400"
-                                : "bg-slate-500/20 text-slate-400"
+                                  ? "bg-orange-500/20 text-orange-400"
+                                  : "bg-slate-500/20 text-slate-400"
                             }`}
                           >
                             {row.status}

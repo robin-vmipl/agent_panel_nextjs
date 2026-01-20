@@ -2,11 +2,10 @@
 import { usePathname } from "next/navigation";
 import StatusDropdown from "./StatusDropdown";
 import MyIngroupsButton from "./MyIngroupsButton";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import ChangePasswordModal from "./ChangePasswordModal";
-import { ChevronDown, Menu, ChevronLeft } from "lucide-react";
+import { ChevronDown, Menu, ChevronLeft, User, Sun, Moon } from "lucide-react";
 import NavbarCrmButton from "./NavbarCrmButton";
-import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function Navbar({
@@ -18,14 +17,27 @@ export default function Navbar({
   const { user } = useAuth();
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
   const [isMobileNavbarOpen, setIsMobileNavbarOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("dark");
 
-  //   STATUSDROPDOWN WRAPPER - DISABLE ON CTC
-  const StatusDropdownWrapper = () => (
-    <div
-      className={pathname === "/ctc" ? "pointer-events-none opacity-50" : ""}
-    >
-      <StatusDropdown />
-    </div>
+  const agentName = user?.full_name || user?.user || "Agent";
+  const profilePic = user?.profilePic || "";
+
+  // 🔥 Memoized StatusDropdown - No re-renders from Profile
+  const StatusDropdownWrapper = useCallback(
+    () => (
+      <div
+        className={pathname === "/ctc" ? "pointer-events-none opacity-50" : ""}
+      >
+        <StatusDropdown />
+      </div>
+    ),
+    [pathname]
+  );
+
+  const MemoizedStatusDropdown = useMemo(
+    () => StatusDropdownWrapper,
+    [StatusDropdownWrapper]
   );
 
   const pageTitleMap: Record<string, string> = {
@@ -35,26 +47,68 @@ export default function Navbar({
 
   const dynamicTitle = pageTitleMap[pathname] || "Dashboard";
 
-  const agentName = user?.full_name || user?.user || "Agent";
-  const profilePic = user?.profilePic || "";
+  useEffect(() => {
+    const theme = (localStorage.getItem("theme") ||
+      document.documentElement.getAttribute("data-theme") ||
+      "dark") as "light" | "dark";
+    setCurrentTheme(theme);
+  }, []);
 
-  // Close mobile navbar on route change
   useEffect(() => {
     setIsMobileNavbarOpen(false);
+    setProfileOpen(false);
   }, [pathname]);
+
+  const changeTheme = useCallback((theme: "light" | "dark") => {
+    if (typeof window !== "undefined") {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+      setCurrentTheme(theme);
+    }
+  }, []);
+
+  // Event handlers with proper stopPropagation
+  const handleProfileClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setProfileOpen((prev) => !prev);
+  };
+
+  const handleMobileToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMobileNavbarOpen((prev) => !prev);
+  };
+
+  const handleOverlayClick = () => {
+    setIsMobileNavbarOpen(false);
+  };
+
+  const handlePasswordClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    // 🔥 AUTO CLOSE MOBILE PROFILE ON PASSWORD CLICK
+    setIsMobileNavbarOpen(false);
+    setProfileOpen(false);
+    setOpenPasswordModal(true);
+  };
+
+  const handleThemeClick =
+    (theme: "light" | "dark") => (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      changeTheme(theme);
+    };
 
   return (
     <>
-      {/*   NAVBAR OVERLAY - Mobile Only */}
       {isMobileNavbarOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/60 z-65"
-          onClick={() => setIsMobileNavbarOpen(false)}
+          onClick={handleOverlayClick}
         />
       )}
 
       <header className="h-20 bg-linear-to-b from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-3xl text-white flex items-center justify-between px-6 border-b border-slate-700/50 shadow-2xl sticky top-0 z-70">
-        {/* Left: Hamburger + Title */}
         <div className="flex items-center gap-4">
           <button
             onClick={onToggleMobileMenu}
@@ -67,113 +121,197 @@ export default function Navbar({
           </h1>
         </div>
 
-        {/* Right: Controls */}
         <div className="flex items-center gap-2 lg:gap-3 relative">
-          {/*   MOBILE: Breadcrumb Dropdown */}
+          {/* Mobile Dropdown - z-[75] */}
           <div className="lg:hidden">
             <button
-              onClick={() => setIsMobileNavbarOpen(!isMobileNavbarOpen)}
+              onClick={handleMobileToggle}
               className="p-3 bg-slate-800/50 hover:bg-slate-700/70 rounded-xl transition-all duration-200 shadow-lg flex items-center gap-2 group z-80"
             >
               <ChevronLeft className="w-5 h-5 rotate-180 group-hover:rotate-0 transition-transform duration-200" />
             </button>
 
-            {/*   MOBILE NAVBAR DROPDOWN */}
             {isMobileNavbarOpen && (
               <div className="absolute top-full right-0 mt-2 w-72 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl z-75 py-3">
                 <div className="px-3 space-y-2">
-                  {/* NavbarCrmButton */}
                   <div className="p-3 rounded-xl hover:bg-slate-700/50 transition-colors">
                     <NavbarCrmButton />
                   </div>
 
-                  {/*   STATUSDROPDOWN WRAPPER - DISABLED ON CTC */}
                   <div
-                    className={`p-3 rounded-xl hover:bg-slate-700/50 transition-colors ${
-                      pathname === "/ctc" ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                    className={`p-3 rounded-xl hover:bg-slate-700/50 transition-colors ${pathname === "/ctc" ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
-                    <StatusDropdownWrapper />
+                    <MemoizedStatusDropdown />
                   </div>
 
-                  {/* MyIngroupsButton */}
                   <div className="p-3 rounded-xl hover:bg-slate-700/50 transition-colors">
                     <MyIngroupsButton />
                   </div>
 
-                  {/* Theme toggle (mobile) */}
-                  <div className="p-3 rounded-xl hover:bg-slate-700/50 transition-colors">
-                    <ThemeToggle />
-                  </div>
-
-                  {/* Divider */}
                   <div className="px-4 my-2">
                     <div className="h-px bg-linear-to-r from-transparent via-slate-700/50 to-transparent" />
                   </div>
 
-                  {/* Profile */}
-                  <button
-                    onClick={() => {
-                      setIsMobileNavbarOpen(false);
-                      setOpenPasswordModal(true);
-                    }}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-700/50 transition-all duration-200 text-slate-300 hover:text-white group"
-                  >
-                    {profilePic ? (
-                      <img
-                        src={profilePic}
-                        alt="Profile"
-                        className="w-10 h-10 rounded-2xl object-cover border-2 border-emerald-400/40"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 bg-linear-to-br from-slate-700 to-slate-600 rounded-2xl flex items-center justify-center text-white font-bold text-sm">
-                        {agentName[0] || "?"}
+                  {/* 🔥 MOBILE PROFILE WITH CHANGE PASSWORD */}
+                  <div className="p-3 rounded-xl hover:bg-slate-700/50 transition-colors space-y-3">
+                    <div className="flex items-center gap-3">
+                      {profilePic ? (
+                        <img
+                          src={profilePic}
+                          alt="Profile"
+                          className="w-10 h-10 rounded-2xl object-cover border-2 border-emerald-400/40"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-linear-to-r from-slate-700 to-slate-600 rounded-2xl flex items-center justify-center text-white font-bold text-sm">
+                          {agentName[0]?.toUpperCase() || "?"}
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="font-medium text-white">
+                          {agentName}
+                        </div>
+                        <div className="text-xs text-slate-400">Settings</div>
                       </div>
-                    )}
-                    <div className="flex-1 text-left">
-                      <span className="font-medium block">
-                        {agentName || "Profile"}
-                      </span>
-                      <span className="text-xs text-slate-500">Settings</span>
                     </div>
-                  </button>
+
+                    {/* 🔥 MOBILE CHANGE PASSWORD BUTTON */}
+                    <button
+                      onClick={handlePasswordClick}
+                      className="flex items-center gap-3 w-full px-3 py-2 rounded-xl hover:bg-slate-600/50 transition-all duration-200 text-left group text-white mb-3 border border-slate-700/50"
+                    >
+                      <User className="w-4 h-4 text-slate-400 group-hover:text-emerald-400 shrink-0" />
+                      <span className="font-medium">Change Password</span>
+                    </button>
+
+                    {/* Theme Section */}
+                    <div className="pt-3 border-t border-slate-700/50 space-y-2">
+                      <div className="text-xs text-slate-400 font-medium tracking-wider uppercase">
+                        Theme
+                      </div>
+
+                      <button
+                        onClick={handleThemeClick("dark")}
+                        className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl transition-all duration-200 text-left group text-white ${
+                          currentTheme === "dark"
+                            ? "bg-emerald-500/20 border-2 border-emerald-400/40 ring-2 ring-emerald-400/30 shadow-lg"
+                            : "hover:bg-slate-700/50"
+                        }`}
+                      >
+                        <Moon
+                          className={`w-4 h-4 shrink-0 ${currentTheme === "dark" ? "text-emerald-400" : "text-slate-400 group-hover:text-emerald-400"}`}
+                        />
+                        <span className="font-medium">Dark</span>
+                        {currentTheme === "dark" && (
+                          <div className="ml-auto w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-md animate-pulse" />
+                        )}
+                      </button>
+
+                      <button
+                        onClick={handleThemeClick("light")}
+                        className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl transition-all duration-200 text-left group text-white ${
+                          currentTheme === "light"
+                            ? "bg-emerald-500/20 border-2 border-emerald-400/40 ring-2 ring-emerald-400/30 shadow-lg"
+                            : "hover:bg-slate-700/50"
+                        }`}
+                      >
+                        <Sun
+                          className={`w-4 h-4 shrink-0 ${currentTheme === "light" ? "text-emerald-400" : "text-slate-400 group-hover:text-emerald-400"}`}
+                        />
+                        <span className="font-medium">Light</span>
+                        {currentTheme === "light" && (
+                          <div className="ml-auto w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-md animate-pulse" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/*   DESKTOP: Show All Controls Inline */}
+          {/* Desktop */}
           <div className="hidden lg:flex items-center gap-3">
             <NavbarCrmButton />
-
-            {/*   STATUSDROPDOWN WRAPPER - DISABLED ON CTC */}
-            <StatusDropdownWrapper />
-
+            <MemoizedStatusDropdown />
             <MyIngroupsButton />
-            <ThemeToggle />
 
-            <button
-              onClick={() => setOpenPasswordModal(true)}
-              className="group bg-linear-to-r from-slate-800/70 to-slate-900/70 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-slate-600/50 shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 text-sm font-semibold"
-            >
-              {profilePic ? (
-                <img
-                  src={profilePic}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-2xl object-cover border-2 border-emerald-400/40"
-                />
-              ) : (
-                <div className="w-8 h-8 bg-linear-to-r from-slate-700 to-slate-600 rounded-2xl flex items-center justify-center text-white font-bold text-xs">
-                  {agentName[0] || "?"}
+            <div className="relative" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={handleProfileClick}
+                className="group bg-linear-to-r from-slate-800/70 to-slate-900/70 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-slate-600/50 shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 text-sm font-semibold"
+              >
+                {profilePic ? (
+                  <img
+                    src={profilePic}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-2xl object-cover border-2 border-emerald-400/40"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-linear-to-r from-slate-700 to-slate-600 rounded-2xl flex items-center justify-center text-white font-bold text-xs">
+                    {agentName[0]?.toUpperCase() || "?"}
+                  </div>
+                )}
+                <span className="truncate max-w-28">{agentName}</span>
+                <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
+              </button>
+
+              {profileOpen && (
+                <div className="absolute top-full right-0 mt-2 w-60 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl z-100 py-3">
+                  <button
+                    onClick={handlePasswordClick}
+                    className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-700/50 transition-all duration-200 text-left group text-white mb-2"
+                  >
+                    <User className="w-5 h-5 text-slate-400 group-hover:text-emerald-400 shrink-0" />
+                    <span className="font-medium">Change Password</span>
+                  </button>
+
+                  <div className="space-y-1">
+                    <div className="px-4 py-1 text-xs text-slate-400 font-medium tracking-wider uppercase border-b border-slate-700/50 pb-2 mb-2">
+                      Theme
+                    </div>
+
+                    <button
+                      onClick={handleThemeClick("dark")}
+                      className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200 text-left group text-white ${
+                        currentTheme === "dark"
+                          ? "bg-emerald-500/20 border-2 border-emerald-400/40 ring-2 ring-emerald-400/30 shadow-lg"
+                          : "hover:bg-slate-700/50"
+                      }`}
+                    >
+                      <Moon
+                        className={`w-5 h-5 shrink-0 transition-all ${currentTheme === "dark" ? "text-emerald-400" : "text-slate-400 group-hover:text-emerald-400"}`}
+                      />
+                      <span className="font-medium">Dark</span>
+                      {currentTheme === "dark" && (
+                        <div className="ml-auto w-3 h-3 bg-emerald-400 rounded-full shadow-md animate-pulse" />
+                      )}
+                    </button>
+
+                    <button
+                      onClick={handleThemeClick("light")}
+                      className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200 text-left group text-white ${
+                        currentTheme === "light"
+                          ? "bg-emerald-500/20 border-2 border-emerald-400/40 ring-2 ring-emerald-400/30 shadow-lg"
+                          : "hover:bg-slate-700/50"
+                      }`}
+                    >
+                      <Sun
+                        className={`w-5 h-5 shrink-0 transition-all ${currentTheme === "light" ? "text-emerald-400" : "text-slate-400 group-hover:text-emerald-400"}`}
+                      />
+                      <span className="font-medium">Light</span>
+                      {currentTheme === "light" && (
+                        <div className="ml-auto w-3 h-3 bg-emerald-400 rounded-full shadow-md animate-pulse" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               )}
-              <span className="truncate max-w-30">{agentName}</span>
-              <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
-            </button>
+            </div>
           </div>
         </div>
       </header>
 
+      {/* 🔥 MODAL z-[999] - ALWAYS ON TOP */}
       <ChangePasswordModal
         open={openPasswordModal}
         onClose={() => setOpenPasswordModal(false)}

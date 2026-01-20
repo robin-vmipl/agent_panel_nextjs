@@ -159,12 +159,12 @@ export default function AssignedCampaigns({
           <button
             onClick={refreshCampaigns}
             disabled={refreshing}
-            className="w-full md:w-auto px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 text-slate-400"
+            className="w-full md:w-auto px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 text-slate-300"
           >
             {refreshing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <RefreshCcw className="w-4 h-4 text-slate-400" />
+              <RefreshCcw className="w-4 h-4 text-slate-300" />
             )}
             Refresh
           </button>
@@ -176,7 +176,7 @@ export default function AssignedCampaigns({
             className="
                 w-full md:flex-1
                 px-4 py-3
-                bg-slate-800/50 border border-slate-600
+                bg-panel border border-slate-600
                 rounded-xl text-white
               "
             value={selectedCampaign}
@@ -197,10 +197,10 @@ export default function AssignedCampaigns({
                 w-full md:w-auto
                 px-8 py-3
                 font-bold rounded-xl shadow-lg transition-all
-                flex items-center justify-center gap-2
+                flex items-center justify-center gap-2 bg-panel
                 ${
                   !selectedCampaign || tableLoading
-                    ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
+                    ? "bg-slate-800/70 text-slate-300 cursor-not-allowed"
                     : "bg-linear-to-r from-blue-600 to-indigo-500 hover:from-blue-700 hover:to-indigo-600 hover:shadow-blue-500/50 hover:scale-[1.02] text-white"
                 }
               `}
@@ -220,7 +220,7 @@ export default function AssignedCampaigns({
             Loading assigned data...
           </div>
         ) : assignedData.length === 0 ? (
-          <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-slate-900/30 backdrop-blur-sm p-12">
+          <div className="text-center py-20 border-2 border-dashed border-slate-700/50 rounded-3xl bg-panel backdrop-blur-sm p-12">
             <Download className="w-20 h-20 mx-auto mb-6 text-slate-500" />
             <h3 className="text-2xl font-bold text-slate-400 mb-2">
               No assigned data

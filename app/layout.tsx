@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { AuthProvider } from "@/app/contexts/AuthContext";
-import ThemeInitializer from "./components/ThemeInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,18 +27,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* SIP styles (only enable if needed) */}
-        {/* <link rel="stylesheet" href="/sip/demo-1.css" /> */}
-        {/* <link rel="stylesheet" href="/sip/style.css" /> */}
+        {/* 🌗 THEME INIT — runs before React & before paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var theme = localStorage.getItem("theme") || "dark";
+                  document.documentElement.setAttribute("data-theme", theme);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
 
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* 🌗 Prevent theme flash */}
-        <ThemeInitializer />
-
-        {/* 🔔 Global Toasts */}
         <Toaster
           position="top-right"
           reverseOrder={false}
