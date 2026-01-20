@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import toast from "react-hot-toast";
 import { apiFetch } from "../lib/api";
 import { sipConnect, sipDisconnect } from "../lib/sipControls";
@@ -24,13 +23,33 @@ export default function StatusDropdown() {
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [isInCall, setIsInCall] = useState(false);
+  const prevStatusRef = useRef("INACTIVE"); // 🔥 Track previous status
 
-  // 🔹 Helper to update state, localStorage, and SIP
-  const updateLocalStatus = (status: string) => {
+  // 🔹 SIP status update - FIXED (No spam!)
+  const syncSipStatus = useCallback((status: string, forceConnect = false) => {
+    const statusEl = document.getElementById("sipStatus");
+
+    if (status === "ACTIVE" && forceConnect) {
+      sipConnect();
+      if (statusEl) {
+        statusEl.textContent = "REGISTERED";
+        statusEl.className = "text-xs text-emerald-400";
+      }
+    } else if (status !== "ACTIVE") {
+      sipDisconnect();
+      if (statusEl) {
+        statusEl.textContent = "Disconnected";
+        statusEl.className = "text-xs text-red-400";
+      }
+    }
+  }, []);
+
+  // 🔹 ONLY update local state & storage - NO SIP calls
+  const updateLocalStatus = useCallback((status: string) => {
     setCurrentStatus(status);
     localStorage.setItem("agentStatus", status);
-    syncSipStatus(status);
-  };
+    prevStatusRef.current = status; // Track for change detection
+  }, []);
 
   // 🔹 Poll SIP call status
   useEffect(() => {
@@ -43,18 +62,25 @@ export default function StatusDropdown() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🔹 Initial DB sync
+  // 🔹 Initial DB sync - FIXED (No stale closure)
   const syncWithDatabase = useCallback(async () => {
     setLoading(true);
     try {
       const data = await apiFetch(
         `${process.env.NEXT_PUBLIC_API_URL}/agent/get-status`,
         {
-          showToast: false, // silent background sync
+          showToast: false,
         }
       );
       const status = data?.status || "INACTIVE";
+
+      // ✅ Update local state ONLY
       updateLocalStatus(status);
+
+      // ✅ SIP sync ONLY if status actually CHANGED
+      if (status !== prevStatusRef.current && status === "ACTIVE") {
+        syncSipStatus(status, true);
+      }
     } catch (err) {
       console.error("Status sync failed:", err);
       updateLocalStatus("INACTIVE");
@@ -62,40 +88,18 @@ export default function StatusDropdown() {
       setLoading(false);
       setInitialized(true);
     }
-  }, []);
+  }, [updateLocalStatus, syncSipStatus]);
 
   useEffect(() => {
     syncWithDatabase();
   }, [syncWithDatabase]);
 
-  // 🔹 SIP status update
-  const syncSipStatus = (status: string) => {
-    const statusEl = document.getElementById("sipStatus");
-    if (status === "ACTIVE") {
-      sipConnect();
-      if (statusEl) {
-        statusEl.textContent = "REGISTERED";
-        statusEl.className = "text-xs text-emerald-400";
-      }
-    } else {
-      sipDisconnect();
-      if (statusEl) {
-        statusEl.textContent = "Disconnected";
-        statusEl.className = "text-xs text-red-400";
-      }
-    }
-  };
-
   // 🔹 Handle status change from dropdown
   const handleStatusChange = async (newStatus: string) => {
-    if (isInCall) {
-      toast.error("Cannot change status during active call!", {
-        id: "status-call-block",
-      });
+    if (isInCall || loading || newStatus === currentStatus) {
       setOpen(false);
       return;
     }
-    if (loading || newStatus === currentStatus) return;
 
     setLoading(true);
     setOpen(false);
@@ -104,23 +108,30 @@ export default function StatusDropdown() {
       await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/agent/update-status`, {
         method: "POST",
         body: JSON.stringify({ status: newStatus }),
-        showToast: true, // api.ts will handle errors
+        showToast: true,
       });
 
-      // ✅ Sync local state & show success toast
+      // ✅ Update local state first
       updateLocalStatus(newStatus);
+
+      // ✅ SIP sync ONLY for real changes
+      syncSipStatus(newStatus, newStatus === "ACTIVE");
+
       toast.success("Status updated successfully!", { id: "status-success" });
     } catch (err) {
       console.error("Status update failed:", err);
+      toast.error("Status update failed!");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Periodic background DB sync
+  // 🔹 Periodic background DB sync - SIP SAFE
   useEffect(() => {
     if (!initialized) return;
-    const interval = setInterval(syncWithDatabase, 30000); // every 30s
+    const interval = setInterval(() => {
+      syncWithDatabase();
+    }, 30000); // every 30s
     return () => clearInterval(interval);
   }, [initialized, syncWithDatabase]);
 
@@ -173,9 +184,7 @@ export default function StatusDropdown() {
             {loading ? "Updating..." : currentStatus.replace(/_/g, " ")}
           </span>
           <ChevronDown
-            className={`w-4 h-4 transition-transform duration-200 ${
-              open ? "rotate-180" : ""
-            }`}
+            className={`w-4 h-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           />
         </div>
       </button>
@@ -209,11 +218,7 @@ export default function StatusDropdown() {
                   />
                   <div className="flex-1 min-w-0">
                     <p
-                      className={`font-semibold text-sm truncate ${
-                        isActive
-                          ? "bg-linear-to-r from-emerald-300 to-emerald-400 bg-clip-text text-transparent"
-                          : ""
-                      }`}
+                      className={`font-semibold text-sm truncate ${isActive ? "bg-linear-to-r from-emerald-300 to-emerald-400 bg-clip-text text-transparent" : ""}`}
                     >
                       {option.label}
                     </p>

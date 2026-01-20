@@ -66,7 +66,17 @@ export default function MyIngroupsModal({
           ingroups.map((group, index) => (
             <div
               key={index}
-              className="group relative bg-linear-to-r from-slate-800/60 to-slate-900/60 backdrop-blur-xl hover:from-emerald-500/15 hover:to-blue-500/15 border border-slate-700/50 hover:border-emerald-500/40 p-4 rounded-xl shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer overflow-hidden"
+              className="group relative 
+                  bg-linear-to-r from-emerald-500/15 to-blue-500/15      
+                  backdrop-blur-xl 
+                  hover:from-slate-800/60 hover:to-slate-900/60           
+                  border border-emerald-500/40 
+                  hover:border-slate-700/50 
+                  p-4 rounded-xl shadow-lg 
+                  hover:shadow-slate-900/30 
+                  hover:-translate-y-0.5 
+                  transition-all duration-300 
+                  cursor-pointer overflow-hidden"
             >
               <div className="absolute inset-0 bg-linear-to-r from-emerald-400/0 via-white/10 to-transparent opacity-0 group-hover:opacity-100 rounded-xl -skew-x-12 -translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700" />
               <div className="relative z-10 flex items-center justify-between">
