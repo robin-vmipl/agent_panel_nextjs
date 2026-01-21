@@ -93,7 +93,7 @@ export default function MyIngroupsModal({
               className="group relative 
                   bg-linear-to-r from-emerald-500/15 to-blue-500/15      
                   backdrop-blur-xl 
-                  hover:from-slate-800/60 hover:to-slate-900/60           
+                  hover:from-slate-200/60 hover:to-slate-300/60           
                   border border-emerald-500/40 
                   hover:border-slate-700/50 
                   p-4 rounded-xl shadow-lg 
@@ -108,7 +108,7 @@ export default function MyIngroupsModal({
                   <h4 className="text-sm font-bold text-slate-300 truncate max-w-55">
                     {group}
                   </h4>
-                  <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">
+                  <p className="text-xs text-slate-600 uppercase tracking-wider font-medium">
                     Group #{index + 1}
                   </p>
                 </div>

@@ -90,10 +90,10 @@ export default function Sidebar({
       {/* SIDEBAR */}
       <aside
         className={`
-          w-64 h-screen theme-surface
+          w-64 h-screen lg:h-screen theme-surface
           border-r border-slate-700/50 shadow-2xl flex flex-col
           fixed inset-y-0 left-0 z-50
-          lg:static lg:z-auto lg:translate-x-0
+          lg:static lg:z-auto lg:translate-x-0 lg:mt-0
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
           transition-transform duration-300 ease-in-out
         `}
