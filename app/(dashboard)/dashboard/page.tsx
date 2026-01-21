@@ -228,15 +228,21 @@ export default function DashboardPage() {
               />
 
               <Tooltip
+                cursor={{
+                  // fill: "rgba(16, 185, 129, 0.2)",
+                  fill: "rgba(148, 163, 184, 0.6)",
+                  stroke: "transparent",
+                  strokeWidth: 0,
+                }}
                 contentStyle={{
                   backgroundColor: "rgba(30, 41, 59, 0.98)",
                   border: "1px solid #64748b",
                   borderRadius: "12px",
                   color: "#f8fafc",
-                  fontSize: "13px",
-                  fontWeight: "600",
+                  fontSize: "15px",
+                  fontWeight: "500",
                   padding: "12px 16px",
-                  backdropFilter: "blur(20px)",
+                  // backdropFilter: "blur(20px)",
                   boxShadow: "0 15px 30px rgba(0,0,0,0.3)",
                 }}
               />

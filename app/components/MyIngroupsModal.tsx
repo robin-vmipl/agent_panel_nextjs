@@ -93,7 +93,7 @@ export default function MyIngroupsModal({
               className="group relative 
                   bg-linear-to-r from-emerald-500/15 to-blue-500/15      
                   backdrop-blur-xl 
-                  hover:from-slate-200/60 hover:to-slate-300/60           
+                  hover:from-slate-400/60 hover:to-slate-400/60           
                   border border-emerald-500/40 
                   hover:border-slate-700/50 
                   p-4 rounded-xl shadow-lg 
