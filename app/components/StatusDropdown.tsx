@@ -165,7 +165,7 @@ export default function StatusDropdown() {
     if (!initialized) return;
     const interval = setInterval(() => {
       syncWithDatabase();
-    }, 30000); // every 30s
+    }, 60000); // every 60s
     return () => clearInterval(interval);
   }, [initialized, syncWithDatabase]);
 

@@ -159,7 +159,7 @@ export default function MissedCallsTable({
                     onClick={() => handleTableDial(call)}
                     disabled={dialingCalls[call.id]}
                     className="ctc-dial-btn px-5 py-2 bg-linear-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600
-                                text-white text-sm font-semibold
+                                text-white text-sm font-semibold cursor-pointer
                                 rounded-xl
                                 flex items-center gap-2
                                 mx-auto

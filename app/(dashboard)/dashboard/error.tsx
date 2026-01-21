@@ -34,7 +34,7 @@ export default function DashboardError({
           <div className="flex gap-4 justify-center pt-2">
             <button
               onClick={reset}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold bg-emerald-600 hover:bg-emerald-500 transition shadow-lg hover:shadow-emerald-500/30"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold bg-emerald-600 hover:bg-emerald-500 transition shadow-lg hover:shadow-emerald-500/30 cursor-pointer"
             >
               <RefreshCcw className="w-4 h-4" />
               Retry
@@ -42,7 +42,7 @@ export default function DashboardError({
 
             <button
               onClick={logoutUser}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold bg-slate-700 hover:bg-slate-600 transition shadow-lg"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold bg-slate-700 hover:bg-slate-600 transition shadow-lg cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               Exit

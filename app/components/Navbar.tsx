@@ -282,7 +282,7 @@ export default function Navbar({
             >
               <button
                 onClick={handleProfileClick}
-                className="navbar-profile-btn group bg-linear-to-r from-slate-800/70 to-slate-900/70 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-slate-600/50 shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 text-sm font-semibold"
+                className="navbar-profile-btn group bg-linear-to-r from-slate-800/70 to-slate-900/70 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-slate-600/50 shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 text-sm font-semibold cursor-pointer"
               >
                 {profilePic ? (
                   <img
@@ -303,7 +303,7 @@ export default function Navbar({
                 <div className="absolute top-full right-0 mt-2 w-60 bg-linear-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl z-100 py-3">
                   <button
                     onClick={handlePasswordClick}
-                    className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-700/50 transition-all duration-200 text-left group text-white mb-2"
+                    className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-700/50 transition-all duration-200 text-left group text-white mb-2 cursor-pointer"
                   >
                     <User className="w-5 h-5 text-slate-400 group-hover:text-emerald-400 shrink-0" />
                     <span className="font-medium">Change Password</span>
@@ -316,7 +316,7 @@ export default function Navbar({
 
                     <button
                       onClick={handleThemeClick("dark")}
-                      className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200 text-left group text-white ${
+                      className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200 text-left group text-white cursor-pointer ${
                         currentTheme === "dark"
                           ? "bg-emerald-500/20 border-2 border-emerald-400/40 ring-2 ring-emerald-400/30 shadow-lg"
                           : "hover:bg-slate-700/50"
@@ -333,7 +333,7 @@ export default function Navbar({
 
                     <button
                       onClick={handleThemeClick("light")}
-                      className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200 text-left group text-white ${
+                      className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200 text-left group text-white cursor-pointer ${
                         currentTheme === "light"
                           ? "bg-emerald-500/20 border-2 border-emerald-400/40 ring-2 ring-emerald-400/30 shadow-lg"
                           : "hover:bg-slate-700/50"

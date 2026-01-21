@@ -96,7 +96,7 @@ export default function CTCPage() {
               setApiError(null);
               loadData();
             }}
-            className="px-4 py-2 bg-emerald-600/80 hover:bg-emerald-500 rounded-xl text-sm"
+            className="px-4 py-2 bg-emerald-600/80 hover:bg-emerald-500 rounded-xl text-sm text-slate-100 cursor-pointer"
           >
             Retry
           </button>

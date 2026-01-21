@@ -45,7 +45,7 @@ export default function AssignedCampaigns({
         `${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-campaigns`,
         {
           showToast: false,
-        }
+        },
       );
 
       const updatedCampaigns = data?.campaigns || [];
@@ -87,7 +87,7 @@ export default function AssignedCampaigns({
             campaign: selectedCampaign,
             agent_id: agentConfig.agent_id,
           }),
-        }
+        },
       );
 
       setAssignedData(response.data || []);
@@ -119,7 +119,7 @@ export default function AssignedCampaigns({
       await apiFetch(
         `${
           process.env.NEXT_PUBLIC_API_URL
-        }/agent/click-to-call?${params.toString()}`
+        }/agent/click-to-call?${params.toString()}`,
       );
 
       toast.success(`✅ Calling ${row.CUST_NUM.slice(-4)}...`);
@@ -159,7 +159,7 @@ export default function AssignedCampaigns({
           <button
             onClick={refreshCampaigns}
             disabled={refreshing}
-            className="ctc-refresh-btn w-full md:w-auto px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 text-slate-300"
+            className="ctc-refresh-btn w-full md:w-auto px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 text-slate-300 cursor-pointer"
           >
             {refreshing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -201,7 +201,7 @@ export default function AssignedCampaigns({
                 ${
                   !selectedCampaign || tableLoading
                     ? "bg-slate-800/70 text-slate-300 cursor-not-allowed"
-                    : "bg-linear-to-r from-blue-600 to-indigo-500 hover:from-blue-700 hover:to-indigo-600 hover:shadow-blue-500/50 hover:scale-[1.02] text-white"
+                    : "bg-linear-to-r from-blue-600 to-indigo-500 hover:from-blue-700 hover:to-indigo-600 hover:shadow-blue-500/50 hover:scale-[1.02] text-white cursor-pointer"
                 }
               `}
           >
@@ -285,7 +285,7 @@ export default function AssignedCampaigns({
                               shadow-lg hover:shadow-blue-500/50
                               hover:scale-[1.02] transition-all
                               flex items-center gap-2
-                              disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+                              disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 cursor-pointer"
                           >
                             {dialingRow === rowKey ? (
                               <Loader2 className="w-4 h-4 animate-spin" />

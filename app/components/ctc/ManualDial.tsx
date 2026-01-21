@@ -53,7 +53,7 @@ export default function ManualDial({
       await apiFetch(
         `${
           process.env.NEXT_PUBLIC_API_URL
-        }/agent/click-to-call?${params.toString()}`
+        }/agent/click-to-call?${params.toString()}`,
       );
 
       toast.success(`Calling ${phonenumber.slice(-4)}...`);
@@ -118,7 +118,7 @@ export default function ManualDial({
               className={`manual-dial-btn w-full py-5 px-8 font-bold text-lg flex items-center justify-center gap-3 rounded-2xl shadow-xl transition-all ${
                 isDisabled
                   ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
-                  : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] btn-gradient"
+                  : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] btn-gradient cursor-pointer"
               }`}
             >
               {loading ? (
@@ -155,7 +155,7 @@ export default function ManualDial({
               className={`manual-dial-btn px-10 py-6 font-bold text-lg flex items-center gap-3 whitespace-nowrap transition-all shadow-xl ${
                 isDisabled
                   ? "bg-slate-800/70 text-slate-500 cursor-not-allowed"
-                  : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] btn-gradient"
+                  : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-500/50 hover:scale-[1.02] btn-gradient cursor-pointer"
               }`}
             >
               {loading ? (
