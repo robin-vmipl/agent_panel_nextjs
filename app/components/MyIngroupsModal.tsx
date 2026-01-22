@@ -56,7 +56,7 @@ export default function MyIngroupsModal({
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-xl bg-slate-800/50 hover:bg-slate-700/70 border border-slate-700/50 hover:border-slate-600/50 text-slate-400 hover:text-slate-200 transition-all duration-200 hover:scale-105"
+          className="p-1.5 rounded-xl bg-slate-800/50 hover:bg-slate-700/70 border border-slate-700/50 hover:border-slate-600/50 text-slate-400 hover:text-slate-200 transition-all duration-200 hover:scale-105 cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
@@ -131,7 +131,7 @@ export default function MyIngroupsModal({
       <div className="relative z-20 p-4 border-t border-slate-700/30">
         <button
           onClick={onClose}
-          className="w-full h-12 px-6 rounded-2xl bg-linear-to-r from-slate-800/80 to-slate-900/80 hover:from-slate-700/80 hover:to-slate-800/80 border border-slate-600/50 hover:border-slate-500/70 text-slate-300 hover:text-white font-semibold shadow-lg hover:shadow-slate-500/30 hover:scale-[1.02] transition-all duration-300 backdrop-blur-sm"
+          className="w-full h-12 px-6 rounded-2xl bg-linear-to-r from-slate-800/80 to-slate-900/80 hover:from-slate-700/80 hover:to-slate-800/80 border border-slate-600/50 hover:border-slate-500/70 text-slate-300 hover:text-white font-semibold shadow-lg hover:shadow-slate-500/30 hover:scale-[1.02] transition-all duration-300 backdrop-blur-sm cursor-pointer"
         >
           Close
         </button>
