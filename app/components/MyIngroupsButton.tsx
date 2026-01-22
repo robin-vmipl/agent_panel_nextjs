@@ -21,7 +21,7 @@ export default function MyIngroupsButton() {
   const fetchIngoups = useCallback(async () => {
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/my-ingroups`,
+        `${process.env.NEXT_PUBLIC_API_URL}/my-ingroups`,
       );
 
       if (data.status === "error") {

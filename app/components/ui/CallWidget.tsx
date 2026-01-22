@@ -189,13 +189,10 @@ export default function CallWidget() {
   const handleFeedback = async () => {
     setLoading(true);
     try {
-      await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/call_transfer_api`,
-        {
-          method: "POST",
-          body: JSON.stringify({ action: "feedback" }),
-        }
-      );
+      await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/call_transfer_api`, {
+        method: "POST",
+        body: JSON.stringify({ action: "feedback" }),
+      });
       toast.success("Feedback submitted successfully!");
       handleHangup();
     } catch (err: any) {
@@ -220,7 +217,7 @@ export default function CallWidget() {
   const fetchIngroups = useCallback(async () => {
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/ingroups`
+        `${process.env.NEXT_PUBLIC_API_URL}/ingroups`,
       );
       setIngroups(data || []);
     } catch (err: any) {
@@ -236,13 +233,10 @@ export default function CallWidget() {
     }
     setLoading(true);
     try {
-      await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/call_transfer_api`,
-        {
-          method: "POST",
-          body: JSON.stringify({ action: "transfer", queue: selectedGroup }),
-        }
-      );
+      await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}//call_transfer_api`, {
+        method: "POST",
+        body: JSON.stringify({ action: "transfer", queue: selectedGroup }),
+      });
       toast.success("Call transferred successfully!");
       setTransferPopup(false);
       setSelectedGroup("");
@@ -349,7 +343,7 @@ export default function CallWidget() {
       const muteCheckbox = document.querySelector("#mute") as HTMLInputElement;
       const holdCheckbox = document.querySelector("#hold") as HTMLInputElement;
       const connectBtn = document.getElementById(
-        "connect"
+        "connect",
       ) as HTMLButtonElement;
 
       if (muteCheckbox) setIsMuted(muteCheckbox.checked);
@@ -369,7 +363,7 @@ export default function CallWidget() {
 
       // CTC PAGE DETECTION - CHECK LOADED SCRIPT
       const sipScript = Array.from(document.querySelectorAll("script")).find(
-        (script) => script.src?.includes("demo-1-ctc")
+        (script) => script.src?.includes("demo-1-ctc"),
       );
       setIsCtcCall(!!sipScript); // true = CTC, false = Dashboard
     };
@@ -405,13 +399,13 @@ export default function CallWidget() {
             currentCallIdRef.current = incomingNum;
 
             const data = await apiFetch(
-              `${process.env.NEXT_PUBLIC_API_URL}/agent/call_details`
+              `${process.env.NEXT_PUBLIC_API_URL}/call_details`,
             );
             const { call_details } = data;
 
             if (call_details) {
               const encryptStringData = (
-                data: string | null
+                data: string | null,
               ): string | null => {
                 if (!data) return null;
                 try {
@@ -423,10 +417,10 @@ export default function CallWidget() {
 
               const userID = encryptStringData(call_details.user || null);
               const uniqueID = encryptStringData(
-                call_details.external_update_fields_data || null
+                call_details.external_update_fields_data || null,
               );
               const mobileNumber = encryptStringData(
-                (call_details.external_transferconf || "").slice(-10)
+                (call_details.external_transferconf || "").slice(-10),
               );
 
               const url = `https://pmfby.gov.in/krph/?userID=${userID}&uniqueID=${uniqueID}&mobileNumber=${mobileNumber}`;

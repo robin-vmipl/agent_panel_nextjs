@@ -25,17 +25,17 @@ export default function NavbarCrmButton() {
 
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/call_details`
+        `${process.env.NEXT_PUBLIC_API_URL}/call_details`,
       );
       const { call_details } = data;
 
       if (call_details) {
         const userID = encryptStringData(call_details.user || null);
         const uniqueID = encryptStringData(
-          call_details.external_update_fields_data || null
+          call_details.external_update_fields_data || null,
         );
         const mobileNumber = encryptStringData(
-          (call_details.external_transferconf || "").slice(-10)
+          (call_details.external_transferconf || "").slice(-10),
         );
         const url = `https://pmfby.gov.in/krph/?userID=${userID}&uniqueID=${uniqueID}&mobileNumber=${mobileNumber}`;
         window.open(url, "_blank");

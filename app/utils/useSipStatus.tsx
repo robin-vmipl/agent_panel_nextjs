@@ -13,7 +13,7 @@ export function useSipStatus() {
     async (flag: string) => {
       if (status.externalPark !== flag) {
         setStatus((prev) => ({ ...prev, externalPark: flag }));
-        await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/agent/update-park`, {
+        await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/update-park`, {
           method: "POST",
           body: JSON.stringify({ external_park: flag }),
           isCtcPage: true,
@@ -22,7 +22,7 @@ export function useSipStatus() {
         });
       }
     },
-    [status.externalPark]
+    [status.externalPark],
   );
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export function useSipStatus() {
       if (!sipData?.callState) return;
 
       const ctcScript = Array.from(document.querySelectorAll("script")).some(
-        (s: any) => s.src?.includes("demo-1-ctc")
+        (s: any) => s.src?.includes("demo-1-ctc"),
       );
       if (ctcScript) return;
 

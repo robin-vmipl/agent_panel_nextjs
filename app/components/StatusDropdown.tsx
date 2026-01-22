@@ -136,7 +136,7 @@ export default function StatusDropdown() {
     setLoading(true);
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/get-status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/get-status`,
         { showToast: false },
       );
 
@@ -145,12 +145,12 @@ export default function StatusDropdown() {
 
       updateLocalStatus(status);
 
-      // 🔥 REFRESH SAFETY
+      // REFRESH SAFETY
       if (status === "ACTIVE") {
         syncSipStatus("ACTIVE", !window.__SIP_CONNECTED__);
       }
 
-      // 🔥 ACTIVE → INACTIVE
+      // ACTIVE → INACTIVE
       if (prev === "ACTIVE" && status !== "ACTIVE") {
         syncSipStatus("INACTIVE");
       }
@@ -189,7 +189,7 @@ export default function StatusDropdown() {
     closeModal("statusDropdown");
 
     try {
-      await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/agent/update-status`, {
+      await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/update-status`, {
         method: "POST",
         body: JSON.stringify({ status: newStatus }),
         showToast: true,
@@ -303,7 +303,7 @@ export default function StatusDropdown() {
                     e.stopPropagation();
                     handleStatusChange(option.value);
                   }}
-                  className={`group relative w-full text-left p-4 rounded-xl transition-all duration-300 flex items-center gap-3 ${
+                  className={`group relative w-full text-left p-4 rounded-xl transition-all duration-300 flex items-center gap-3 cursor-pointer ${
                     isActive
                       ? "bg-linear-to-r from-emerald-500/30 to-emerald-600/30 border-2 border-emerald-500/50 text-emerald-300 shadow-emerald-500/40 cursor-default"
                       : "hover:bg-linear-to-r hover:from-slate-700/50 hover:to-slate-800/50 text-slate-300 hover:text-white border border-transparent"

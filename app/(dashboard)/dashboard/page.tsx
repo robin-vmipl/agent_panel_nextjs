@@ -32,7 +32,7 @@ export default function DashboardPage() {
   useSipStatus();
 
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/agent/activity-report`,
+    `${process.env.NEXT_PUBLIC_API_URL}/activity-report`,
     fetcher,
     {
       refreshInterval: 30000,

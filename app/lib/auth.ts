@@ -8,7 +8,7 @@ export const logoutUser = async () => {
   didLogout = true;
 
   try {
-    await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/nextjs/logout`, {
+    await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
       method: "POST",
       skipLogoutOn401: true,
       showToast: false,

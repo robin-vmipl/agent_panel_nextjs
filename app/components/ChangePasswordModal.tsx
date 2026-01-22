@@ -77,7 +77,7 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
     setLoading(true);
     try {
       const res = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/update-password/${agentId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/update-password/${agentId}`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -85,7 +85,7 @@ export default function ChangePasswordModal({ open, onClose }: Props) {
             new_password: newPassword,
             new_password_confirmation: confirmPassword,
           }),
-        }
+        },
       );
 
       if (res.error) {

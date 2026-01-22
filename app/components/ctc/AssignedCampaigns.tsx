@@ -42,7 +42,7 @@ export default function AssignedCampaigns({
     setRefreshing(true);
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-campaigns`,
+        `${process.env.NEXT_PUBLIC_API_URL}/ctc-campaigns`,
         {
           showToast: false,
         },
@@ -79,7 +79,7 @@ export default function AssignedCampaigns({
     setTableLoading(true);
     try {
       const response = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/assigned-campaign-data`,
+        `${process.env.NEXT_PUBLIC_API_URL}/assigned-campaign-data`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

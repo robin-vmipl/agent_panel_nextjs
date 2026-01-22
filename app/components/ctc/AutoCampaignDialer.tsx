@@ -34,7 +34,7 @@ export default function AutoCampaignDialer({
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [dialingCalls, setDialingCalls] = useState<{ [key: string]: boolean }>(
-    {}
+    {},
   );
   const [refreshing, setRefreshing] = useState(false);
   const [localDialerCampaigns, setLocalDialerCampaigns] =
@@ -50,7 +50,7 @@ export default function AutoCampaignDialer({
     setTableLoading(true);
     try {
       const response = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/auto-campaign-data`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auto-campaign-data`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -58,7 +58,7 @@ export default function AutoCampaignDialer({
             auto_campaign: selectedCampaign,
             agent_id: agentConfig.agent_id,
           }),
-        }
+        },
       );
 
       setAutoData(response.data || []);
@@ -92,7 +92,7 @@ export default function AutoCampaignDialer({
       const response1 = await apiFetch(
         `${
           process.env.NEXT_PUBLIC_API_URL
-        }/agent/auto-campaign-dial?${params1.toString()}`
+        }/agent/auto-campaign-dial?${params1.toString()}`,
       );
 
       if (response1.message.startsWith("01")) {
@@ -114,21 +114,21 @@ export default function AutoCampaignDialer({
         await apiFetch(
           `${
             process.env.NEXT_PUBLIC_API_URL
-          }/agent/auto-campaign-dial?${params2.toString()}`
+          }/agent/auto-campaign-dial?${params2.toString()}`,
         );
 
         toast.success(
           `✅ Auto dialing ${row.customer_number.slice(
-            -4
-          )}... Webphone ringing!`
+            -4,
+          )}... Webphone ringing!`,
         );
 
         setAutoData((prev) =>
           prev.filter(
             (item) =>
               item.campaign_id !== row.campaign_id ||
-              item.customer_number !== row.customer_number
-          )
+              item.customer_number !== row.customer_number,
+          ),
         );
       }
     } catch (error: any) {
@@ -148,8 +148,8 @@ export default function AutoCampaignDialer({
     setRefreshing(true);
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-campaigns`,
-        { showToast: false }
+        `${process.env.NEXT_PUBLIC_API_URL}/ctc-campaigns`,
+        { showToast: false },
       );
       const updatedCampaigns = data?.dialer_campaigns || [];
       setLocalDialerCampaigns(updatedCampaigns);
@@ -157,7 +157,7 @@ export default function AutoCampaignDialer({
       if (
         selectedCampaign &&
         !updatedCampaigns.some(
-          (c: AutoCampaign) => c.CAMPAIGN_NAME === selectedCampaign
+          (c: AutoCampaign) => c.CAMPAIGN_NAME === selectedCampaign,
         )
       ) {
         setSelectedCampaign("");

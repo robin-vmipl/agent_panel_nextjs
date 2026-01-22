@@ -32,7 +32,7 @@ export default function MissedCallsTable({
   onCallDialed,
 }: MissedCallsTableProps) {
   const [dialingCalls, setDialingCalls] = useState<{ [key: string]: boolean }>(
-    {}
+    {},
   );
 
   const handleTableDial = async (call: MissedCall) => {
@@ -40,7 +40,7 @@ export default function MissedCallsTable({
 
     try {
       const response = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/missed-call-dial`,
+        `${process.env.NEXT_PUBLIC_API_URL}/missed-call-dial`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -55,7 +55,7 @@ export default function MissedCallsTable({
             agent_name: agentConfig.full_name || "",
             cli: call.CLI || "",
           }),
-        }
+        },
       );
 
       if (response.status_code === "0005") {
@@ -65,7 +65,7 @@ export default function MissedCallsTable({
 
       if (response.status_code === "0000") {
         toast.success(
-          `✅ Calling ${call.customer_number.slice(-4)}... Webphone ringing!`
+          `✅ Calling ${call.customer_number.slice(-4)}... Webphone ringing!`,
         );
         onCallDialed(call.id); //   REMOVE FROM PARENT STATE
         return;

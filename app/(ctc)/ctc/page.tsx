@@ -38,12 +38,12 @@ export default function CTCPage() {
 
     try {
       const data = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/agent/ctc-data`,
+        `${process.env.NEXT_PUBLIC_API_URL}/ctc-data`,
         {
           isCtcPage: true,
           showToast: false,
           skipLogoutOn401: true,
-        }
+        },
       );
 
       if (data?.error) {
@@ -164,7 +164,7 @@ export default function CTCPage() {
             loading={tableLoading}
             onCallDialed={(dialedCallId: string) => {
               setMissedCalls((prev) =>
-                prev.filter((call) => call.id !== dialedCallId)
+                prev.filter((call) => call.id !== dialedCallId),
               );
             }}
           />
