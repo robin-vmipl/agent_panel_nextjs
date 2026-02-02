@@ -119,7 +119,7 @@ export default function AssignedCampaigns({
       await apiFetch(
         `${
           process.env.NEXT_PUBLIC_API_URL
-        }/agent/click-to-call?${params.toString()}`,
+        }/click-to-call?${params.toString()}`,
       );
 
       toast.success(`✅ Calling ${row.CUST_NUM.slice(-4)}...`);

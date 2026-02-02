@@ -53,7 +53,7 @@ export default function ManualDial({
       await apiFetch(
         `${
           process.env.NEXT_PUBLIC_API_URL
-        }/agent/click-to-call?${params.toString()}`,
+        }/click-to-call?${params.toString()}`,
       );
 
       toast.success(`Calling ${phonenumber.slice(-4)}...`);

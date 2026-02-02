@@ -172,8 +172,11 @@ export default function DashboardPage() {
           <div className="absolute inset-0 bg-linear-to-br from-slate-500/10 via-slate-400/5 to-slate-600/10 blur-xl -z-10" />
 
           <div className="flex items-center justify-between mb-6 relative z-10">
-            <h2 className="text-xl font-black bg-linear-to-r from-emerald-300 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-2xl">
-              📈 Last 7 Days Performance
+            <h2 className="text-xl font-black drop-shadow-2xl">
+              <span className="mr-2">📈</span>
+              <span className="bg-linear-to-r from-emerald-300 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
+                Last 7 Days Performance
+              </span>
             </h2>
           </div>
 

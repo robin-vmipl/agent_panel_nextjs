@@ -92,7 +92,7 @@ export default function AutoCampaignDialer({
       const response1 = await apiFetch(
         `${
           process.env.NEXT_PUBLIC_API_URL
-        }/agent/auto-campaign-dial?${params1.toString()}`,
+        }/auto-campaign-dial?${params1.toString()}`,
       );
 
       if (response1.message.startsWith("01")) {
@@ -114,7 +114,7 @@ export default function AutoCampaignDialer({
         await apiFetch(
           `${
             process.env.NEXT_PUBLIC_API_URL
-          }/agent/auto-campaign-dial?${params2.toString()}`,
+          }/auto-campaign-dial?${params2.toString()}`,
         );
 
         toast.success(

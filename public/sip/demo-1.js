@@ -28471,7 +28471,7 @@ THE SOFTWARE.
 
         async function logHoldTimeToLaravel(action, holdDuration = 0) {
             try {
-                const response = await fetch(`${API_BASE_URL}/agent/call-logs`, {
+                const response = await fetch(`${API_BASE_URL}/call-logs`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
