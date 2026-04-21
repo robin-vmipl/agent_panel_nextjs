@@ -1,4 +1,3 @@
-// app/middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -6,21 +5,21 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("nextjs_auth_token")?.value;
   const { pathname } = req.nextUrl;
 
-  if (!token && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+  const protectedRoutes = ["/dashboard", "/ctc"];
 
-  if (!token && pathname.startsWith("/ctc")) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+  const isProtected = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
-  if (token && pathname === "/login") {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  if (!token && isProtected) {
+    return NextResponse.redirect(
+      new URL(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, req.url)
+    );
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/login", "/dashboard/:path*", "/ctc/:path*"],
+  matcher: ["/dashboard/:path*", "/ctc/:path*"],
 };

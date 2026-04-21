@@ -1,9 +1,11 @@
+"use client";
+
 import { apiFetch } from "./api";
 import toast from "react-hot-toast";
 
 let didLogout = false;
 
-export const logoutUser = async () => {
+export async function logoutUser() {
   if (didLogout) return;
   didLogout = true;
 
@@ -15,11 +17,11 @@ export const logoutUser = async () => {
     });
   } catch {}
 
-  window.dispatchEvent(new Event("nextjs:logout"));
-  toast.success("You have been logged out");
+  document.cookie = "nextjs_auth_token=; path=/; max-age=0; SameSite=Lax";
 
-  if (window.location.pathname !== "/login") {
-    window.location.href = "/login";
-  }
-};
+  toast.success("Logged out successfully");
 
+  setTimeout(() => {
+    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`;
+  }, 500);
+}

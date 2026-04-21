@@ -13,7 +13,7 @@ export default function HomePage() {
       if (user) {
         router.replace("/dashboard");
       } else {
-        router.replace("/login");
+        window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`;
       }
     }
   }, [user, isLoading, router]);

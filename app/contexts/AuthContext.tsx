@@ -1,15 +1,13 @@
-// contexts/AuthContext.tsx
 "use client";
 
 import {
   createContext,
   useContext,
-  useState,
   useEffect,
+  useState,
   ReactNode,
 } from "react";
-import { apiFetch } from "../lib/api";
-import { useRouter } from "next/navigation";
+import { apiFetch } from "@/app/lib/api";
 
 interface SipConfig {
   username: string;
@@ -20,84 +18,63 @@ interface AuthContextType {
   user: any | null;
   sipConfig: SipConfig;
   isAuthenticated: boolean;
-  setUser: (user: any) => void;
   isLoading: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUserState] = useState<any | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [sipConfig, setSipConfig] = useState<SipConfig>({
     username: "",
     password: "",
   });
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
-  const setUser = (newUser: any) => {
-    setUserState(newUser);
-    if (newUser) {
-      setIsAuthenticated(true);
-      setSipConfig({
-        username: newUser.sip_username || newUser.id || "",
-        password: newUser.sip_password || "",
+  const refreshUser = async () => {
+    try {
+      const data = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/me`, {
+        skipLogoutOn401: true,
+        showToast: false,
       });
-    } else {
-      setIsAuthenticated(false);
+
+      const u = data?.user ?? null;
+      setUser(u);
+
+      if (u) {
+        setSipConfig({
+          username: u.sip_username || u.user || "",
+          password: u.sip_password || "",
+        });
+      }
+    } catch {
+      setUser(null);
       setSipConfig({ username: "", password: "" });
     }
   };
 
   useEffect(() => {
-    let mounted = true;
-
-    // 🔒 Do NOT fetch /me on login page
-    if (window.location.pathname === "/login") {
-      setIsLoading(false);
-      return;
-    }
-
-    const fetchMe = async () => {
-      try {
-        const data = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/me`, {
-          skipLogoutOn401: true,
-          showToast: false,
-        });
-        if (!mounted) return;
-        setUser(data?.user ?? null);
-      } catch {
-        if (mounted) setUser(null);
-      } finally {
-        if (mounted) setIsLoading(false);
-      }
-    };
-
-    fetchMe();
-
-    const onLogout = () => {
-      setUser(null);
-    };
-
-    window.addEventListener("nextjs:logout", onLogout);
-    return () => {
-      mounted = false;
-      window.removeEventListener("nextjs:logout", onLogout);
-    };
+    refreshUser().finally(() => setIsLoading(false));
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ user, sipConfig, isAuthenticated, setUser, isLoading }}
+      value={{
+        user,
+        sipConfig,
+        isAuthenticated: !!user,
+        isLoading,
+        refreshUser,
+      }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
-  return context;
-};
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  return ctx;
+}
