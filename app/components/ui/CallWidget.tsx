@@ -233,7 +233,7 @@ export default function CallWidget() {
     }
     setLoading(true);
     try {
-      await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}//call_transfer_api`, {
+      await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/call_transfer_api`, {
         method: "POST",
         body: JSON.stringify({ action: "transfer", queue: selectedGroup }),
       });
